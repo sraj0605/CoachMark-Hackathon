@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MobileScanner</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="title_home_item">Home</string>
+    <string name="title_settings_item">Settings</string>
+    <string name="title_switch_item">Switch User</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="main_activity_label">User Dashboard</string>
+</resources>

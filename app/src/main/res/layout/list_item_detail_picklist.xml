@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/item_name"
+        android:layout_alignParentLeft="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:text="itemname"/>
+
+    <TextView
+        android:id="@+id/item_desc"
+        android:layout_below="@id/item_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:text="itemdesc"/>
+
+    <TextView
+        android:id="@+id/item_qty_needed"
+        app:layout_widthPercent="32%"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_desc"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="8dp"
+        android:text="needed:10"/>
+
+    <TextView
+        android:id="@+id/item_qty_topick"
+        app:layout_widthPercent="32%"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_below="@id/item_desc"
+        android:layout_toRightOf="@id/item_qty_needed"
+        android:text="topick:5"/>
+
+    <TextView
+        android:id="@+id/item_qty_picked"
+        app:layout_widthPercent="36%"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_desc"
+        android:layout_toRightOf="@id/item_qty_topick"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="4dp"
+        android:gravity="right"
+        android:text="picked:0"/>
+
+</android.support.percent.PercentRelativeLayout>
