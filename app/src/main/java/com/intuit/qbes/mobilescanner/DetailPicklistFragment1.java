@@ -185,11 +185,11 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
         db = new SQLiteDatabaseLineItemHandler(getActivity().getApplicationContext());
         lineitems = db.allLineItems(mPicklist.getRecnum());
         //cahdan -start - only for testing
-        LineItem obj1 = new LineItem(1,"Redmi","pick it","aaa","1",10,1,2,"abc","_",null);
-        LineItem obj2 = new LineItem(1,"Iphone","hardware","aaa","1",10,1,2,"def","def_123",null);
-        LineItem obj3 = new LineItem(1,"Motorola","harware","aaa","1",10,1,2,"ghi","def_12",null);
-        LineItem obj4 = new LineItem(1,"Zebra","awesome phone","aaa","1",10,1,2,"wow","jkl",null);
-        LineItem obj5 = new LineItem(1,"1 plus 3","struggling phone","aaa","1",10,1,2,"mno","wer",null);
+        LineItem obj1 = new LineItem(1,"Redmi phone","black gold","aaa","1",10,1,2,"abc","Rack 1",null);
+        LineItem obj2 = new LineItem(1,"Iphone","Rose gold","aaa","1",10,1,12,"def","Rack 2",null);
+        LineItem obj3 = new LineItem(1,"Motorola","Scanner","aaa","1",10,1,21,"ghi","Rack 3",null);
+        LineItem obj4 = new LineItem(1,"Zebra","hardware","aaa","1",10,1,12,"wow","Rack 4",null);
+        LineItem obj5 = new LineItem(1,"1 plus 3","struggling phone","aaa","1",10,1,42,"mno","Rack 5",null);
         lineitems.add(obj1);
         lineitems.add(obj2);
         lineitems.add(obj3);
