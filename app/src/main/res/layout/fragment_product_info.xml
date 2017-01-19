@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        app:layout_widthPercent="100%"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="10dp"
+        android:textSize="10dp"
+        android:text = "QTY TO BE PICKED"
+        android:layout_alignParentTop="true"
+        android:id="@+id/qty" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        android:text = "11.56"
+        android:layout_below="@id/qty"
+        android:id="@+id/item_qty" />
+
+
+    <TextView
+        app:layout_widthPercent="100%"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="3dp"
+        android:layout_marginTop="3dp"
+        android:textSize="12dp"
+        android:text = "ea"
+        android:layout_below="@id/qty"
+        android:layout_toRightOf="@id/item_qty"
+        android:id="@+id/ea" />
+
+
+    <View style="@style/Divider"
+        android:id="@+id/divider7"
+        android:layout_below="@id/item_qty"
+        android:layout_marginTop="6dp"/>
+
+    <TextView
+        app:layout_widthPercent="100%"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp"
+        android:textSize="10dp"
+        android:text = "QTY PICKED"
+        android:layout_below="@id/divider7"
+        android:id="@+id/qty_picked" />
+
+    <ImageView
+        android:id="@+id/decrease"
+        app:layout_widthPercent="15%"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/qty_picked"
+        android:src="@drawable/minus" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@id/decrease"
+        android:maxLines="1"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        android:text = "0"
+        android:layout_below="@id/qty_picked"
+        android:background="@android:color/transparent"
+        android:inputType="number|numberDecimal"
+        android:selectAllOnFocus="true"
+        android:id="@+id/qty_picked_value" />
+
+    <ImageView
+        android:id="@+id/increase"
+        app:layout_widthPercent="15%"
+        android:layout_marginLeft="14dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/qty_picked"
+        android:layout_toRightOf="@id/qty_picked_value"
+        android:src="@drawable/plus" />
+
+    <TextView
+        app:layout_widthPercent="12%"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/increase"
+        android:textSize="12dp"
+        android:layout_marginTop="3dp"
+        android:text = "ea"
+        android:layout_below="@id/qty_picked"
+        android:id="@+id/ea2" />
+
+    <View style="@style/Divider"
+        android:id="@+id/divider6"
+        android:layout_below="@id/qty_picked_value"
+        android:layout_marginTop="6dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/divider6"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="10dp"
+        android:textSize="10dp"
+        android:text = "ITEM"
+        android:id="@+id/item"
+    />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        android:text = "LTree Tempered Glass"
+        android:layout_below="@id/item"
+        android:id="@+id/item_Name" />
+
+    <View style="@style/Divider"
+        android:id="@+id/divider1"
+        android:layout_below="@id/item_Name"
+        android:layout_marginTop="10dp"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp"
+        android:textSize="10dp"
+        android:text = "DESCRIPTION"
+        android:layout_below="@id/divider1"
+        android:id="@+id/description" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        android:maxLines="5"
+        android:text = "LTree Tempered Glass for Lenovo"
+        android:layout_below="@id/description"
+        android:id="@+id/item_description" />
+
+    <View style="@style/Divider"
+        android:id="@+id/divider2"
+        android:layout_below="@id/item_description"
+        android:layout_marginTop="10dp"/>
+
+
+
+    <TextView
+        app:layout_widthPercent = "46%"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp"
+        android:textSize="10dp"
+        android:text = "UPC"
+        android:layout_below="@id/divider2"
+        android:id="@+id/UPC_code" />
+
+
+       <EditText
+           app:layout_widthPercent = "30%"
+        android:layout_height="wrap_content"
+           android:textSize="12dp"
+           android:layout_below="@+id/UPC_code"
+           android:maxLines="1"
+        android:layout_marginLeft="10dp"
+        android:hint="Enter UPC Code"
+           android:textColorHint="#d3d3cd"
+           android:background="@android:color/transparent"
+           android:id="@+id/item_upc" />
+
+  <!-- </android.support.design.widget.TextInputLayout> -->
+
+    <View style="@style/VerticalDivider"
+        android:id="@+id/vdivider"
+        android:layout_below="@id/divider2"
+        android:layout_toRightOf="@id/UPC_code"/>
+
+    <TextView
+        app:layout_widthPercent="54%"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/vdivider"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp"
+        android:textSize="10dp"
+        android:text = "SERIAL NUMBER"
+        android:layout_below="@id/divider2"
+        android:id="@+id/SNO" />
+
+    <TextView
+        app:layout_widthPercent="54%"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/vdivider"
+        android:layout_marginLeft="10dp"
+        android:textSize="12dp"
+        android:textColor="#d3d3cd"
+        android:text = "Enter Serial Number/s"
+        android:layout_below="@id/SNO"
+        android:id="@+id/item_SNO" />
+
+    <View style="@style/Divider"
+        android:id="@+id/divider3"
+        android:layout_below="@id/divider2"
+        android:layout_marginTop="52dp"/>
+
+    <TextView
+        app:layout_widthPercent="70%"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp"
+        android:textSize="10dp"
+        android:text = "LOCATION"
+        android:layout_below="@id/divider3"
+        android:id="@+id/location" />
+
+    <TextView
+        app:layout_widthPercent="70%"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        android:text = "BIN 6"
+        android:layout_below="@id/location"
+        android:id="@+id/item_location" />
+
+    <ImageView
+        android:id="@+id/bin"
+        app:layout_widthPercent="30%"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_below="@id/divider3"
+        android:layout_toRightOf="@id/location"
+        android:src="@drawable/location" />
+
+    <View style="@style/Divider"
+        android:id="@+id/divider4"
+        android:layout_below="@id/item_location"
+        android:layout_marginTop="10dp"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp"
+        android:textSize="10dp"
+        android:text = "SALES ORDER"
+        android:layout_below="@id/divider4"
+        android:id="@+id/salesorder" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        android:text = "A12345"
+        android:layout_below="@id/salesorder"
+        android:id="@+id/item_salesorder" />
+
+    <View style="@style/Divider"
+        android:id="@+id/divider5"
+        android:layout_below="@id/item_salesorder"
+        android:layout_marginTop="10dp"/>
+
+
+    <Button
+        android:text="CONFIRM"
+        app:layout_widthPercent="95%"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:id="@+id/button_confirm" />
+
+
+
+
+</android.support.percent.PercentRelativeLayout>

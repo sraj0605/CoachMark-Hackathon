@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <TextView
+        android:text="TEST"
+        app:layout_widthPercent="70%"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textSize="15dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginStart="54dp"
+        android:layout_marginTop="44dp"
+        android:id="@+id/serialnumber_text" />
+
+    <ImageView
+        android:id="@+id/remove_serialno"
+        app:layout_widthPercent="30%"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="44dp"
+        android:layout_toRightOf="@id/serialnumber_text"
+        android:src="@drawable/minus" />
+</android.support.percent.PercentRelativeLayout>

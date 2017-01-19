@@ -7,5 +7,12 @@
     <string name="title_switch_item">Switch User</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-    <string name="main_activity_label">User Dashboard</string>
+    <string name="main_activity_label">My Tasks</string>
+    <string name="title_activity_product_info">Information</string>
+    <string name="sort_by">SORT BY</string>
+    <string name="filter">FILTER</string>
+    <string name="sort_by_location">Locations</string>
+    <string name="sort_by_items">Items</string>
+    <string name="sort_by_status">Status</string>
+    <string name="sort_by_salesorder">Sales Order</string>
 </resources>

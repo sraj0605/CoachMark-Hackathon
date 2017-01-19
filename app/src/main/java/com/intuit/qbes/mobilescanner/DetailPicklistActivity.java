@@ -14,7 +14,7 @@ import com.intuit.qbes.mobilescanner.model.Picklist;
 /**
  * Created by pdixit on 10/6/16.
  */
-public class DetailPicklistActivity extends SingleFrameActivity implements DetailPicklistFragment.Callbacks {
+public class DetailPicklistActivity extends SingleFrameActivity implements DetailPicklistFragment1.Callbacks {
 
     private static final String LOG_TAG = "DetailPicklistActivity";
 
@@ -23,14 +23,14 @@ public class DetailPicklistActivity extends SingleFrameActivity implements Detai
     @Override
     protected Fragment createFragment()
     {
-        Picklist picklist = (Picklist) getIntent().getParcelableExtra(DetailPicklistFragment.EXTRA_PICKLIST);
-        return DetailPicklistFragment.newInstance(picklist);
+        Picklist picklist = (Picklist) getIntent().getParcelableExtra(DetailPicklistFragment1.EXTRA_PICKLIST);
+        return DetailPicklistFragment1.newInstance(picklist);
     }
 
     @Override
     public void onLineItemSelected(LineItem selectedLineItem) {
-        Intent intent = new Intent(this, DetailItemActivity.class);
-        intent.putExtra(DetailItemFragment.EXTRA_LINEITEM, selectedLineItem);
+        Intent intent = new Intent(this, ProductInfoActivity.class);
+        //intent.putExtra(ProductInfoFragment.EXTRA_LINEITEM, selectedLineItem);
         startActivityForResult(intent, REQUEST_DETAIL_ITEM);
     }
 
@@ -44,7 +44,7 @@ public class DetailPicklistActivity extends SingleFrameActivity implements Detai
         else
         {
             Intent data = new Intent();
-            data.putExtra(DetailPicklistFragment.EXTRA_PICKLIST, picklist);
+            data.putExtra(DetailPicklistFragment1.EXTRA_PICKLIST, picklist);
             setResult(Activity.RESULT_OK, data);
             finish();
         }
@@ -64,7 +64,7 @@ public class DetailPicklistActivity extends SingleFrameActivity implements Detai
             case REQUEST_DETAIL_ITEM:
                 FragmentManager fm = getSupportFragmentManager();
 
-                DetailPicklistFragment fragment = (DetailPicklistFragment) fm.findFragmentById(R.id.flContent);
+                DetailPicklistFragment1 fragment = (DetailPicklistFragment1) fm.findFragmentById(R.id.flContent);
                 if (fragment != null)
                 {
                     try

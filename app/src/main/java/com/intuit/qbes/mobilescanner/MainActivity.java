@@ -1,9 +1,11 @@
 package com.intuit.qbes.mobilescanner;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -12,14 +14,16 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 
 public class MainActivity extends AppCompatActivity
-        implements ListPicklistFragment.Callbacks {
+        implements ListPicklistFragment.Callbacks{
 
     private static String LOG_TAG = "MainActivity";
     private static final int REQUEST_DETAIL_PICKLIST = 1;
@@ -29,9 +33,9 @@ public class MainActivity extends AppCompatActivity
     private NavigationView mNavigationView;
     private CoordinatorLayout mCoordinatorLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-    private TextView mHeaderTextView1;
-    private TextView mHeaderTextView2;
-
+    private TextView mPickerFName;
+    private TextView mPickerLName;
+    private static final int REQUEST_DETAIL_ITEM = 1;
     private int mSelectedMenuId;
 
     @Override
@@ -54,12 +58,12 @@ public class MainActivity extends AppCompatActivity
 
         //Setup header
         View navHeader = mNavigationView.getHeaderView(0);
-        mHeaderTextView1 = (TextView) navHeader.findViewById(R.id.nav_header_tv1);
-        mHeaderTextView2 = (TextView) navHeader.findViewById(R.id.nav_header_tv2);
+        mPickerFName = (TextView) navHeader.findViewById(R.id.nav_header_tv1);
+        mPickerLName = (TextView) navHeader.findViewById(R.id.nav_header_tv2);
         String tv1Text = "Hello,";
         String tv2Text = "John Doe!";
-        mHeaderTextView1.setText(tv1Text);
-        mHeaderTextView2.setText(tv2Text);
+        mPickerFName.setText(tv1Text);
+        mPickerLName.setText(tv2Text);
 
         mSelectedMenuId = R.id.nav_home_item;
     }
@@ -105,10 +109,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPickSelected(Picklist selectedPick) {
+
         Intent intent = new Intent(this, DetailPicklistActivity.class);
-        intent.putExtra(DetailPicklistFragment.EXTRA_PICKLIST, selectedPick);
+        intent.putExtra(DetailPicklistFragment1.EXTRA_PICKLIST, selectedPick);
         startActivityForResult(intent, REQUEST_DETAIL_PICKLIST);
+
     }
+
 
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, mDrawer, mToolbar,
@@ -123,13 +130,11 @@ public class MainActivity extends AppCompatActivity
 
     private void presentFragmentForMenu(int menuId)
     {
-        Fragment fragment = null;
         mSelectedMenuId = menuId;
-
-        Class fragmentClass = null;
+Class fragmentClass = null;
         switch(menuId) {
             case R.id.nav_home_item:
-                fragmentClass = ListPicklistFragment.class;
+                fragmentClass = TabLayoutFragment.class;
                 break;
             default:
                 break;
@@ -141,9 +146,12 @@ public class MainActivity extends AppCompatActivity
         same fragment are present and one is not attached to the activity
          */
 
+
         String tag = fragmentClass.getCanonicalName();
+
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragment = fragmentManager.findFragmentByTag(tag);
+
+       Fragment fragment = fragmentManager.findFragmentByTag(tag);
         try {
             if (fragment == null) {
                 fragment = (Fragment) fragmentClass.newInstance();
@@ -152,9 +160,52 @@ public class MainActivity extends AppCompatActivity
         catch (Exception e) {
             e.printStackTrace();
         }
-        FragmentTransaction ft = fragmentManager.beginTransaction();
+        FragmentTransaction   ft = fragmentManager.beginTransaction();
         ft.replace(R.id.flContent, fragment, tag);
-        ft.addToBackStack(null);
+        if(!(fragmentClass == TabLayoutFragment.class)) {
+
+            ft.addToBackStack(null);
+
+            }
         ft.commit();
+
     }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode != Activity.RESULT_OK)
+            return;
+
+        switch (requestCode) {
+            case REQUEST_DETAIL_PICKLIST:
+                FragmentManager fm = getSupportFragmentManager();
+
+                ListPicklistFragment fragment = (ListPicklistFragment) fm.findFragmentById(R.id.flContent);
+                if (fragment != null)
+                {
+                    Picklist picklist = (Picklist) data.getParcelableExtra(DetailPicklistFragment.EXTRA_PICKLIST);
+                    try
+                    {
+                        fragment.updatePicklist(picklist);
+                    }
+                    catch (IllegalArgumentException ex)
+                    {
+                        Log.e(LOG_TAG, ex.toString());
+                    }
+                    Snackbar.make(mCoordinatorLayout,
+                            String.format("Picklist# %s updated", picklist.getNumber()),
+                            Snackbar.LENGTH_LONG).show();
+
+                }
+                else
+                {
+                    Log.e(LOG_TAG, "Fragment not found");
+                }
+
+                break;
+            default:
+                break;
+        }
+    }
+
 }

@@ -99,6 +99,7 @@ public class LineItem implements Parcelable {
         }
     }
 
+
     public LineItem(Parcel in)
     {
         mPicklistID = in.readLong();

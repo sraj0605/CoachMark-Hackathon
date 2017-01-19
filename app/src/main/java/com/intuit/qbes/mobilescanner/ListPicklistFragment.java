@@ -1,53 +1,27 @@
 package com.intuit.qbes.mobilescanner;
 
-import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NavUtils;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.telecom.Call;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.networking.PicklistHttp;
+import com.symbol.emdk.barcode.ScannerConfig;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -59,7 +33,7 @@ import java.util.List;
  * Use the {@link ListPicklistFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListPicklistFragment extends Fragment{
+public class ListPicklistFragment extends Fragment implements PickingReceivingAdapter.AdapterCallback{
 
     private static final String LOG_TAG = "ListPicklistFragment";
 
@@ -71,6 +45,14 @@ public class ListPicklistFragment extends Fragment{
 
     public interface Callbacks {
         void onPickSelected(Picklist selectedPick);
+    }
+
+    @Override
+    public void onClickCallback(Picklist picklist) {
+        db = new SQLiteDatabaseHandler(getActivity().getApplicationContext());
+        mPicklists =  db.allPickLists();
+        mCallbacks.onPickSelected(mPicklists.get(0));
+       // mCallbacks.onPickSelected(picklist);
     }
 
     public ListPicklistFragment() {
@@ -90,28 +72,16 @@ public class ListPicklistFragment extends Fragment{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list_picklist, container, false);
 
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list_picklist_rv);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setHasFixedSize(true);
-        RecyclerView.ItemDecoration itemDecoration = new
-                com.intuit.qbes.mobilescanner.DividerItemDecoration(getActivity(), com.intuit.qbes.mobilescanner.DividerItemDecoration.VERTICAL_LIST);
-        mRecyclerView.addItemDecoration(itemDecoration);
+        PickingReceivingAdapter pa = new PickingReceivingAdapter(createList(5), this);
+        mRecyclerView.setAdapter(pa);
 
         return view;
 
 
-    }
-
-    private void setupAdapter()
-    {
-        if (isAdded())
-        {
-            if (mPicklists == null)
-            {
-                mPicklists = new ArrayList<Picklist>();
-            }
-            mRecyclerView.setAdapter(new PicklistAdapter());
-        }
     }
 
     private void fetchPicklists()
@@ -120,8 +90,6 @@ public class ListPicklistFragment extends Fragment{
                 "Fetching Picklists", "Working real hard on it", true);
         new FetchPicklistTask().execute();
     }
-
-
 
     @Override
     public void onAttach(Context context) {
@@ -185,84 +153,7 @@ public class ListPicklistFragment extends Fragment{
         mRecyclerView.scrollToPosition(idx);
     }
 
-    private class ListPicklistHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private TextView mNumber;
-        private ImageView mStatus;
-        private TextView mDate;
-        private TextView mName;
-
-        private Picklist mPick;
-
-        public ListPicklistHolder(View itemView)
-        {
-            super(itemView);
-            itemView.setOnClickListener(this);
-
-            mNumber = (TextView) itemView.findViewById(R.id.list_picklist_num);
-            mStatus = (ImageView) itemView.findViewById(R.id.list_picklist_status);
-            mDate = (TextView) itemView.findViewById(R.id.list_picklist_date);
-            mName = (TextView) itemView.findViewById(R.id.list_picklist_name);
-        }
-
-        public void bindPickList(com.intuit.qbes.mobilescanner.model.Picklist pList)
-        {
-            mPick = pList;
-            String dateStr = "";
-
-            //ToDo: Change this to make display date's format as per device's locale settings
-            dateStr = MSUtils.MMddyyyyFormat.format((Date)pList.getOrderDate());
-
-            mDate.setText(dateStr);
-            mNumber.setText(pList.getNumber());
-            mName.setText(pList.getName());
-
-            if (pList.getStatus() == 1)
-            {
-                mStatus.setImageResource(R.drawable.ic_assignment_black_24dp);
-            }
-            else
-            {
-                mStatus.setImageResource(R.drawable.ic_assignment_turned_in_black_24dp);
-            }
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (mCallbacks != null) {
-                mCallbacks.onPickSelected(mPick);
-            }
-        }
-
-    }
-
-    private class PicklistAdapter extends RecyclerView.Adapter<ListPicklistHolder> {
-
-        public PicklistAdapter() {
-        }
-
-        @Override
-        public void onBindViewHolder(ListPicklistHolder holder, int position) {
-                holder.bindPickList(mPicklists.get(position));
-
-        }
-
-        @Override
-        public ListPicklistHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            Context context = parent.getContext();
-            LayoutInflater inflater = LayoutInflater.from(context);
-
-            View view = inflater.inflate(R.layout.list_item_list_picklist, parent, false);
-
-            ListPicklistHolder viewHolder = new ListPicklistHolder(view);
-            return viewHolder;
-        }
-
-        @Override
-        public int getItemCount() {
-            return mPicklists.size();
-        }
-    }
 
     private class FetchPicklistTask extends AsyncTask<Void, Void, Void> {
         @Override
@@ -303,10 +194,95 @@ public class ListPicklistFragment extends Fragment{
         @Override
         protected void onPostExecute(Void aVoid) {
             mProgressDialog.dismiss();
-            setupAdapter();
+          //  setupAdapter();
         }
 
 
     }
 
+
+//Dummy as of now
+    private List<Picklist> createList(int size) {
+
+        List<Picklist> result = new ArrayList<Picklist>();
+        for (int i=1; i <= size; i++) {
+            Picklist pi = new Picklist();
+            pi.setName("Picklist" + " " + i);
+            pi.setTotalItems(35*i);
+            pi.setNote("Note:" +" " + i);
+
+            result.add(pi);
+
+        }
+
+        return result;
+    }
+
+ /*   public class PickingAdapter extends RecyclerView.Adapter<PickingAdapter.PickingViewHolder> {
+
+        private List<Picklist> pickingdata;
+
+        public PickingAdapter(List<Picklist> pickingdata) {
+            this.pickingdata = pickingdata;
+        }
+
+        @Override
+        public PickingViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+            View itemView = LayoutInflater.
+                    from(viewGroup.getContext()).
+                    inflate(R.layout.userdashboard_layout, viewGroup, false);
+
+            return new PickingViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(PickingViewHolder pickingViewHolder, int i) {
+            Picklist pi = pickingdata.get(i);
+            pickingViewHolder.mPicklistName.setText(pi.getName());
+            pickingViewHolder.mPicklistItems.setText(String.valueOf(pi.getTotalItems()) + " " + "items");
+            pickingViewHolder.mPicklistNote.setText(pi.getNote());
+
+            pickingViewHolder.bindPickList(pi);
+        }
+
+
+
+        @Override
+        public int getItemCount() {
+            return pickingdata.size();
+        }
+
+        public class PickingViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+
+            protected TextView mPicklistName;
+            protected TextView mPicklistItems;
+            protected TextView mPicklistNote;
+            protected Picklist mPick;
+
+
+
+            public PickingViewHolder(View v) {
+                super(v);
+                mPicklistName  =  (TextView) v.findViewById(R.id.picklist_name);
+                mPicklistItems = (TextView)  v.findViewById(R.id.picklist_total_items);
+                mPicklistNote = (TextView)  v.findViewById(R.id.picklist_note);
+
+                v.setOnClickListener(this);
+            }
+
+            public void bindPickList(Picklist pList)
+            {
+                mPick = pList;
+            }
+
+            @Override
+            public void onClick(View view) {
+
+                if (mCallbacks != null) {
+                    mCallbacks.onPickSelected(mPick);
+                }
+            }
+        }
+
+    }*/
 }

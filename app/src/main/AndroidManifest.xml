@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.intuit.qbes.mobilescanner"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.intuit.qbes.mobilescanner">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="com.symbol.emdk.permission.EMDK"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.symbol.emdk.permission.EMDK" />
 
     <application
         android:allowBackup="true"
@@ -14,37 +14,43 @@
         android:theme="@style/AppTheme">
         <uses-library
             android:name="com.symbol.emdk"
-            android:required="false"/>
+            android:required="false" />
 
-        <activity
-            android:name=".ListPicklistActivity"
-            android:label="Picklists">
-
-        </activity>
         <activity
             android:name=".DetailPicklistActivity"
             android:label="Picklist Details">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ListPicklistActivity"/>
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".DetailItemActivity"
             android:label="Item Details">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".DetailPicklistActivity"/>
+                android:value=".DetailPicklistActivity" />
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="Settings">
-        </activity>
-        <activity android:name=".MainActivity"
+            android:label="Settings"></activity>
+        <activity
+            android:name=".MainActivity"
             android:label="@string/main_activity_label">
+
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".ProductInfoActivity"
+            android:label="@string/title_activity_product_info"
+            android:theme="@style/AppTheme">
+
+
+
         </activity>
     </application>
 

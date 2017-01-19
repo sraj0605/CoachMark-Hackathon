@@ -38,7 +38,7 @@ public class ListPicklistActivity extends SingleFrameActivity implements ListPic
     @Override
     public void onPickSelected(Picklist selectedPick) {
         Intent intent = new Intent(this, DetailPicklistActivity.class);
-        intent.putExtra(DetailPicklistFragment.EXTRA_PICKLIST, selectedPick);
+        intent.putExtra(DetailPicklistFragment1.EXTRA_PICKLIST, selectedPick);
         startActivityForResult(intent, REQUEST_DETAIL_PICKLIST);
     }
 

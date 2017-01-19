@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+    <TextView
+        android:text="To be added: 2"
+        app:layout_widthPercent="100%"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="15dp"
+        android:id="@+id/serialno_added"
+        android:layout_alignParentTop="true"
+        />
+
+    <EditText
+        app:layout_widthPercent="70%"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="Enter Serial Number"
+        android:ems="10"
+        android:layout_below="@+id/serialno_added"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="24dp"
+        android:id="@+id/AddSno" />
+
+    <ImageView
+        android:id="@+id/add_serialno"
+        app:layout_widthPercent="30%"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/serialno_added"
+        android:layout_marginTop="30dp"
+        android:layout_toRightOf="@id/AddSno"
+        android:src="@drawable/plus" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/serialnumber_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/AddSno"
+        android:layout_marginTop="15dp"/>
+
+</android.support.percent.PercentRelativeLayout>

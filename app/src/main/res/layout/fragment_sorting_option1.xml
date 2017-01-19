@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    >
+    <TextView
+        android:id="@+id/sortby"
+        android:text ="Sort By"
+        android:textStyle="bold"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_width="match_parent"
+        android:layout_marginTop="15dp"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="15dp"
+        android:textSize="20sp"/>
+    <View
+        android:id="@+id/horizontaldivider1"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/sortby"
+        android:layout_marginTop="5dp"
+        android:layout_height="1dip" android:background="#37000000"/>
+
+    <TextView
+        android:id="@+id/sortByLocation"
+        android:layout_below="@+id/horizontaldivider1"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text ="@string/sort_by_location"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:textSize="20sp"/>
+    <View
+    android:id="@+id/horizontaldivider2"
+    android:layout_width="match_parent"
+    android:layout_below="@+id/sortByLocation"
+    android:layout_marginTop="5dp"
+
+    android:layout_height="1dip" android:background="#37000000"/>
+
+    <TextView
+        android:id="@+id/sortByItems"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/horizontaldivider2"
+        android:text ="@string/sort_by_items"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:textSize="20sp"/>
+    <View
+        android:id="@+id/horizontaldivider3"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/sortByItems"
+        android:layout_marginTop="5dp"
+        android:layout_height="1dip" android:background="#37000000"/>
+
+    <TextView
+        android:id="@+id/sortByStatus"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text ="@string/sort_by_status"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_below="@+id/horizontaldivider3"
+        android:textSize="20sp"/>
+    <View
+        android:id="@+id/horizontaldivider4"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/sortByStatus"
+        android:layout_marginTop="5dp"
+        android:layout_height="1dip" android:background="#37000000"/>
+
+    <TextView
+        android:id="@+id/sortBySalesOrder"
+        android:layout_below="@+id/horizontaldivider4"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text ="@string/sort_by_salesorder"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:textSize="20sp"/>
+
+</RelativeLayout>
