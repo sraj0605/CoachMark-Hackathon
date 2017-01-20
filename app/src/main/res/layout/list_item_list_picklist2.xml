@@ -67,7 +67,7 @@
             <ImageView
                 android:layout_weight="1"
                 android:id="@+id/pickImage"
-                app:srcCompat="@android:drawable/ic_menu_camera"
+                app:srcCompat="@drawable/ic_notpicked"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="50dp"/>
