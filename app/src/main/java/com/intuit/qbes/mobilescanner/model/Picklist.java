@@ -73,19 +73,30 @@ public class Picklist implements Parcelable {
 
     public Picklist(Parcel in)
     {
-        mRecnum = in.readLong();
+     /*   mRecnum = in.readLong();
         mNumber = in.readString();
         mStatus = in.readInt();
-        try {
+     /*   try {
             mOrderDate = MSUtils.yyyyMMddFormat.parse(in.readString());
             mShipDate = MSUtils.yyyyMMddFormat.parse(in.readString());
+
         }
         catch (ParseException e) {
             Log.e(LOG_TAG, e.toString());
-        }
-        mName = in.readString();
+        }*/
+     /*   mOrderDate = (java.util.Date) in.readSerializable();
+        mShipDate = (java.util.Date) in.readSerializable();
+        mName = in.readString();*/
         //chandan - commenting as of now,to find why it is taking time
-        //mLines = new ArrayList<LineItem>(Arrays.asList(in.createTypedArray(LineItem.CREATOR)));
+        mLines = new ArrayList<LineItem>(Arrays.asList(in.createTypedArray(LineItem.CREATOR)));
+        mNote = in.readString();
+        mRecnum = in.readLong();
+        mNumber = in.readString();
+        mStatus = in.readInt();
+        mOrderDate = (java.util.Date) in.readSerializable();
+        mShipDate = (java.util.Date) in.readSerializable();
+        mName = in.readString();
+
     }
 
     public List<LineItem> getLines() {
@@ -223,25 +234,25 @@ public class Picklist implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         try {
-            dest.writeInt(getTotalItems());
-            String test = getNote();
-            Date test2;
-            test2 = getOrderDate();
-            Long lg = getRecnum();
-
+           // dest.writeInt(getTotalItems());
+            dest.writeTypedArray(getLines().toArray(new LineItem[getLines().size()]), 0);
             dest.writeString(getNote());
             dest.writeLong(getRecnum());
             dest.writeString(getNumber());
             dest.writeInt(getStatus());
-            dest.writeString(MSUtils.yyyyMMddFormat.format(getOrderDate()));
-            dest.writeString(MSUtils.yyyyMMddFormat.format(getShipDate()));
+            dest.writeSerializable(getOrderDate());
+            dest.writeSerializable(getShipDate());
+            dest.writeString(getName());
+
+       //     dest.writeString(MSUtils.yyyyMMddFormat.format(getOrderDate()));
+       //     dest.writeString(MSUtils.yyyyMMddFormat.format(getShipDate()));
 
         }
         catch (Exception exp)
         {
 
         }
-      //  dest.writeTypedArray(getLines().toArray(new LineItem[getLines().size()]), 0);
+       //dest.writeTypedArray(getLines().toArray(new LineItem[getLines().size()]), 0);
     }
 
     public static final Parcelable.Creator<Picklist> CREATOR = new Parcelable.Creator<Picklist>() {

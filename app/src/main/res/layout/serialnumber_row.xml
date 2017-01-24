@@ -2,7 +2,7 @@
 <android.support.percent.PercentRelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="40dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
@@ -11,10 +11,8 @@
         app:layout_widthPercent="70%"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:textSize="15dp"
+        android:textSize="20dp"
         android:layout_marginLeft="30dp"
-        android:layout_marginStart="54dp"
-        android:layout_marginTop="44dp"
         android:id="@+id/serialnumber_text" />
 
     <ImageView
@@ -22,7 +20,6 @@
         app:layout_widthPercent="30%"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="44dp"
         android:layout_toRightOf="@id/serialnumber_text"
-        android:src="@drawable/minus" />
+        android:src="@drawable/cancel" />
 </android.support.percent.PercentRelativeLayout>

@@ -33,7 +33,8 @@ public class LineItem implements Parcelable {
     private String mName;
     private String mDescription;
     private String mBarcode;
-
+    private String mBarcodeEntered;
+    private String mSalesOrder;
     private String mUom;
     private double mQtyNeeded;
     private double mQtyToPick;
@@ -42,7 +43,9 @@ public class LineItem implements Parcelable {
     private String mSite;
     private String mBin;
 
-    private String[] mSNArr;
+   // private String[] mSNArr;
+    private ArrayList<String> mSNArr;
+
     public LineItem()
     {
         mRecNum = -1;
@@ -51,6 +54,7 @@ public class LineItem implements Parcelable {
                     String name,
                     String description,
                     String barcode,
+                    String barcodeentered,
                     String uom,
                     double qtyNeeded,
                     double qtyPicked,
@@ -70,11 +74,12 @@ public class LineItem implements Parcelable {
         mSite = site;
 
         if (SNArr != null) {
-            mSNArr = (String[]) SNArr.toArray();
+          //  mSNArr = (String[]) SNArr.toArray();
+            mSNArr = SNArr;
         }
         else
         {
-            mSNArr = null;
+            mSNArr = new ArrayList<String>();
         }
         mUom = uom;
     }
@@ -99,7 +104,6 @@ public class LineItem implements Parcelable {
         }
     }
 
-
     public LineItem(Parcel in)
     {
         mPicklistID = in.readLong();
@@ -107,18 +111,29 @@ public class LineItem implements Parcelable {
         mName = in.readString();
         mDescription = in.readString();
         mBarcode = in.readString();
+        mBarcodeEntered = in.readString();
         mUom = in.readString();
         mQtyNeeded = in.readDouble();
         mQtyToPick = in.readDouble();
         mQtyPicked = in.readDouble();
         mSite = in.readString();
         mBin = in.readString();
-        //in.readStringArray(mSNArr);
+        try {
+           // in.readStringList(mSNArr);
+        mSNArr =  (ArrayList<String>)in.readSerializable();
+        }
+        catch(Exception e)
+        {
+
+        }
     }
+
 
     public String getBarcode() {
         return mBarcode;
     }
+
+    public String getBarcodeEntered() {return mBarcodeEntered; }
 
     public String getBin() {
         return mBin;
@@ -131,6 +146,8 @@ public class LineItem implements Parcelable {
     public String getName() {
         return mName;
     }
+
+    public String getSalesOrder() { return mSalesOrder;}
 
     public double getQtyNeeded() {
         return mQtyNeeded;
@@ -152,7 +169,13 @@ public class LineItem implements Parcelable {
         return mSite;
     }
 
-    public String[] getSNArr() {
+
+  /*  public String[] getSNArr() {
+        return mSNArr;
+    }*/
+
+    public ArrayList<String> getSNArr()
+    {
         return mSNArr;
     }
 
@@ -165,9 +188,11 @@ public class LineItem implements Parcelable {
     }
 
 
+
     public void setBarcode(String barcode) {
         mBarcode = barcode;
     }
+    public void setBarcodeEntered(String barcodeEntered) {mBarcodeEntered = barcodeEntered;}
     public void setDescription(String decsription) {
         mDescription = decsription;
     }
@@ -187,8 +212,12 @@ public class LineItem implements Parcelable {
     public void setUom(String uom) {
         mUom = uom;
     }
+   // public void setSNArrpicked(ArrayList<String> serialnos){mSNArrpicked = serialnos;}
+
+    public void setSNArr(ArrayList<String> serialnos){mSNArr = serialnos;}
 
     public void setPickListID(long id) { mPicklistID = id ;}
+
 
 
     public void setQtyPicked(double qtyPicked) {
@@ -206,6 +235,7 @@ public class LineItem implements Parcelable {
                         jsonItem.getString(JSON_TAG_NAME),
                         jsonItem.optString(JSON_TAG_DESC),
                         jsonItem.getString(JSON_TAG_BARCODE),
+                        null,
                         jsonItem.optString(JSON_TAG_UOM),
                         jsonItem.optDouble(JSON_TAG_NEEDED, 0.0),
                         jsonItem.optDouble(JSON_TAG_PICKED, 0.0),
@@ -264,13 +294,15 @@ public class LineItem implements Parcelable {
         dest.writeString(getName());
         dest.writeString(getDescription());
         dest.writeString(getBarcode());
+        dest.writeString(getBarcodeEntered());
         dest.writeString(getUom());
         dest.writeDouble(getQtyNeeded());
         dest.writeDouble(getQtyToPick());
         dest.writeDouble(getQtyPicked());
         dest.writeString(getSite());
         dest.writeString(getBin());
-        //dest.writeStringArray(mSNArr);
+       // dest.writeStringList(getSNArr());
+        dest.writeSerializable(getSNArr());
     }
 
     public static final Parcelable.Creator<LineItem> CREATOR = new Parcelable.Creator<LineItem>() {

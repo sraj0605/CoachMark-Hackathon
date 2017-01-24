@@ -11,7 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductInfoActivity extends AppCompatActivity implements ProductInfoFragment.Callbacks {
 
@@ -30,8 +34,7 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
-
+        LineItem lineitem = (LineItem) getIntent().getParcelableExtra(ProductInfoFragment.EXTRA_LINEITEM);
 
         fragmentClass = ProductInfoFragment.class;
         String tag = fragmentClass.getCanonicalName();
@@ -41,46 +44,46 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
         try {
             if (fragment == null) {
                 //fragment = (Fragment) fragmentClass.newInstance();
-                 fragment = new ProductInfoFragment();
+                fragment = ProductInfoFragment.newInstance(lineitem);
 
             }
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.flProdInfo, fragment, tag);
-       // ft.addToBackStack(fragment.getClass().getName());
+        // ft.addToBackStack(null);
         ft.commit();
 
     }
 
     @Override
-    public void onSerialNumberClicked() {
+    public void onSerialNumberClicked(LineItem lineitem) {
 
         fragmentClass = SerialNumberFragment.class;
         String tag = fragmentClass.getCanonicalName();
+
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         Fragment fragment = fragmentManager.findFragmentByTag(tag);
         try {
             if (fragment == null) {
-                fragment = (Fragment) fragmentClass.newInstance();
+                //fragment = (Fragment) fragmentClass.newInstance();
+                fragment = SerialNumberFragment.newInstance(lineitem);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        FragmentTransaction   ft = fragmentManager.beginTransaction();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.flProdInfo, fragment, tag);
-        if(!(fragmentClass == TabLayoutFragment.class)) {
 
-            ft.addToBackStack(null);
+        ft.addToBackStack(null);
 
-        }
         ft.commit();
     }
+
+
+
 }

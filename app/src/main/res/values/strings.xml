@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WarehouseScanner</string>
+    <string name="app_name">MobileScanner</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="title_home_item">Home</string>
@@ -15,4 +15,8 @@
     <string name="sort_by_items">Items</string>
     <string name="sort_by_status">Status</string>
     <string name="sort_by_salesorder">Sales Order</string>
+    <string name="No">No</string>
+    <string name="Yes">Yes</string>
+    <string name="OK">OK</string>
+
 </resources>
