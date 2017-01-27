@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Created by pdixit on 10/3/16.
  */
@@ -35,6 +36,7 @@ public class LineItem implements Parcelable {
     private String mBarcode;
     private String mBarcodeEntered;
     private String mSalesOrder;
+    private long mSalesOrderId;
     private String mUom;
     private double mQtyNeeded;
     private double mQtyToPick;
@@ -42,13 +44,30 @@ public class LineItem implements Parcelable {
 
     private String mSite;
     private String mBin;
+    //Must be defined in same order of sort option
+    public enum Status
+    {
+        NOTAVAILABLE,
+        NOTPICKED,
+        PARTIALPICKED,
+        PICKED
 
+    }
+
+    private Status mItemStatus;
    // private String[] mSNArr;
     private ArrayList<String> mSNArr;
 
     public LineItem()
     {
         mRecNum = -1;
+    }
+    public LineItem(long recnum,String barcode)
+    {
+        mRecNum = -1;
+        mBarcode = barcode;
+        mSite = null;
+
     }
     public LineItem(long recNum,
                     String name,
@@ -61,6 +80,8 @@ public class LineItem implements Parcelable {
                     double qtyToPick,
                     String site,
                     String bin,
+                    long salesOrderId,
+                    Status status,
                     ArrayList<String> SNArr)
     {
         mBarcode = barcode;
@@ -72,7 +93,8 @@ public class LineItem implements Parcelable {
         mQtyToPick = qtyToPick;
         mRecNum = recNum;
         mSite = site;
-
+        mSalesOrderId = salesOrderId;
+        mItemStatus = status;
         if (SNArr != null) {
           //  mSNArr = (String[]) SNArr.toArray();
             mSNArr = SNArr;
@@ -118,6 +140,8 @@ public class LineItem implements Parcelable {
         mQtyPicked = in.readDouble();
         mSite = in.readString();
         mBin = in.readString();
+        mSalesOrderId = in.readLong();
+        mItemStatus = Status.valueOf(in.readString());
         try {
            // in.readStringList(mSNArr);
         mSNArr =  (ArrayList<String>)in.readSerializable();
@@ -128,7 +152,9 @@ public class LineItem implements Parcelable {
         }
     }
 
+    public void setItemStatus(Status mItemStatus) { this.mItemStatus = mItemStatus;}
 
+    public Status getItemStatus() {return mItemStatus;}
     public String getBarcode() {
         return mBarcode;
     }
@@ -187,6 +213,8 @@ public class LineItem implements Parcelable {
         return mPicklistID;
     }
 
+    public long getSalesOrderId() {return mSalesOrderId;}
+    public void setSalesOrderId(long mSalesOrderId) {this.mSalesOrderId = mSalesOrderId;}
 
 
     public void setBarcode(String barcode) {
@@ -240,7 +268,7 @@ public class LineItem implements Parcelable {
                         jsonItem.optDouble(JSON_TAG_NEEDED, 0.0),
                         jsonItem.optDouble(JSON_TAG_PICKED, 0.0),
                         jsonItem.getDouble(JSON_TAG_TOPICK),
-                        null, null, null));
+                        null, null, 0,Status.NOTPICKED,null));
             }
         }
         catch (JSONException ex)
@@ -301,8 +329,11 @@ public class LineItem implements Parcelable {
         dest.writeDouble(getQtyPicked());
         dest.writeString(getSite());
         dest.writeString(getBin());
+        dest.writeLong(getSalesOrderId());
+        dest.writeString((mItemStatus == null) ? "" : mItemStatus.name());
        // dest.writeStringList(getSNArr());
         dest.writeSerializable(getSNArr());
+
     }
 
     public static final Parcelable.Creator<LineItem> CREATOR = new Parcelable.Creator<LineItem>() {
@@ -320,11 +351,24 @@ public class LineItem implements Parcelable {
     @Override
     public boolean equals(Object o) {
         boolean ret = false;
+        int test = 0;
 
         if (o instanceof LineItem)
         {
             LineItem rhs = (LineItem) o;
-            ret = rhs.mRecNum == this.mRecNum;
+            //ret = rhs.mRecNum == this.mRecNum;
+            if(this.getRecNum() == -1) { //object of dummy barcode which will have recnum as -1
+                test = (rhs.getBarcode().toLowerCase().compareTo(this.getBarcode().toLowerCase()));
+                if (test == 0)
+                    ret = true;
+            }
+            else
+            {
+                //barcode and location can be null from qb
+                //TO D0 - next we will add target id
+                ret = (rhs.mRecNum == this.mRecNum);
+
+            }
         }
 
         return ret;

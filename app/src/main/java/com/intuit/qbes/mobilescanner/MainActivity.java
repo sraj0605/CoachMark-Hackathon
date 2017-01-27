@@ -1,6 +1,8 @@
 package com.intuit.qbes.mobilescanner;
 
 import android.app.Activity;
+import android.app.Application;
+import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.design.widget.CoordinatorLayout;
@@ -19,11 +21,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.intuit.qbes.mobilescanner.barcode.BarcodeScannerDevice;
+import com.intuit.qbes.mobilescanner.barcode.DeviceManager;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.networking.Foreground;
 
 public class MainActivity extends AppCompatActivity
-        implements ListPicklistFragment.Callbacks{
+        implements ListPicklistFragment.Callbacks,Foreground.Listener{
 
     private static String LOG_TAG = "MainActivity";
     private static final int REQUEST_DETAIL_PICKLIST = 1;
@@ -37,6 +42,8 @@ public class MainActivity extends AppCompatActivity
     private TextView mPickerLName;
     private static final int REQUEST_DETAIL_ITEM = 1;
     private int mSelectedMenuId;
+    private DeviceManager mDevice = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +73,21 @@ public class MainActivity extends AppCompatActivity
         mPickerLName.setText(tv2Text);
 
         mSelectedMenuId = R.id.nav_home_item;
+        mDevice = DeviceManager.getDevice(getApplicationContext());
+        Foreground obj = Foreground.init(getApplication());
+        obj.addListener(this);
+
+    }
+
+    @Override
+    public void onBecameBackground() {
+        if(mDevice!= null)
+            mDevice.freeDeviceResource();
+    }
+
+    @Override
+    public void onBecameForeground() {
+
     }
 
     @Override
@@ -84,6 +106,12 @@ public class MainActivity extends AppCompatActivity
                         return true;
                     }
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mDevice.freeDeviceResource();
     }
 
     @Override
@@ -115,6 +143,7 @@ public class MainActivity extends AppCompatActivity
         startActivityForResult(intent, REQUEST_DETAIL_PICKLIST);
 
     }
+
 
 
     private ActionBarDrawerToggle setupDrawerToggle() {

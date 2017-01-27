@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
@@ -23,6 +25,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.intuit.qbes.mobilescanner.barcode.BarcodeScannerDevice;
+import com.intuit.qbes.mobilescanner.barcode.DeviceManager;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 
 import java.util.ArrayList;
@@ -34,7 +38,7 @@ import static com.intuit.qbes.mobilescanner.R.drawable.plus;
  * Created by ashah9 on 1/18/17.
  */
 
-public class SerialNumberFragment extends Fragment implements View.OnClickListener {
+public class SerialNumberFragment extends Fragment implements View.OnClickListener,BarcodeScannerDevice.ScanDataReceiver {
 
     private RecyclerView mRecyclerView;
     private SerialNumberAdapter mySerialNumberAdapter;
@@ -44,6 +48,8 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
     private LineItem lineitem;
     private Integer qty;
     private Button mConfirm;
+    private DeviceManager mDeviceManager = null;
+    boolean bSerialNumberLimitDialog = false;
   //  private ArrayList<String> test = new ArrayList<>();
 
     @Override
@@ -106,8 +112,10 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
 
         mRecyclerView.setAdapter(mySerialNumberAdapter);
 
-
-
+        //scanner integration
+        mDeviceManager = DeviceManager.getDevice(getContext());
+        mDeviceManager.registerForCallback(this);
+        bSerialNumberLimitDialog = false;
     }
 
 
@@ -132,7 +140,8 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
                 }
                 else
                 {
-                    SerialNoLimitDialog();
+                    if(!bSerialNumberLimitDialog)
+                        SerialNoLimitDialog();
 
                 }
                 break;
@@ -169,9 +178,13 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
                 .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         mSerialNumberAdded.getText().clear();
+                        bSerialNumberLimitDialog = false;
                     }
                 })
+
                 .show();
+
+        bSerialNumberLimitDialog = true;
     }
 
     public void SerialNoConfirmDialog(int toAdd)
@@ -314,8 +327,19 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         else
             return false;
     }
+    //scanner integration
+    @Override
+    public void scanDataReceived(String sData) {
+        final String sSerialNumber = sData;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                mSerialNumberAdded.setText(sSerialNumber);
+                onClick(mAddSerialNo);
+            }
+        });
 
-
+    }
 }
 
 

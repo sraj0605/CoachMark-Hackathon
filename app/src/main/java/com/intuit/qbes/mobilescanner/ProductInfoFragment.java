@@ -5,11 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +24,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.intuit.qbes.mobilescanner.barcode.BarcodeScannerDevice;
+import com.intuit.qbes.mobilescanner.barcode.DeviceManager;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 
 import java.math.BigDecimal;
@@ -31,9 +37,10 @@ import java.util.regex.Pattern;
  * Created by ashah9 on 1/8/17.
  */
 
-public class ProductInfoFragment extends Fragment implements View.OnClickListener, TextWatcher {
+public class ProductInfoFragment extends Fragment implements View.OnClickListener, TextWatcher,BarcodeScannerDevice.ScanDataReceiver {
 
     public static final String EXTRA_LINEITEM = "com.intuit.qbes.mobilescanner.lineitem";
+    public static final String BARCODE_ENTERED = "BARCODE_ENTERED";
     private static final String LOG_TAG = "ProductInfoFragment";
     private View view;
     private LineItem mlineItem;
@@ -58,7 +65,8 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     private Button mConfirm;
     private boolean isInt;
     private Callbacks mCallbacks;
-
+    private String mbarcodePassed;
+    private static DeviceManager mDeviceManager = null;
 
 
     public interface Callbacks {
@@ -72,9 +80,11 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         super.onCreate(savedInstanceState);
 
         mlineItem = (LineItem) getArguments().getParcelable(EXTRA_LINEITEM);
+        mbarcodePassed = getArguments().getString(BARCODE_ENTERED);
         if (mlineItem == null && savedInstanceState != null)
         {
             mlineItem = (LineItem) savedInstanceState.getParcelable(EXTRA_LINEITEM);
+            mbarcodePassed = savedInstanceState.getString(BARCODE_ENTERED);
         }
         
         setHasOptionsMenu(true);
@@ -88,11 +98,12 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     }
 
 
-    public static ProductInfoFragment newInstance(LineItem lineitem)
+    public static ProductInfoFragment newInstance(LineItem lineitem,String barcodePassed)
     {
 
         Bundle args = new Bundle();
         args.putParcelable(EXTRA_LINEITEM, lineitem);
+        args.putString(BARCODE_ENTERED,barcodePassed);
         ProductInfoFragment fragment = new ProductInfoFragment();
         fragment.setArguments(args);
         return fragment;
@@ -148,7 +159,6 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStart() {
         super.onStart();
-
         mUPC_background = (View)view.findViewById(R.id.UPC_Error);
 
 
@@ -176,6 +186,15 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
         setControllers(mlineItem, view);
 
+        if(mbarcodePassed.compareTo("") != 0)
+        {
+            mUPC_Value.setText(mbarcodePassed);
+            onClick(mIncrement);
+        }
+
+        mDeviceManager = DeviceManager.getDevice(getContext());
+        mDeviceManager.unRegisterDeviceFromCallback(this);
+        mDeviceManager.registerForCallback(this);
     }
 
     public void setControllers(LineItem lineitem, View view)
@@ -397,6 +416,8 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
             case R.id.button_confirm :
 
+                updateItemStatus();
+
                 if(!mlineItem.getBarcode().isEmpty()) {
                     if (!(((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSNArr().size() > 0)) && (mUPC_Value.getText().toString().isEmpty())) && !(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick())) {
 
@@ -530,8 +551,57 @@ public boolean noDecimal(double val)
     else
         return false;
 }
+//scanner Integration
+    @Override
+    public void scanDataReceived(String sData) {
+        final String sUPCData = sData;
+        if(mlineItem.getBarcode().compareTo(sData) == 0)
+        {//We have to run this  on ui thread - ASync task also can be used
+             new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    mUPC_Value.setText(sUPCData);
+                    onClick(mIncrement);
 
-
+                }
+            });
+        }
+        else
+        {
+            //Scanned item is not matching current item
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    mlineItem.setBarcodeEntered(sUPCData);
+                    onClick(mConfirm);
+                }
+            });
+        }
 
     }
+
+    public void updateItemStatus()
+    {
+        Double qtyPicked = mlineItem.getQtyPicked();
+        Double qtyToPick = mlineItem.getQtyToPick();
+        if(Double.compare(qtyPicked,qtyToPick) == 0)
+        {
+            mlineItem.setItemStatus(LineItem.Status.PICKED);
+        }
+
+        else if(Double.compare(qtyPicked,0) > 0 && Double.compare(qtyPicked,qtyToPick) < 0)
+        {
+            mlineItem.setItemStatus(LineItem.Status.PARTIALPICKED);
+        }
+        else if(Double.compare(qtyPicked,0) == 0)
+        {
+            mlineItem.setItemStatus(LineItem.Status.NOTPICKED);
+        }
+        else
+        {
+            //need to see
+            mlineItem.setItemStatus(LineItem.Status.NOTAVAILABLE);
+        }
+    }
+}
 

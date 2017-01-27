@@ -28,9 +28,10 @@ public class DetailPicklistActivity extends SingleFrameActivity implements Detai
     }
 
     @Override
-    public void onLineItemSelected(LineItem selectedLineItem) {
+    public void onLineItemSelected(LineItem selectedLineItem,String barcodeEntered) {
         Intent intent = new Intent(this, ProductInfoActivity.class);
-        //intent.putExtra(ProductInfoFragment.EXTRA_LINEITEM, selectedLineItem);
+        intent.putExtra(ProductInfoFragment.EXTRA_LINEITEM, selectedLineItem);
+        intent.putExtra(ProductInfoFragment.BARCODE_ENTERED,barcodeEntered);
         startActivityForResult(intent, REQUEST_DETAIL_ITEM);
     }
 
@@ -69,7 +70,12 @@ public class DetailPicklistActivity extends SingleFrameActivity implements Detai
                 {
                     try
                     {
-                        fragment.updateLineItem((LineItem) data.getParcelableExtra(DetailItemFragment.EXTRA_LINEITEM));
+                        LineItem obj = (LineItem) data.getParcelableExtra(DetailItemFragment.EXTRA_LINEITEM);
+                        fragment.updateLineItemAndItsView((LineItem) data.getParcelableExtra(DetailItemFragment.EXTRA_LINEITEM));
+                        //To Do- second condition is hack will be done in product info fragment
+                        if((obj.getBarcodeEntered().compareTo("") !=0) && (obj.getBarcode().compareTo(obj.getBarcodeEntered()) !=0))
+                            fragment.scanDataReceived(obj.getBarcodeEntered());
+
                     }
                     catch (IllegalArgumentException ex)
                     {

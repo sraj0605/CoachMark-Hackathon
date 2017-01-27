@@ -9,7 +9,9 @@ import com.symbol.emdk.EMDKResults;
 import com.symbol.emdk.barcode.BarcodeManager;
 import com.symbol.emdk.barcode.ScanDataCollection;
 import com.symbol.emdk.barcode.Scanner;
+import com.symbol.emdk.barcode.ScannerConfig;
 import com.symbol.emdk.barcode.ScannerException;
+import com.symbol.emdk.barcode.ScannerInfo;
 import com.symbol.emdk.barcode.ScannerResults;
 import com.symbol.emdk.barcode.StatusData;
 import java.util.ArrayList;
@@ -39,11 +41,11 @@ import android.widget.Toast;
  * Created by ckumar5 on 23/12/16.
  */
 
-public class EMDKDevice implements BarcodeScannerDevice,EMDKManager.EMDKListener,Scanner.StatusListener,Scanner.DataListener {
+public class EMDKDevice implements BarcodeScannerDevice,EMDKManager.EMDKListener,Scanner.StatusListener,Scanner.DataListener,BarcodeManager.ScannerConnectionListener{
 
     public String LOG_STR = "EMDKDevice";
     //Client Interface which will receive Scanned Data
-    BarcodeScannerDevice.ScanDataReceiver scanDataRecieverObj= null;
+    private BarcodeScannerDevice.ScanDataReceiver scanDataRecieverObj = null;
 
     // Declare a variable to store EMDKManager object
     private EMDKManager emdkManager = null;
@@ -63,6 +65,10 @@ public class EMDKDevice implements BarcodeScannerDevice,EMDKManager.EMDKListener
     //Application context which will be set by client
     public Context context = null;
 
+    public EMDKDevice()
+    {
+        //Putting a default constructor
+    }
     //Barcode Interface method
     public Boolean initializeLibraryResource(Context context) {
 
@@ -83,20 +89,26 @@ public class EMDKDevice implements BarcodeScannerDevice,EMDKManager.EMDKListener
     {
         scanDataRecieverObj = obj;
     }
+
+    @Override
+    public void unRegisterDeviceFromCallback(ScanDataReceiver obj) {
+        //To - do
+        if (obj instanceof EMDKDevice.ScanDataReceiver)
+        {
+            scanDataRecieverObj = null;
+        }
+    }
+
     //Barcode Interface method - Release EMDK resource
     public void releaseDevice()
     {
-        //Release the EMDKmanager on Application exit.
-        if (emdkManager != null) {
-            emdkManager.release();
-            emdkManager = null;
-        }
         if (scanner != null)
         {
             try {
+                scanner.cancelRead();
+                scanner.disable();
                 scanner.removeStatusListener(this);
                 scanner.removeDataListener(this);
-                scanner.disable();
                 scanner = null;
             }
             catch (ScannerException ex)
@@ -105,8 +117,36 @@ public class EMDKDevice implements BarcodeScannerDevice,EMDKManager.EMDKListener
                 Log.e(LOG_STR, ex.toString());
             }
         }
+        barcodeManager.removeConnectionListener(this);
+        //Release the EMDKmanager on Application exit.
+        if (emdkManager != null) {
+            emdkManager.release(EMDKManager.FEATURE_TYPE.BARCODE);
+            emdkManager = null;
+        }
 
     }
+
+    @Override
+    public void releaseScanner() {
+        if (scanner != null)
+        {
+            try {
+                scanner.cancelRead();
+                scanner.disable();
+
+                scanner.removeStatusListener(this);
+                scanner.removeDataListener(this);
+
+            }
+            catch (ScannerException ex)
+            {
+                Log.e(LOG_STR, "Failed disable scanner");
+                Log.e(LOG_STR, ex.toString());
+            }
+        }
+        scanner = null;
+    }
+
     @Override
     public void onOpened(EMDKManager emdkManager) {
         this.emdkManager = emdkManager;
@@ -130,6 +170,13 @@ public class EMDKDevice implements BarcodeScannerDevice,EMDKManager.EMDKListener
     }
 
     @Override
+    public void onConnectionChange(ScannerInfo scannerInfo, BarcodeManager.ConnectionState connectionState) {
+
+        Log.e("chandan","on connection listener");
+
+    }
+
+    @Override
     public void onStatus(StatusData statusData) {
         new AsyncStatusUpdate().execute(statusData);
     }
@@ -145,6 +192,7 @@ public class EMDKDevice implements BarcodeScannerDevice,EMDKManager.EMDKListener
             // Get the Barcode Manager object
             barcodeManager = (BarcodeManager) this.emdkManager
                     .getInstance(EMDKManager.FEATURE_TYPE.BARCODE);
+            barcodeManager.addConnectionListener(this);
             // Get default scanner defined on the device
             scanner = barcodeManager.getDevice(BarcodeManager.DeviceIdentifier.DEFAULT);
             // Add data and status listeners
@@ -154,7 +202,13 @@ public class EMDKDevice implements BarcodeScannerDevice,EMDKManager.EMDKListener
             // press the trigger on the device after issuing the read call.
             scanner.triggerType = Scanner.TriggerType.HARD;
             // Enable the scanner
-            scanner.enable();
+            try {
+                scanner.enable();
+            }
+            catch (ScannerException exp)
+            {
+                Log.e("chandan",exp.getMessage());
+            }
             // Starts an asynchronous Scan. The method will not turn ON the
             // scanner. It will, however, put the scanner in a state in which
             // the scanner can be turned ON either by pressing a hardware
@@ -201,7 +255,12 @@ public class EMDKDevice implements BarcodeScannerDevice,EMDKManager.EMDKListener
                         // Get the scanned data
                         String a = data.getData();
                         if(scanDataRecieverObj != null)
+                        {
                             scanDataRecieverObj.scanDataReceived(a.toString());
+                        }
+                        else {
+                            Log.e("LOG_STR","listener for scan data is null");
+                        }
                         Log.e(LOG_STR, a.toString());
                         // Get the type of label being scanned
                         //LabelType labelType = data.getLabelType();

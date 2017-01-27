@@ -34,22 +34,15 @@ public class LineItemListComparator implements Comparator<LineItem> {
             }
             case SalesOrder:
             {
-                //Chandan - To be decided
-                if(lineItem1.getDescription() != null && lineItem2.getDescription() != null)
-                    return lineItem1.getDescription().compareTo(lineItem2.getDescription());//chandan - to do sales order
-                return 0;
+                return Long.valueOf(lineItem1.getSalesOrderId()).compareTo(Long.valueOf(lineItem2.getSalesOrderId()));
             }
             case Status:
             {
                 //Chandan - To be decided
-                if(lineItem1.getDescription() != null && lineItem2.getDescription() != null)
-                    return  lineItem1.getDescription().compareTo(lineItem2.getDescription());//chandan - to do
-                return 0;
+                return lineItem1.getItemStatus().compareTo(lineItem2.getItemStatus()) ;
             }
         }
         throw new RuntimeException("Practically unreachable code,Sorting By option passed is not supported");
     }
-
-
 }
 

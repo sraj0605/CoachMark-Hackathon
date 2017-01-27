@@ -25,6 +25,10 @@ import com.symbol.emdk.barcode.ScannerConfig;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTAVAILABLE;
+import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
+import static com.intuit.qbes.mobilescanner.model.LineItem.Status.PICKED;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -214,6 +218,7 @@ dummyPicklists.set(idx,picklist);
 //            {
 //                Log.e(LOG_TAG, "Failed to fetch URL: ", ioe);
 //            }
+            Log.e("chandan","returning from db");
             return null;
         }
 
@@ -242,11 +247,11 @@ dummyPicklists.set(idx,picklist);
             lineitems = new ArrayList<LineItem>();
         //cahdan -start - only for testing
 
-        LineItem obj1 = new LineItem(1, "Redmi", "pick it", "", "","1", 10, 0, 5.8, "abc", "_", serialnos1);
-        LineItem obj2 = new LineItem(2, "Iphone", "hardware", "IphoneBarcode", "","1", 10, 0, 2, "def", "def_123", serialnos2);
-        LineItem obj3 = new LineItem(3, "Motorola", "hardware", "MotoRolaBarcode","", "1", 10, 0, 2, "ghi", "def_12", serialnos3);
-        LineItem obj4 = new LineItem(4, "Zebra", "awesome phone", "ZebraBarcode", "1","", 10, 0, 2, "wow", "jkl", serialnos4);
-        LineItem obj5 = new LineItem(5, "1 plus 3", "struggling phone", "1PlusBarcode", "", "1", 10, 0, 2, "mno", "wer", serialnos5);
+        LineItem obj1 = new LineItem(1, "Redmi", "pick it", "8901238910005", "","1", 10, 1, 10, "abc", "_",110,NOTPICKED,serialnos1);
+        LineItem obj2 = new LineItem(2, "Iphone", "hardware", "8901057310062", "","1", 10, 0, 8, "def", "def_123", 111,NOTPICKED,serialnos2);
+        LineItem obj3 = new LineItem(3, "Motorola", "hardware", "MotoRolaBarcode","", "1", 10, 0, 7, "ghi", "def_12",112,NOTAVAILABLE, serialnos3);
+        LineItem obj4 = new LineItem(4, "Zebra", "awesome phone", "ZebraBarcode", "1","", 10, 0, 21.9, "wow", "jkl", 113,NOTPICKED,serialnos4);
+        LineItem obj5 = new LineItem(5, "1 plus 3", "struggling phone", "1PlusBarcode", "", "1", 10, 0, 5, "mno", "wer", 114,NOTPICKED,serialnos5);
         lineitems.add(obj1);
         lineitems.add(obj2);
         lineitems.add(obj3);

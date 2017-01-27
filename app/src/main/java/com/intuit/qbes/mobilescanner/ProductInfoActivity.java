@@ -35,16 +35,15 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         LineItem lineitem = (LineItem) getIntent().getParcelableExtra(ProductInfoFragment.EXTRA_LINEITEM);
-
+        String barcodePassed = getIntent().getStringExtra(ProductInfoFragment.BARCODE_ENTERED);
         fragmentClass = ProductInfoFragment.class;
         String tag = fragmentClass.getCanonicalName();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragment = fragmentManager.findFragmentByTag(tag);
-
         try {
             if (fragment == null) {
                 //fragment = (Fragment) fragmentClass.newInstance();
-                fragment = ProductInfoFragment.newInstance(lineitem);
+                fragment = ProductInfoFragment.newInstance(lineitem,barcodePassed);
 
             }
         } catch (Exception e) {

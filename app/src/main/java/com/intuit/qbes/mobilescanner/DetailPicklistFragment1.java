@@ -27,25 +27,32 @@ import android.widget.TextView;
 
 import com.intuit.qbes.mobilescanner.barcode.BarcodeFactory;
 import com.intuit.qbes.mobilescanner.barcode.BarcodeScannerDevice;
+import com.intuit.qbes.mobilescanner.barcode.DeviceManager;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.model.LineItem.Status;
 import com.intuit.qbes.mobilescanner.networking.PicklistHttp;
 
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTAVAILABLE;
+import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
+import static com.intuit.qbes.mobilescanner.model.LineItem.Status.PARTIALPICKED;
+import static com.intuit.qbes.mobilescanner.model.LineItem.Status.PICKED;
 import static java.lang.Math.E;
 
 /**
  * Created by ckumar5 on 08/01/17.
  */
 
-public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerDevice.ScanDataReceiver,View.OnClickListener,SortingDialog.SortingSelectionDialogListener {
+public class DetailPicklistFragment1 extends Fragment implements View.OnClickListener,SortingDialog.SortingSelectionDialogListener,BarcodeScannerDevice.ScanDataReceiver{
 
 
     public static final String EXTRA_PICKLIST = "com.intuit.qbes.mobilescanner.picklist";
@@ -60,6 +67,8 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
     private BarcodeFactory mBarcodeFactory = null;
     private BarcodeScannerDevice mBarcodeScannerDevice = null;
 
+    private DeviceManager mDeviceManager = null;
+
     private RelativeLayout mLayoutForFilter;
     private RelativeLayout mLayoutForSort;
     private ImageView mReverseSortingOption;
@@ -68,11 +77,11 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
 
     private ProgressDialog mProgressDialog;
     private SQLiteDatabaseLineItemHandler db;
-    private List<LineItem> lineitems;
+    private List<LineItem> lineitems = null;
 
 
     public interface Callbacks {
-        void onLineItemSelected(LineItem selectedLineItem);
+        void onLineItemSelected(LineItem selectedLineItem,String barcodeEntered);
         void onPicklistSaved(Integer responseCode, Picklist picklist);
         void onBarcodeReady();
     }
@@ -83,6 +92,7 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
         args.putParcelable(EXTRA_PICKLIST, picklist);
 
         DetailPicklistFragment1 fragment = new DetailPicklistFragment1();
+
         fragment.setArguments(args);
 
         return fragment;
@@ -108,13 +118,13 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        //@Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_detail_picklist2, container, false);
 
-        //Set up Recycle view and its holder
+        //@Set up Recycle view and its holder
         setUpRecycleView(view);
 
-        //Set up necessary control listener
+        //@Set up necessary control listener
         setUpControlListenerForFragment(view);
 
         return view;
@@ -131,7 +141,7 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
         mRecyclerView.addItemDecoration(itemDecoration);
 
     }
-    //Set up necessary control listener
+    //@Set up necessary control listener
     public void setUpControlListenerForFragment(View view)
     {
         mLayoutForSort = (RelativeLayout) view.findViewById(R.id.sortlayout);
@@ -182,39 +192,25 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
     @Override
     public void onStart() {
         super.onStart();
+
         db = new SQLiteDatabaseLineItemHandler(getActivity().getApplicationContext());
-        lineitems = db.allLineItems(mPicklist.getRecnum());
-        //cahdan -start - only for testing
-        LineItem obj1 = new LineItem(1,"Redmi phone","black gold","aaa","1",10,1,2,"abc","Rack 1",null);
-        LineItem obj2 = new LineItem(1,"Iphone","Rose gold","aaa","1",10,1,12,"def","Rack 2",null);
-        LineItem obj3 = new LineItem(1,"Motorola","Scanner","aaa","1",10,1,21,"ghi","Rack 3",null);
-        LineItem obj4 = new LineItem(1,"Zebra","hardware","aaa","1",10,1,12,"wow","Rack 4",null);
-        LineItem obj5 = new LineItem(1,"1 plus 3","struggling phone","aaa","1",10,1,42,"mno","Rack 5",null);
-        lineitems.add(obj1);
-        lineitems.add(obj2);
-        lineitems.add(obj3);
-        lineitems.add(obj4);
-        lineitems.add(obj5);
-        //chandan - end
+
+        if(lineitems == null)
+            lineitems = mPicklist.getLines();
+        if(lineitems == null)
+            lineitems = db.allLineItems(mPicklist.getRecnum());
 
         if(mAdapter ==  null)
             mAdapter = new LineItemAdapter(lineitems);
 
         mRecyclerView.setAdapter(mAdapter);
+        //@get Scanner device and register for call back
+        mDeviceManager = DeviceManager.getDevice(getContext());
+        mDeviceManager.unRegisterDeviceFromCallback(this);
+        mDeviceManager.registerForCallback(this);
 
-        if (mBarcodeScannerDevice == null)
-        {
-            mBarcodeFactory = new BarcodeFactory();
-            mBarcodeScannerDevice = mBarcodeFactory.getDevice();
-            if(mBarcodeScannerDevice != null)
-            {
-                mBarcodeScannerDevice.registerForCallback(this);
-                mBarcodeScannerDevice.initializeLibraryResource(getActivity());
-            }
-            mBarcodeFactory = null;
-        }
     }
-    //callback from sort Dialog fragment
+    //@callback from sorting Dialog fragment
     @Override
     public void onSortingOptionSelection(SortFilterOption userSelection) {
 
@@ -228,34 +224,43 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
         }
         mAdapter.sortDataSetByUserOption(userSelection,false);
     }
-
+///@Filter - in future we can enable this
    /* @Override
     public void onFilterOptionSelection(SortFilterOption userSelection) {
         mAdapter.filterDatasetByUserOption(userSelection,"Item1");
     }*/
 
-    //callback from scanner device library
+    //@callback from scanner device library
     @Override
     public void scanDataReceived(String sData) {
-        new AsyncDataUpdate().execute(sData);
+        //Creating a dummy Line Item object,-1 is important as equal of will validate based on -1
+        LineItem lineItem = new LineItem(-1,sData);
 
-    }
+        if(lineitems.contains(lineItem))
+        {
+            lineItem = lineitems.get(lineitems.indexOf(lineItem));
+            /*if model has to get updated from this activity itself*/
+            /*Double dQtyPicked = lineItem.getQtyPicked();
+            Double dQtyToPick = lineItem.getQtyToPick();
+            BigDecimal temp = BigDecimal.valueOf(dQtyPicked);
+            BigDecimal tempToAdd = new BigDecimal(1);
+            BigDecimal result = temp.add(tempToAdd);
+            dQtyPicked = result.doubleValue();
+            lineItem.setQtyPicked(dQtyPicked);
+            if(dQtyPicked > 0 && dQtyPicked < dQtyToPick)
+                lineItem.setItemStatus(PARTIALPICKED);
+            else if(dQtyPicked == dQtyToPick)
+                lineItem.setItemStatus(PICKED);
+            else
+                lineItem.setItemStatus(NOTPICKED);*/
 
-    private void initializeBarcode()
-    {
-        if (mBarcodeScannerDevice != null)
-        {
-            mBarcodeScannerDevice.releaseDevice();
-            mBarcodeFactory = null;
+            mCallbacks.onLineItemSelected(lineItem,sData);
         }
-        mBarcodeFactory = new BarcodeFactory();
-        mBarcodeScannerDevice = mBarcodeFactory.getDevice();
-        if(mBarcodeScannerDevice != null)
+        else
         {
-            mBarcodeScannerDevice.registerForCallback(this);
-            mBarcodeScannerDevice.initializeLibraryResource(getActivity());
+            //chandan- scanned barcode is not available in list
         }
-        mBarcodeFactory = null;
+
     }
 
     @Override
@@ -273,9 +278,7 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
     @Override
     public void onStop() {
         super.onStop();
-        //mBarcodeReader.unregisterDataListener(this);
-        //mBarcodeReader.close();
-        //mBarcodeReader = null;
+
     }
 
     @Override
@@ -317,8 +320,20 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
         }
 
     }
+    public void updateLineItemAndItsView(LineItem lineItem)
+    {
+        try
+        {
+            int lineItemPosition = updateLineItem(lineItem);
+            updateViewAtPosition(lineItemPosition);
+        }
+        catch (Exception exp)
+        {
+            Log.e(LOG_STR,exp.getMessage());
+        }
+    }
 
-    public void updateLineItem(LineItem lineItem)
+    public int updateLineItem(LineItem lineItem)
     {
         if (lineItem == null)
         {
@@ -331,8 +346,16 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
         {
             throw new IllegalArgumentException("Lineitem is not found in picklist");
         }
+        mPicklist.getLines().set(idx,lineItem);
+        //mPicklist.getLines().get(idx).setQtyPicked(lineItem.getQtyPicked());
+        return idx;
+    }
 
-        mPicklist.getLines().get(idx).setQtyPicked(lineItem.getQtyPicked());
+    public void updateViewAtPosition(int position)
+    {
+        mAdapter.updateViewAtPosition(position);
+        /*@if requirement is like not picked should come first,comment above line and uncomment below one*/
+        //mAdapter.sortDataSetByUserOption(SortFilterOption.Status,false);
     }
 
     private void savePicklist()
@@ -369,8 +392,23 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
             mItemName.setText(item.getName());
             mItemDesc.setText(item.getDescription());
             mLocation.setText(String.format("Bin No : %s",item.getBin()));
-            mSalesOrder.setText(String.format("Sales Order: %s",item.getPickListID()));
-            mQtyToPick.setText(String.format("Qty : %s",item.getQtyToPick()));
+            mSalesOrder.setText(String.format("Sales Order: %d",item.getSalesOrderId()));
+            if(isInteger(item.getQtyToPick()))
+            {
+                long qtyTopick = (long) item.getQtyToPick();
+                mQtyToPick.setText(String.format("Qty : %s", qtyTopick));
+            }
+            else
+                mQtyToPick.setText(String.format("Qty : %s", (item.getQtyToPick())));
+
+            if(item.getItemStatus() == Status.PICKED)
+                mPickOrNonPickImage.setImageResource(R.drawable.ic_picked_test);
+            else if(item.getItemStatus() == Status.NOTPICKED)
+                mPickOrNonPickImage.setImageResource(R.drawable.ic_notpicked_test);
+            else if(item.getItemStatus() == Status.PARTIALPICKED)
+                mPickOrNonPickImage.setImageResource(R.drawable.ic_notpicked_test);
+            else
+                mPickOrNonPickImage.setImageResource(R.drawable.ic_notpicked_test);
 
         }
 
@@ -378,11 +416,13 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
         public void onClick(View v) {
             if (mCallbacks != null)
             {
-                mCallbacks.onLineItemSelected(mItem);
+                mCallbacks.onLineItemSelected(mItem,"");
             }
         }
-
-
+        //To check its integer or not
+        public boolean isInteger(double number){
+            return Math.ceil(number) == Math.floor(number);
+        }
     }
     //Recycle View Adpter
     private class LineItemAdapter extends RecyclerView.Adapter<LineItemHolder> implements Filterable{
@@ -398,8 +438,8 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
         public LineItemAdapter(List<LineItem> lineItems)
         {
 
-            mLineItems = lineItems;
-            originalLineItems = lineItems;
+            mLineItems = lineItems;//This is to keep track of last sort opton done on dataset,which will be helpful in removing filter
+            originalLineItems = lineItems;//This is only for filter
         }
 
         @Override
@@ -427,15 +467,15 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
                 Collections.reverse(mLineItems);
             else {
                 SortItemList objSorting = new SortItemList(mLineItems,sortOption);
-                objSorting.performShort();
+                objSorting.performSort();
                 objSorting = null;
             }
             notifyDataSetChanged();//Notify Layout manager that dataset has changed to re render
         }
 
-        public void filterDatasetByUserOption(SortFilterOption sortOption,String strToFilter)
+        public void filterDatasetByUserOption(SortFilterOption filterOption,String strToFilter)
         {
-            this.filterOption = sortOption;
+            this.filterOption = filterOption;
             getFilter().filter(strToFilter);
         }
 
@@ -455,7 +495,7 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
                         filteredResults = originalLineItems;
                     } else {
                         //provide your custom logic
-                        filteredResults = getFilteredResults(charSequence.toString().toLowerCase(),sortOption);
+                        filteredResults = getFilteredResults(charSequence.toString().toLowerCase(),filterOption);
                     }
 
                     FilterResults results = new FilterResults();
@@ -509,6 +549,11 @@ public class DetailPicklistFragment1 extends Fragment implements BarcodeScannerD
         @Override
         public int getItemCount() {
             return mLineItems.size();
+        }
+        //Method to update specific view in view holder
+        public void updateViewAtPosition(int nPosition)
+        {
+            notifyItemChanged(nPosition);
         }
     }
 

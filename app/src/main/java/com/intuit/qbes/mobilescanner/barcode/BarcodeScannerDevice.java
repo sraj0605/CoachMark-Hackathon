@@ -16,5 +16,9 @@ public interface BarcodeScannerDevice {
 
     public void registerForCallback(ScanDataReceiver obj);
 
+    public void unRegisterDeviceFromCallback(ScanDataReceiver obj);
+
     public void releaseDevice();
+
+    public void releaseScanner();
 }

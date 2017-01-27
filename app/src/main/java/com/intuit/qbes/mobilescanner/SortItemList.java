@@ -25,16 +25,17 @@ public class SortItemList {
 
     }
 
-    public void performShort()
+    public void performSort()
     {
         try {
-            this.lineItemListComparator = new LineItemListComparator(sortingOption);
-            Collections.sort(mLineItemList, lineItemListComparator);
+                this.lineItemListComparator = new LineItemListComparator(sortingOption);
+                Collections.sort(mLineItemList, lineItemListComparator);
         }
         catch (RuntimeException exception)
         {
 
         }
+        lineItemListComparator = null;
     }
 
 }
