@@ -26,8 +26,7 @@ ext {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'], exclude: ['com.symbol.emdk.jar'])
-    provided fileTree(include: ['com.symbol.emdk.jar'], dir: '/Users/ckumar5/Library/Android/sdk/add-ons/addon-symbol-emdk_v5.0-API-19/libs')
-    testCompile 'junit:junit:4.12'
+    provided fileTree(include: ['com.symbol.emdk.jar'], dir: '/Users/ckumar5/Library/Android/sdk/add-ons/addon-symbol-emdk_v5.0-API-19/libs')    testCompile 'junit:junit:4.12'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
     compile "com.android.support:support-v4:${supportLibVersion}"

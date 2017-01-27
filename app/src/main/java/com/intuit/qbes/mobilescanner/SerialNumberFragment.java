@@ -46,7 +46,7 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
     private ImageView mAddSerialNo;
     private TextView  mAdded;
     private LineItem lineitem;
-    private Integer qty;
+    private String Qty;
     private Button mConfirm;
     private DeviceManager mDeviceManager = null;
     boolean bSerialNumberLimitDialog = false;
@@ -97,16 +97,25 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
     public void onStart() {
         super.onStart();
 
-        qty = (int)lineitem.getQtyToPick();
+       if(noDecimal(lineitem.getQtyToPick())) {
+            Qty = String.valueOf((int)lineitem.getQtyToPick());
 
-
-        if(lineitem.getSNArr().size() == 0) {
-            mAdded.setText("To be added: " + qty);
+            if (lineitem.getSNArr().size() == 0) {
+                mAdded.setText("To be added: " + Qty);
+            } else {
+                mAdded.setText("Added:" + " " + lineitem.getSNArr().size() + "/" + Qty);
+            }
         }
-        else {
-            mAdded.setText("Added:" + " " + lineitem.getSNArr().size() +"/" + qty);
-        }
+        else
+        {
+            Qty = String.valueOf(lineitem.getQtyToPick());
 
+            if (lineitem.getSNArr().size() == 0) {
+                mAdded.setText("To be added: " + Qty);
+            } else {
+                mAdded.setText("Added:" + " " + lineitem.getSNArr().size() + "/" + Qty);
+            }
+        }
 
         mySerialNumberAdapter = new SerialNumberAdapter(lineitem);
 
@@ -129,11 +138,11 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
 
                 int position = mySerialNumberAdapter.getItemCount();
                 String SerialNumber = mSerialNumberAdded.getText().toString();
-                if(mySerialNumberAdapter.getSerialnoList().size() < qty) {
+                if(mySerialNumberAdapter.getSerialnoList().size() < (int)Double.parseDouble(Qty)) {
                     if (!SerialNumber.equals("")) {
                         mySerialNumberAdapter.add(position, SerialNumber);
                         int count = position + 1;
-                        mAdded.setText("Added:" + " " + count + "/" + qty);
+                        mAdded.setText("Added:" + " " + count + "/" + Qty);
                         mSerialNumberAdded.getText().clear();
 
                     }
@@ -148,9 +157,9 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
 
             case R.id.serialno_confirm:
 
-                if(mySerialNumberAdapter.getSerialnoList().size() < qty)
+                if(mySerialNumberAdapter.getSerialnoList().size() < (int)Double.parseDouble(Qty))
                 {
-                    int value = qty - mySerialNumberAdapter.getSerialnoList().size();
+                    int value = (int)Double.parseDouble(Qty) - mySerialNumberAdapter.getSerialnoList().size();
                     SerialNoConfirmDialog(value);
                 }
                 else
@@ -250,9 +259,9 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
                                             notifyItemRemoved(position);
                                             if (count > 1) {
                                                 count--;
-                                                mAdded.setText("Added:" + " " + count + "/" + qty);
+                                                mAdded.setText("Added:" + " " + count + "/" + Qty);
                                             } else
-                                                mAdded.setText("To be added: " + qty);
+                                                mAdded.setText("To be added: " + Qty);
 
                                         } catch (ArrayIndexOutOfBoundsException e) {
                                             e.printStackTrace();

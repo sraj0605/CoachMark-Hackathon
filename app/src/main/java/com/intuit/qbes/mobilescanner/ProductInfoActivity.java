@@ -22,6 +22,7 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
     private static String LOG_TAG = "ProductInfoActivity";
     private Class fragmentClass = null;
     private Fragment fragment = null;
+    private ProductInfoFragment ProductFragment = null;
 
 
 
@@ -36,6 +37,7 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
 
         LineItem lineitem = (LineItem) getIntent().getParcelableExtra(ProductInfoFragment.EXTRA_LINEITEM);
         String barcodePassed = getIntent().getStringExtra(ProductInfoFragment.BARCODE_ENTERED);
+     	ProductFragment = new ProductInfoFragment();
         fragmentClass = ProductInfoFragment.class;
         String tag = fragmentClass.getCanonicalName();
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -84,5 +86,15 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
     }
 
 
+    @Override
+    public void onBackPressed() {
 
+        fragmentClass = ProductInfoFragment.class;
+        String tag = fragmentClass.getCanonicalName();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        ProductInfoFragment fragment = (ProductInfoFragment)fragmentManager.findFragmentByTag(tag);
+        fragment.onBackPressed();
+
+    }
 }

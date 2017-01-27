@@ -6,11 +6,16 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 
+import com.intuit.qbes.mobilescanner.model.Picklist;
+
+import java.util.List;
+
 /**
  * Created by ashah9 on 1/6/17.
  */
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
+    private Picklist picklist;
     public ViewPagerAdapter(FragmentManager fm) {
         super(fm);
     }

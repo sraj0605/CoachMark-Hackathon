@@ -218,7 +218,6 @@ dummyPicklists.set(idx,picklist);
 //            {
 //                Log.e(LOG_TAG, "Failed to fetch URL: ", ioe);
 //            }
-            Log.e("chandan","returning from db");
             return null;
         }
 
@@ -247,11 +246,11 @@ dummyPicklists.set(idx,picklist);
             lineitems = new ArrayList<LineItem>();
         //cahdan -start - only for testing
 
-        LineItem obj1 = new LineItem(1, "Redmi", "pick it", "8901238910005", "","1", 10, 1, 10, "abc", "_",110,NOTPICKED,serialnos1);
-        LineItem obj2 = new LineItem(2, "Iphone", "hardware", "8901057310062", "","1", 10, 0, 8, "def", "def_123", 111,NOTPICKED,serialnos2);
-        LineItem obj3 = new LineItem(3, "Motorola", "hardware", "MotoRolaBarcode","", "1", 10, 0, 7, "ghi", "def_12",112,NOTAVAILABLE, serialnos3);
-        LineItem obj4 = new LineItem(4, "Zebra", "awesome phone", "ZebraBarcode", "1","", 10, 0, 21.9, "wow", "jkl", 113,NOTPICKED,serialnos4);
-        LineItem obj5 = new LineItem(5, "1 plus 3", "struggling phone", "1PlusBarcode", "", "1", 10, 0, 5, "mno", "wer", 114,NOTPICKED,serialnos5);
+        LineItem obj1 = new LineItem(1, "Redmi", "pick it", "8901238910005", "",1,"1", 10, 1, 10, "abc", "_",110,NOTPICKED,serialnos1);
+        LineItem obj2 = new LineItem(2, "Iphone", "hardware", "8901057310062", "",0,"1", 10, 0, 8, "def", "def_123", 111,NOTPICKED,serialnos2);
+        LineItem obj3 = new LineItem(3, "Motorola", "hardware", "MotoRolaBarcode","",0,"1", 10, 0, 7, "ghi", "def_12",112,NOTAVAILABLE, serialnos3);
+        LineItem obj4 = new LineItem(4, "Zebra", "awesome phone", "ZebraBarcode", "",1,"1", 10, 0, 21.9, "wow", "jkl", 113,NOTPICKED,serialnos4);
+        LineItem obj5 = new LineItem(5, "1 plus 3", "struggling phone", "1PlusBarcode", "",1, "1", 10, 0, 5, "mno", "wer", 114,NOTPICKED,serialnos5);
         lineitems.add(obj1);
         lineitems.add(obj2);
         lineitems.add(obj3);

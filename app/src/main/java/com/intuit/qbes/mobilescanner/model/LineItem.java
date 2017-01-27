@@ -35,6 +35,7 @@ public class LineItem implements Parcelable {
     private String mDescription;
     private String mBarcode;
     private String mBarcodeEntered;
+    private Integer mIsSNO;
     private String mSalesOrder;
     private long mSalesOrderId;
     private String mUom;
@@ -74,6 +75,7 @@ public class LineItem implements Parcelable {
                     String description,
                     String barcode,
                     String barcodeentered,
+                    Integer isSNO,
                     String uom,
                     double qtyNeeded,
                     double qtyPicked,
@@ -85,6 +87,8 @@ public class LineItem implements Parcelable {
                     ArrayList<String> SNArr)
     {
         mBarcode = barcode;
+        mBarcodeEntered = barcodeentered;
+        mIsSNO = isSNO;
         mBin = bin;
         mDescription = description;
         mName = name;
@@ -134,6 +138,7 @@ public class LineItem implements Parcelable {
         mDescription = in.readString();
         mBarcode = in.readString();
         mBarcodeEntered = in.readString();
+        mIsSNO = in.readInt();
         mUom = in.readString();
         mQtyNeeded = in.readDouble();
         mQtyToPick = in.readDouble();
@@ -160,6 +165,8 @@ public class LineItem implements Parcelable {
     }
 
     public String getBarcodeEntered() {return mBarcodeEntered; }
+
+    public Integer getIsSNO() {return mIsSNO;}
 
     public String getBin() {
         return mBin;
@@ -221,6 +228,7 @@ public class LineItem implements Parcelable {
         mBarcode = barcode;
     }
     public void setBarcodeEntered(String barcodeEntered) {mBarcodeEntered = barcodeEntered;}
+    public void setIsSNO(Integer isSNO){mIsSNO = isSNO;}
     public void setDescription(String decsription) {
         mDescription = decsription;
     }
@@ -264,6 +272,7 @@ public class LineItem implements Parcelable {
                         jsonItem.optString(JSON_TAG_DESC),
                         jsonItem.getString(JSON_TAG_BARCODE),
                         null,
+                        1,
                         jsonItem.optString(JSON_TAG_UOM),
                         jsonItem.optDouble(JSON_TAG_NEEDED, 0.0),
                         jsonItem.optDouble(JSON_TAG_PICKED, 0.0),
@@ -323,6 +332,7 @@ public class LineItem implements Parcelable {
         dest.writeString(getDescription());
         dest.writeString(getBarcode());
         dest.writeString(getBarcodeEntered());
+        dest.writeInt(getIsSNO());
         dest.writeString(getUom());
         dest.writeDouble(getQtyNeeded());
         dest.writeDouble(getQtyToPick());

@@ -2,6 +2,7 @@ package com.intuit.qbes.mobilescanner;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -62,6 +64,11 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     private View mUPC_background;
     private EditText mUPC_Value;
     private TextView mUPC_Header;
+    private TextView mSNO_Header;
+    private TextView mLocationHeader;
+    private ImageView mBin;
+    private View mVDivider;
+    private View mHDivider;
     private Button mConfirm;
     private boolean isInt;
     private Callbacks mCallbacks;
@@ -124,6 +131,12 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
         mUPC_Header = (TextView)view.findViewById(R.id.UPC_code);
 
+        mSNO_Header = (TextView)view.findViewById(R.id.SNO);
+
+        mLocationHeader = (TextView)view.findViewById(R.id.location);
+
+        mBin = (ImageView)view.findViewById(R.id.bin);
+
         mUPC_ErrorText = (TextView)view.findViewById(R.id.UPC_Errortext);
 
         mConfirm = (Button)view.findViewById(R.id.button_confirm);
@@ -131,6 +144,10 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         mSerialNo = (TextView) view.findViewById(R.id.item_SNO);
 
         mSerialView = (TextView)view.findViewById(R.id.item_ViewSNO);
+
+        mVDivider = (View)view.findViewById(R.id.vdivider);
+
+        mHDivider = (View)view.findViewById(R.id.divider3);
 
         error = (View)view.findViewById(R.id.errordivider);
 
@@ -184,14 +201,43 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             mUPC_Value.setVisibility(view.GONE);
         }
 
-        setControllers(mlineItem, view);
+        if(mlineItem.getIsSNO() == 0)
+        {
+          mSNO_Header.setVisibility(view.GONE);
+            mSerialNo.setVisibility(view.GONE);
+            mSerialView.setVisibility(view.GONE);
+            mVDivider.setVisibility(view.GONE);
+
+        }
+
+        if(mlineItem.getIsSNO() == 0 && (mlineItem.getBarcode().isEmpty())) {
+            mHDivider.setVisibility(view.GONE);
+
+        }
 
         if(mbarcodePassed.compareTo("") != 0)
         {
             mUPC_Value.setText(mbarcodePassed);
+            if(mlineItem.getIsSNO() == 1) {
+
+                mQty_picked.setText(String.valueOf(mlineItem.getSNArr().size()));
+            }
+
+            else {
+                if (noDecimal(mlineItem.getQtyPicked())) {
+
+                    mQty_picked.setText(String.valueOf((int) mlineItem.getQtyPicked()));
+
+                }
+                else
+                {
+                    mQty_picked.setText(String.valueOf(mlineItem.getQtyPicked()));
+
+                }
+            }
             onClick(mIncrement);
         }
-
+        setControllers(mlineItem, view);
         mDeviceManager = DeviceManager.getDevice(getContext());
         mDeviceManager.unRegisterDeviceFromCallback(this);
         mDeviceManager.registerForCallback(this);
@@ -226,7 +272,13 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
         }
 
-        if(noDecimal(lineitem.getQtyPicked())){
+        if(lineitem.getIsSNO() == 1) {
+
+            mQty_picked.setText(String.valueOf(lineitem.getSNArr().size()));
+        }
+
+        else {
+            if (noDecimal(lineitem.getQtyPicked())) {
 
             mQty_picked.setText(String.valueOf((int) lineitem.getQtyPicked()));
 
@@ -235,6 +287,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         {
             mQty_picked.setText(String.valueOf(lineitem.getQtyPicked()));
 
+            }
         }
 
         getActivity().setTitle(mItemName.getText().toString());
@@ -259,6 +312,16 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
             if (editable.length() == 0) {
                 mQty_picked.setText("0");
+            }
+
+            try {
+                if (editable.charAt(0) == '.') {
+                    mQty_picked.setText("0.");
+                }
+            }
+            catch(Exception e)
+            {
+
             }
 
 
@@ -286,8 +349,13 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
                 }
             }
-
+           if(mlineItem.getIsSNO() == 1) {
+            mlineItem.setQtyPicked(mlineItem.getSNArr().size());
+           }
+            else {
             mlineItem.setQtyPicked(Double.parseDouble(mQty_picked.getText().toString()));
+            }
+
         }
 
         else if(mUPC_Value.getText().hashCode() == editable.hashCode())
@@ -417,31 +485,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             case R.id.button_confirm :
 
                 updateItemStatus();
-
-                if(!mlineItem.getBarcode().isEmpty()) {
-                    if (!(((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSNArr().size() > 0)) && (mUPC_Value.getText().toString().isEmpty())) && !(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick())) {
-
-                        Intent data = new Intent();
-                        data.putExtra(EXTRA_LINEITEM, mlineItem);
-                        getActivity().setResult(Activity.RESULT_OK, data);
-                        getActivity().finish();
-                    }
-                }
-                else if(mlineItem.getBarcode().isEmpty())
-                {
-                    if (!(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick())) {
-
-                        Intent data = new Intent();
-                        data.putExtra(EXTRA_LINEITEM, mlineItem);
-                        getActivity().setResult(Activity.RESULT_OK, data);
-                        getActivity().finish();
-                    }
-                }
-
-                else{
-
-                }
-
+                GotoDetailPicklist();
                 break;
 
 
@@ -489,6 +533,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
 
             case android.R.id.home:
+                updateItemStatus();
 
                 GotoDetailPicklist();
                 break;
@@ -505,28 +550,80 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     public void GotoDetailPicklist()
     {
         if(!mlineItem.getBarcode().isEmpty()) {
-            if (!(((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSNArr().size() > 0)) && (mUPC_Value.getText().toString().isEmpty())) && !(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick())) {
+            if(mlineItem.getIsSNO() == 0) {
+                if (!(((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSNArr().size() > 0)) && (mUPC_Value.getText().toString().isEmpty())) && !(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick())) {
 
-                Intent data = new Intent();
-                data.putExtra(EXTRA_LINEITEM, mlineItem);
-                getActivity().setResult(Activity.RESULT_OK, data);
-                getActivity().finish();
+                    Intent data = new Intent();
+                    data.putExtra(EXTRA_LINEITEM, mlineItem);
+                    getActivity().setResult(Activity.RESULT_OK, data);
+                    getActivity().finish();
+                }
+            }
+            else
+            {
+                if (!(((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSNArr().size() > 0)) && (mUPC_Value.getText().toString().isEmpty())) && !(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick()) && !(Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSNArr().size()) ) {
+
+                    Intent data = new Intent();
+                    data.putExtra(EXTRA_LINEITEM, mlineItem);
+                    getActivity().setResult(Activity.RESULT_OK, data);
+                    getActivity().finish();
+                }
+                else if((Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSNArr().size()))
+                {
+                    new AlertDialog.Builder(getContext())
+                            .setMessage("Quantity picked does not match the number of serial numbers for this item. Please check.").setCancelable(false)
+
+                            .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            })
+                            .show();                }
+                else
+                {
+
+                }
             }
         }
         else if(mlineItem.getBarcode().isEmpty())
         {
-            if (!(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick())) {
+            if(mlineItem.getIsSNO() == 0) {
+                if (!(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick())) {
 
-                Intent data = new Intent();
-                data.putExtra(EXTRA_LINEITEM, mlineItem);
-                getActivity().setResult(Activity.RESULT_OK, data);
-                getActivity().finish();
+                    Intent data = new Intent();
+                    data.putExtra(EXTRA_LINEITEM, mlineItem);
+                    getActivity().setResult(Activity.RESULT_OK, data);
+                    getActivity().finish();
+                }
+            }
+            else
+            {
+                if (!(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick()) && !(Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSNArr().size()) ) {
+
+                    Intent data = new Intent();
+                    data.putExtra(EXTRA_LINEITEM, mlineItem);
+                    getActivity().setResult(Activity.RESULT_OK, data);
+                    getActivity().finish();
+                }
+                else if((Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSNArr().size()))
+                {
+                    new AlertDialog.Builder(getContext())
+                            .setMessage("Quantity picked does not match the number of serial numbers for this item. Please check.").setCancelable(false)
+
+                            .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            })
+                            .show();                  }
+                else
+                {
+
+                }
             }
         }
 
-        else{
 
-        }
     }
 
     @Override
@@ -551,6 +648,13 @@ public boolean noDecimal(double val)
     else
         return false;
 }
+  public  void onBackPressed()
+    {
+
+        updateItemStatus();
+
+        GotoDetailPicklist();
+    }
 //scanner Integration
     @Override
     public void scanDataReceived(String sData) {
