@@ -23,13 +23,13 @@ public class LineItemListComparator implements Comparator<LineItem> {
             case Items:
             {
                 if(lineItem1.getName() != null && lineItem2.getName() != null)
-                    return lineItem1.getName().compareTo(lineItem2.getName());
+                    return lineItem1.getName().toLowerCase().compareTo(lineItem2.getName().toLowerCase());
                 return 0;
             }
             case Location:
             {
                 if(lineItem1.getBin() != null && lineItem2.getBin() != null)
-                    return lineItem1.getBin().compareTo(lineItem2.getBin());
+                    return lineItem1.getBin().toLowerCase().compareTo(lineItem2.getBin().toLowerCase());
                 return 0;
             }
             case SalesOrder:
@@ -41,8 +41,12 @@ public class LineItemListComparator implements Comparator<LineItem> {
                 //Chandan - To be decided
                 return lineItem1.getItemStatus().compareTo(lineItem2.getItemStatus()) ;
             }
+            default:
+            {
+                throw new RuntimeException("Practically unreachable code,Sorting By option passed is not supported");
+            }
         }
-        throw new RuntimeException("Practically unreachable code,Sorting By option passed is not supported");
+
     }
 }
 
