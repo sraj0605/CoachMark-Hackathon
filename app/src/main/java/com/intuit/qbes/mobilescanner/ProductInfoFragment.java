@@ -683,29 +683,39 @@ public boolean noDecimal(double val)
         }
 
     }
-
+//chandan - status related code
     public void updateItemStatus()
     {
         Double qtyPicked = mlineItem.getQtyPicked();
         Double qtyToPick = mlineItem.getQtyToPick();
+        LineItem.Status status  = getItemStatus(qtyPicked,qtyToPick);
+        mlineItem.setItemStatus(status);
+
+    }
+
+    public LineItem.Status getItemStatus(Double qtyPicked,Double qtyToPick)
+    {
+        LineItem.Status status;
         if(Double.compare(qtyPicked,qtyToPick) == 0)
         {
-            mlineItem.setItemStatus(LineItem.Status.PICKED);
+            status = LineItem.Status.PICKED;
         }
 
         else if(Double.compare(qtyPicked,0) > 0 && Double.compare(qtyPicked,qtyToPick) < 0)
         {
-            mlineItem.setItemStatus(LineItem.Status.PARTIALPICKED);
+            status = LineItem.Status.PARTIALPICKED;
         }
         else if(Double.compare(qtyPicked,0) == 0)
         {
-            mlineItem.setItemStatus(LineItem.Status.NOTPICKED);
+            status = LineItem.Status.NOTPICKED;
         }
         else
         {
             //need to see
-            mlineItem.setItemStatus(LineItem.Status.NOTAVAILABLE);
+            status = LineItem.Status.NOTAVAILABLE;
         }
+
+        return status;
     }
 }
 
