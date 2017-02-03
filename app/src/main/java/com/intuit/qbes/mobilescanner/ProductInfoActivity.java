@@ -89,12 +89,19 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
     @Override
     public void onBackPressed() {
 
+
         fragmentClass = ProductInfoFragment.class;
         String tag = fragmentClass.getCanonicalName();
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         ProductInfoFragment fragment = (ProductInfoFragment)fragmentManager.findFragmentByTag(tag);
-        fragment.onBackPressed();
+        if(fragment!=null && fragment.isVisible()) {
+            fragment.onBackPressed();
+        }
+        else
+        {
+            super.onBackPressed();
+        }
 
     }
 }
