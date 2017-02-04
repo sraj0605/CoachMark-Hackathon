@@ -45,6 +45,8 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
     private EditText mSerialNumberAdded;
     private ImageView mAddSerialNo;
     private TextView  mAdded;
+    private TextView mAddedValue;
+    private TextView mItemName;
     private LineItem lineitem;
     private String Qty;
     private Button mConfirm;
@@ -56,6 +58,7 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
 
     }
@@ -84,6 +87,8 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         mAddSerialNo = (ImageView) view.findViewById(R.id.add_serialno);
         mAddSerialNo.setOnClickListener(this);
         mAdded = (TextView) view.findViewById(R.id.serialno_added);
+        mAddedValue = (TextView)view.findViewById(R.id.serialno_added_value);
+        mItemName = (TextView)view.findViewById(R.id.serialno_item_value);
         mSerialNumberAdded = (EditText) view.findViewById(R.id.AddSno);
         mConfirm.setOnClickListener(this);
 
@@ -97,13 +102,16 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
     public void onStart() {
         super.onStart();
 
+        mItemName.setText(lineitem.getName());
        if(noDecimal(lineitem.getQtyToPick())) {
             Qty = String.valueOf((int)lineitem.getQtyToPick());
 
             if (lineitem.getSNArr().size() == 0) {
-                mAdded.setText("To be added: " + Qty);
+                //mAdded.setText("To be added: " + Qty);
+                mAddedValue.setText(Qty);
             } else {
-                mAdded.setText("Added:" + " " + lineitem.getSNArr().size() + "/" + Qty);
+                mAdded.setText("ADDED");// + " " + lineitem.getSNArr().size() + "/" + Qty);
+                mAddedValue.setText(lineitem.getSNArr().size() + "/" + Qty);
             }
         }
         else
@@ -111,9 +119,11 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
             Qty = String.valueOf(lineitem.getQtyToPick());
 
             if (lineitem.getSNArr().size() == 0) {
-                mAdded.setText("To be added: " + Qty);
+               // mAdded.setText("To be added: " + Qty);
+                mAddedValue.setText(Qty);
             } else {
-                mAdded.setText("Added:" + " " + lineitem.getSNArr().size() + "/" + Qty);
+                mAdded.setText("ADDED");// + " " + lineitem.getSNArr().size() + "/" + Qty);
+                mAddedValue.setText(lineitem.getSNArr().size() + "/" + Qty);
             }
         }
 
@@ -142,7 +152,8 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
                     if (!SerialNumber.equals("")) {
                         mySerialNumberAdapter.add(position, SerialNumber);
                         int count = position + 1;
-                        mAdded.setText("Added:" + " " + count + "/" + Qty);
+                        mAdded.setText("ADDED");// + " " + count + "/" + Qty);
+                        mAddedValue.setText(count + "/" + Qty);
                         mSerialNumberAdded.getText().clear();
 
                     }
@@ -259,9 +270,12 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
                                             notifyItemRemoved(position);
                                             if (count > 1) {
                                                 count--;
-                                                mAdded.setText("Added:" + " " + count + "/" + Qty);
-                                            } else
-                                                mAdded.setText("To be added: " + Qty);
+                                                mAdded.setText("ADDED");// + " " + count + "/" + Qty);
+                                                mAddedValue.setText(count + "/" + Qty);
+                                            } else {
+                                                mAdded.setText("TO BE ADDED");// + Qty);
+                                                mAddedValue.setText(Qty);
+                                            }
 
                                         } catch (ArrayIndexOutOfBoundsException e) {
                                             e.printStackTrace();
