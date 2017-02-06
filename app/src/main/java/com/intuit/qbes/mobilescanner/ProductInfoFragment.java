@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -176,6 +177,16 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStart() {
         super.onStart();
+
+        if(mlineItem.getSNArr().size()>0 && mlineItem.getBarcodeEntered().isEmpty())
+        {
+
+            showUPCDialog();
+
+        }
+
+
+
         mUPC_background = (View)view.findViewById(R.id.UPC_Error);
 
 
@@ -496,13 +507,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
-            mCallbacks = (Callbacks) context;
-        }
-        catch (Exception exp)
-        {
-
-        }
+        mCallbacks = (Callbacks) context;
     }
 
     @Override
@@ -722,6 +727,26 @@ public boolean noDecimal(double val)
         }
 
         return status;
+    }
+
+    private void showUPCDialog() {
+        FragmentManager fm = getFragmentManager();
+        UPCFragment UPCFragment = new UPCFragment().newInstance(mlineItem);
+        UPCFragment.setTargetFragment(ProductInfoFragment.this,300);
+        UPCFragment.show(fm, "fragment_edit_name");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 300:
+                if (resultCode == Activity.RESULT_OK) {
+                    mlineItem = data.getParcelableExtra("lineitem");
+                    if(!mlineItem.getBarcodeEntered().isEmpty())
+                        mUPC_Value.setText(mlineItem.getBarcodeEntered());
+                }
+                break;
+        }
     }
 }
 

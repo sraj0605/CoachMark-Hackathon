@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -147,9 +148,10 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
             case R.id.add_serialno:
 
                 int position = mySerialNumberAdapter.getItemCount();
-                String SerialNumber = mSerialNumberAdded.getText().toString();
+               // String SerialNumber = mSerialNumberAdded.getText().toString();
+                String SerialNumber = mSerialNumberAdded.getText().toString().replaceAll(" ","");
                 if(mySerialNumberAdapter.getSerialnoList().size() < (int)Double.parseDouble(Qty)) {
-                    if (!SerialNumber.equals("")) {
+                    if (!SerialNumber.isEmpty()) {
                         mySerialNumberAdapter.add(position, SerialNumber);
                         int count = position + 1;
                         mAdded.setText("ADDED");// + " " + count + "/" + Qty);
@@ -363,6 +365,9 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         });
 
     }
+
+
+
 }
 
 
