@@ -496,7 +496,13 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mCallbacks = (Callbacks) context;
+        try {
+            mCallbacks = (Callbacks) context;
+        }
+        catch (Exception exp)
+        {
+
+        }
     }
 
     @Override

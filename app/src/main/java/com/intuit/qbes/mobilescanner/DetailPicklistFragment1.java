@@ -94,10 +94,8 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         DetailPicklistFragment1 fragment = new DetailPicklistFragment1();
 
         fragment.setArguments(args);
-
         return fragment;
     }
-
 
     public DetailPicklistFragment1() {
         // Required empty public constructor
@@ -266,7 +264,13 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mCallbacks = (Callbacks) context;
+        try {
+            mCallbacks = (Callbacks) context;
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 
     @Override
@@ -406,7 +410,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
             else if(item.getItemStatus() == Status.NOTPICKED)
                 mPickOrNonPickImage.setImageResource(R.drawable.ic_notpicked_test);
             else if(item.getItemStatus() == Status.PARTIALPICKED)
-                mPickOrNonPickImage.setImageResource(R.drawable.ic_notpicked_test);
+                mPickOrNonPickImage.setImageResource(R.drawable.ic_action_partial);
             else
                 mPickOrNonPickImage.setImageResource(R.drawable.ic_notpicked_test);
 
