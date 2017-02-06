@@ -72,7 +72,7 @@ public class DetailPickListFragment1Test {
         mLineitems = new ArrayList<>();
         mLineItem  = new LineItem(1, "Redmi2", "pick it", "8901238910005", "",1,"1", 10.2, 1, 10.2, "abc", "_",110,NOTPICKED,null);
         mLineitems.add(mLineItem);
-        mPickList = new Picklist(mLineitems, 1, "Picklist1", "1", "20160929", "20160929", 1,"Note 1");
+        mPickList = new Picklist(mLineitems, 1, "Picklist1", "1", "20160929", "20160929", 1);
 
     }
 
