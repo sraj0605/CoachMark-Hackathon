@@ -24,7 +24,7 @@ public class ApplicationContentProvider extends ContentProvider{
     public static final Uri CONTENT_URI_LINEITEM_TABLE = Uri.parse("content://" + AUTHORITY + "/LineItemInfo");
 
     //Table Name
-    private static final String PICKLIST_TABLE = "  ";
+    private static final String PICKLIST_TABLE = "PickListInfo";
     private static final String LINEITEM_TABLE = "LineItemInfo";
 
     public static final int PICKLISTS = 1;
@@ -42,6 +42,8 @@ public class ApplicationContentProvider extends ContentProvider{
         sURIMatcher.addURI(AUTHORITY, PICKLIST_TABLE,PICKLISTS);
         sURIMatcher.addURI(AUTHORITY, LINEITEM_TABLE,LINEITEMS);
     }
+
+
     @Nullable
     @Override
     public String getType(Uri uri) {
@@ -50,10 +52,15 @@ public class ApplicationContentProvider extends ContentProvider{
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+
         int uriType = sURIMatcher.match(uri);
+
         SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
+
         int rowsUpdated = 0;
+
         switch (uriType) {
+
             case PICKLISTS:
                 rowsUpdated = sqlDB.update(mDbHandler.TABLE_PICKLISTINFO_NAME,
                         values,
@@ -71,16 +78,22 @@ public class ApplicationContentProvider extends ContentProvider{
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
+
         return rowsUpdated;
     }
 
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
+
         int uriType = sURIMatcher.match(uri);
+
         SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
+
         long id = 0;
+
         Uri  ret;
+
         switch (uriType) {
 
             case PICKLISTS:
@@ -107,6 +120,7 @@ public class ApplicationContentProvider extends ContentProvider{
 
         if(mDbHandler !=null)
             return true;
+
         return false;
     }
 
@@ -114,11 +128,13 @@ public class ApplicationContentProvider extends ContentProvider{
     public int delete(Uri uri, String selection, String[] selectionArgs) {
 
         int uriType = sURIMatcher.match(uri);
+
         SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
+
         int rowsDeleted = 0;
+
         switch (uriType) {
             case PICKLISTS:
-
                 rowsDeleted = sqlDB.delete(mDbHandler.TABLE_PICKLISTINFO_NAME,
                         selection,
                         selectionArgs);
@@ -146,13 +162,7 @@ public class ApplicationContentProvider extends ContentProvider{
         cursor = sqlDB.rawQuery(selection,null);
         return cursor;
     }
-
-    public static String getTableName(Uri uri){
-        String value = uri.getPath();
-        value = value.replace("/", "");//we need to remove '/'
-        return value;
-    }
-
+    //chandan - a custom method can be useful in future
     @Nullable
     @Override
     public Bundle call(String method, String arg, Bundle extras) {
