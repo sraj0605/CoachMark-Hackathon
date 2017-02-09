@@ -23,13 +23,6 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".DetailItemActivity"
-            android:label="Item Details">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".DetailPicklistActivity" />
-        </activity>
-        <activity
             android:name=".SettingsActivity"
             android:label="Settings"></activity>
         <activity
