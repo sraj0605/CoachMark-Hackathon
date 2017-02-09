@@ -1,25 +1,13 @@
 package com.intuit.qbes.mobilescanner;
 
-import android.app.Instrumentation;
-import android.content.Intent;
-import android.os.Parcel;
-import android.test.ActivityInstrumentationTestCase2;
-import android.test.suitebuilder.annotation.LargeTest;
-import android.widget.EditText;
 
-import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 import static org.junit.Assert.*;
 
 /**
