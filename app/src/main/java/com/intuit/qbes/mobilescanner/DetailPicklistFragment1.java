@@ -76,7 +76,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
 
 
     private ProgressDialog mProgressDialog;
-    private SQLiteDatabaseLineItemHandler db;
+    private DatabaseHandler db;
     private List<LineItem> lineitems = null;
 
 
@@ -191,7 +191,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
     public void onStart() {
         super.onStart();
 
-        db = new SQLiteDatabaseLineItemHandler(getActivity().getApplicationContext());
+        db = new DatabaseHandler(getActivity().getApplicationContext());
 
         if(lineitems == null)
             lineitems = mPicklist.getLines();
@@ -211,16 +211,26 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
     //@callback from sorting Dialog fragment
     @Override
     public void onSortingOptionSelection(SortFilterOption userSelection) {
+    if(mSortOrderSelection!=null && mAdapter!=null) {
+    switch (userSelection) {
 
-        switch (userSelection)
-        {
-            case Items: mSortOrderSelection.setText("Items");break;
-            case Location:mSortOrderSelection.setText("Locations");break;
-            case SalesOrder:mSortOrderSelection.setText("SalesOrder");break;
-            case Status:mSortOrderSelection.setText("Status");break;
+        case Items:
+            mSortOrderSelection.setText("Items");
+            break;
+        case Location:
+            mSortOrderSelection.setText("Locations");
+            break;
+        case SalesOrder:
+            mSortOrderSelection.setText("SalesOrder");
+            break;
+        case Status:
+            mSortOrderSelection.setText("Status");
+            break;
 
-        }
-        mAdapter.sortDataSetByUserOption(userSelection,false);
+    }
+
+    mAdapter.sortDataSetByUserOption(userSelection, false);
+}
     }
 ///@Filter - in future we can enable this
    /* @Override

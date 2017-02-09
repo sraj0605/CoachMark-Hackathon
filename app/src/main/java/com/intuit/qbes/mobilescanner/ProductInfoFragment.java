@@ -72,7 +72,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     private View mHDivider;
     private Button mConfirm;
     private boolean isInt;
-    private Callbacks mCallbacks;
+    private Callbacks mCallbacks = null;
     private String mbarcodePassed;
     private static DeviceManager mDeviceManager = null;
 
@@ -482,17 +482,10 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
                 break;
 
             case R.id.item_SNO :
-
-                mCallbacks.onSerialNumberClicked(mlineItem);
-
+            case R.id.item_ViewSNO:
+                if(mCallbacks !=null)
+                    mCallbacks.onSerialNumberClicked(mlineItem);
                 break;
-
-            case R.id.item_ViewSNO :
-
-                mCallbacks.onSerialNumberClicked(mlineItem);
-
-                break;
-
             case R.id.button_confirm :
 
                 updateItemStatus();
@@ -512,7 +505,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         }
         catch (Exception exp)
         {
-            
+
         }
     }
 

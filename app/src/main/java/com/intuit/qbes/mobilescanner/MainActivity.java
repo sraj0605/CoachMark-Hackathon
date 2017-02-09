@@ -200,7 +200,7 @@ Class fragmentClass = null;
 
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+   /* public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode != Activity.RESULT_OK)
             return;
@@ -235,6 +235,6 @@ Class fragmentClass = null;
             default:
                 break;
         }
-    }
+    }*/
 
 }

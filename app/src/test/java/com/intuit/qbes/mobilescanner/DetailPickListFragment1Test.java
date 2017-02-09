@@ -3,6 +3,7 @@ package com.intuit.qbes.mobilescanner;
 /**
  * Created by ckumar5 on 03/02/17.
  */
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.location.Location;
@@ -12,6 +13,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -27,6 +29,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.Shadows;
+import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.shadows.ShadowActivity;
 //import org.robolectric.shadows.support.v4.Shadows;
 import org.robolectric.shadows.ShadowDialog;
@@ -36,6 +39,7 @@ import org.robolectric.util.ActivityController;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.intuit.qbes.mobilescanner.ProductInfoFragment.EXTRA_LINEITEM;
 import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTAVAILABLE;
 import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 import static junit.framework.Assert.assertTrue;
@@ -132,6 +136,61 @@ public class DetailPickListFragment1Test {
         junit.framework.Assert.assertNotNull(sortby);
     }
 
+@Test
+    public void test_onitemselect()
+    {
+        String barcode ="8901238910005";
+       detailPicklistActivity.onLineItemSelected(mLineItem,barcode);
+    }
 
+
+    @Test
+    public void test_onpicksaved()
+    {
+        Integer code = 200;
+        detailPicklistActivity.onPicklistSaved(code,mPickList);
+    }
+
+    @Test
+    public void test_onbarcodeready()
+    {
+        detailPicklistActivity.onBarcodeReady();
+    }
+
+    @Test
+    public void test_onactivityresult()
+    {
+        int reqcode = 1;
+        int rescode = Activity.RESULT_OK;
+        Intent data = new Intent();
+        data.putExtra(EXTRA_LINEITEM, mLineItem);
+        detailPicklistActivity.onActivityResult(reqcode,rescode,data);
+    }
+
+@Test
+    public void test_msutils()
+    {
+        MSUtils.getServerUrl(detailPicklistActivity);
+    }
+
+    @Test
+    public void test_updatelineitem()
+    {
+       LineItem testlineitem  = new LineItem(1, "Redmi3", "pick it", "8901238910005", "",1,"1", 10.2, 1, 10.2, "abc", "_",110,NOTPICKED,null);
+
+        detailPicklistFragment1.updateLineItem(testlineitem);
+
+        detailPicklistFragment1.updateViewAtPosition(0);
+    }
+
+    @Test
+    public void app_back()
+    {
+
+        MenuItem menuItem = new RoboMenuItem(R.id.home);
+        detailPicklistFragment1.onOptionsItemSelected(menuItem);
+        Assert.assertEquals(detailPicklistFragment1.getFragmentManager().getBackStackEntryCount(),0);
+
+    }
 
 }

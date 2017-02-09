@@ -147,8 +147,16 @@ private EditText mUPC_entered;
                 mUpc_error_text.setVisibility(view.GONE);
                 mUPC_entered.setError("", mTickmark);
                 mLineItem.setBarcodeEntered(mUPC_entered.getText().toString());
+
                 Intent i = new Intent().putExtra("lineitem", mLineItem);
-                getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
+
+                try {
+                    getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
+                }
+                catch(Exception e)
+                {
+
+                }
 
                 //this.dismiss();
 

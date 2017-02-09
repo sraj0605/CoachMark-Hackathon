@@ -31,7 +31,7 @@ public class ApplicationContentProvider extends ContentProvider{
     public static final int LINEITEMS = 2;
 
     //DataBase Handler
-    private DatabaseaHandler mDbHandler = null;
+    private DatabaseHandler mDbHandler = null;
 
     //URI Matcher
     private static final UriMatcher sURIMatcher =
@@ -42,25 +42,19 @@ public class ApplicationContentProvider extends ContentProvider{
         sURIMatcher.addURI(AUTHORITY, PICKLIST_TABLE,PICKLISTS);
         sURIMatcher.addURI(AUTHORITY, LINEITEM_TABLE,LINEITEMS);
     }
-
-
     @Nullable
     @Override
     public String getType(Uri uri) {
-        return null;
+        int uriType = sURIMatcher.match(uri);
+        return String.valueOf(uriType);
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-
-        int uriType = sURIMatcher.match(uri);
-
+        int uriType = Integer.parseInt(getType(uri));
         SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
-
         int rowsUpdated = 0;
-
         switch (uriType) {
-
             case PICKLISTS:
                 rowsUpdated = sqlDB.update(mDbHandler.TABLE_PICKLISTINFO_NAME,
                         values,
@@ -78,22 +72,16 @@ public class ApplicationContentProvider extends ContentProvider{
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-
         return rowsUpdated;
     }
 
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-
-        int uriType = sURIMatcher.match(uri);
-
+        int uriType = Integer.parseInt(getType(uri));
         SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
-
         long id = 0;
-
         Uri  ret;
-
         switch (uriType) {
 
             case PICKLISTS:
@@ -116,25 +104,22 @@ public class ApplicationContentProvider extends ContentProvider{
     @Override
     public boolean onCreate() {
 
-        mDbHandler = new DatabaseaHandler(getContext());
+        mDbHandler = new DatabaseHandler(getContext());
 
         if(mDbHandler !=null)
             return true;
-
         return false;
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
 
-        int uriType = sURIMatcher.match(uri);
-
+        int uriType = Integer.parseInt(getType(uri));
         SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
-
         int rowsDeleted = 0;
-
         switch (uriType) {
             case PICKLISTS:
+
                 rowsDeleted = sqlDB.delete(mDbHandler.TABLE_PICKLISTINFO_NAME,
                         selection,
                         selectionArgs);
@@ -162,12 +147,5 @@ public class ApplicationContentProvider extends ContentProvider{
         cursor = sqlDB.rawQuery(selection,null);
         return cursor;
     }
-    //chandan - a custom method can be useful in future
-    @Nullable
-    @Override
-    public Bundle call(String method, String arg, Bundle extras) {
-        return super.call(method, arg, extras);
-    }
-
 
 }

@@ -48,7 +48,7 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     private List<Picklist> mPicklists;
     private List<Picklist> dummyPicklists;
     private ProgressDialog mProgressDialog;
-    private SQLiteDatabaseHandler db;
+    private DatabaseHandler db;
     private List<LineItem> lineitems = null;
     public static final String EXTRA_PICKLIST = "com.intuit.qbes.mobilescanner.picklist";
 
@@ -72,7 +72,8 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     @Override
     public void onClickCallback(Picklist picklist) {
 
-        mCallbacks.onPickSelected(picklist);
+    mCallbacks.onPickSelected(picklist);
+
     }
 
     public ListPicklistFragment() {
@@ -91,7 +92,12 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fetchPicklists();
+        dummyPicklists = createList(5);
+
+        db = new DatabaseHandler(getActivity().getApplicationContext());
+
+        mPicklists =  db.allPickLists();
+        //fetchPicklists();
         setHasOptionsMenu(true);
     }
 
@@ -114,17 +120,23 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
 
     }
 
-    private void fetchPicklists()
+ /*   private void fetchPicklists()
     {
         mProgressDialog = ProgressDialog.show(getActivity(),
                 "Fetching Picklists", "Working real hard on it", true);
         new FetchPicklistTask().execute();
     }
-
+*/
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mCallbacks = (Callbacks) context;
+        try {
+            mCallbacks = (Callbacks) context;
+        }
+        catch(Exception e)
+        {
+
+        }
     }
 
     @Override
@@ -151,7 +163,7 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
                 break;
 
             case R.id.action_sync:
-                fetchPicklists();
+               // fetchPicklists();
                 break;
 
             case android.R.id.home:
@@ -185,7 +197,7 @@ dummyPicklists.set(idx,picklist);
 
 
 
-    private class FetchPicklistTask extends AsyncTask<Void, Void, Void> {
+   /* private class FetchPicklistTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             try
@@ -202,7 +214,7 @@ dummyPicklists.set(idx,picklist);
                 Log.d(LOG_TAG, "Fetch URL: " + urlStr);
                 Log.i(LOG_TAG, "Fetch contents of URL: " + result);
 
-                mPicklists = Picklist.picklistsFromJSON(result, getActivity().getApplicationContext());
+                mPicklists = Picklist.picklistsFromJSON(result);
                 Picklist.StorePickList(mPicklists, getContext());
 
                 db = new SQLiteDatabaseHandler(getActivity().getApplicationContext());
@@ -230,9 +242,9 @@ dummyPicklists.set(idx,picklist);
 
     }
 
-
+*/
 //Dummy as of now
-    private List<Picklist> createList(int size) {
+    public List<Picklist> createList(int size) {
 
         List<Picklist> result = new ArrayList<Picklist>();
        /* for (int i=1; i <= size; i++) {

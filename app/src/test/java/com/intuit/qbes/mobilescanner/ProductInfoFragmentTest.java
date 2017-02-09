@@ -3,6 +3,7 @@ package com.intuit.qbes.mobilescanner;
 /**
  * Created by ckumar5 on 05/02/17.
  */
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.location.Location;
@@ -40,6 +41,7 @@ import org.robolectric.util.ActivityController;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.intuit.qbes.mobilescanner.ProductInfoFragment.EXTRA_LINEITEM;
 import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTAVAILABLE;
 import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 import static junit.framework.Assert.assertTrue;
@@ -53,6 +55,7 @@ public class ProductInfoFragmentTest{
     private ProductInfoActivity productInfoActivity;
     private ProductInfoFragment productInfoFragment;
     private LineItem mLineItem;
+    private ArrayList<String> serialnos1 = new ArrayList<String>();
     ImageView mIncrement;
     EditText mQty_picked;
     ImageView mDecrement;
@@ -82,7 +85,7 @@ public class ProductInfoFragmentTest{
     }
     public void createDummyModel()
     {
-        mLineItem  = new LineItem(1, "Redmi2", "pick it", "8901238910005", "",1,"1", 10.2, 1.2, 10.2, "abc", "_",110,NOTPICKED,null);
+        mLineItem  = new LineItem(1, "Redmi2", "pick it", "8901238910005", "",1,"1", 10.2, 1.2, 10.2, "abc", "_",110,NOTPICKED,serialnos1);
 
     }
 
@@ -171,5 +174,68 @@ public class ProductInfoFragmentTest{
         mDecrement.performClick();
 
     }
+
+    @Test
+    public void test_serial_number_click_functionality()
+    {
+        view = productInfoFragment.getView();
+        TextView mSerialNumberView = (TextView)view.findViewById(R.id.item_SNO);
+        mSerialNumberView.performClick();
+
+    }
+
+    @Test
+    public void test_prodinfotosno()
+    {
+        productInfoActivity.onSerialNumberClicked(mLineItem);
+
+    }
+
+    @Test
+    public void test_confirm()
+    {
+        view = productInfoFragment.getView();
+
+        Button confirm = (Button)view.findViewById(R.id.button_confirm);
+
+        confirm.performClick();
+
+    }
+
+
+    @Test
+    public void test_updatetatus()
+    {
+        mLineItem.setQtyPicked(5.0);
+        mLineItem.setQtyToPick(5.0);
+        productInfoFragment.updateItemStatus();
+
+        Assert.assertEquals(mLineItem.getItemStatus(),LineItem.Status.PICKED);
+
+    }
+
+    @Test
+    public void integer_decimal_functionality_test()
+    {
+        double val = 10.2;
+       boolean result =  productInfoFragment.noDecimal(10.2);
+        Assert.assertFalse(result);
+
+        String qty = "10";
+        boolean isInt = productInfoFragment.isInteger(qty);
+        Assert.assertTrue(isInt);
+    }
+
+    @Test
+    public void test_onactivityresult()
+    {
+        int reqcode = 300;
+        int rescode = Activity.RESULT_OK;
+        Intent data = new Intent();
+        data.putExtra("lineitem", mLineItem);
+        productInfoFragment.onActivityResult(reqcode,rescode,data);
+    }
+
+
 
 }

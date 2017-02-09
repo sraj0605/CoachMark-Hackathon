@@ -5,9 +5,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.intuit.qbes.mobilescanner.DatabaseHandler;
 import com.intuit.qbes.mobilescanner.MSUtils;
-import com.intuit.qbes.mobilescanner.SQLiteDatabaseHandler;
-import com.intuit.qbes.mobilescanner.SQLiteDatabaseLineItemHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,8 +31,7 @@ public class Picklist implements Parcelable {
     private static final String JSON_TAG_SHIPDATE = "shipdate";
     private static final String JSON_TAG_CUSTJOB = "customerjob";
     private static final String JSON_TAG_ITEMARR = "items";
-    private static SQLiteDatabaseHandler db;
-    private static SQLiteDatabaseLineItemHandler dbLineItem;
+    private static DatabaseHandler db = null;
 
     private long mRecnum;
     private String mNumber;
@@ -177,7 +175,7 @@ public class Picklist implements Parcelable {
         mStatus = status;
     }
 
-    public static List<Picklist> picklistsFromJSON(String plJsonStr, Context context )
+    public static List<Picklist> picklistsFromJSON(String plJsonStr )
     {
         List<Picklist> plArr = new ArrayList<Picklist>();
         try
@@ -289,7 +287,8 @@ public class Picklist implements Parcelable {
 
     public static void StorePickList(List<Picklist> picklists, Context context)
     {
-        db = new SQLiteDatabaseHandler(context);
+        if(db!= null)
+        db = new DatabaseHandler(context);
         for(int i =0 ; i<picklists.size() ; i++)
         {
             if(db.PickListExists(picklists.get(i).getRecnum())) {
@@ -306,26 +305,29 @@ public class Picklist implements Parcelable {
 
     public static void StoreLineItem(List<LineItem> lineitems, long id, Context context)
     {
-        dbLineItem = new SQLiteDatabaseLineItemHandler(context);
+        if(db!= null)
+        db = new DatabaseHandler(context);
         for(int i =0 ; i<lineitems.size() ; i++)
         {
-                dbLineItem.addLineItem(lineitems.get(i), id);
+                db.addLineItem(lineitems.get(i), id);
         }
 
     }
 
     public static void UpdateLineItems(List<LineItem> lineitems, long id,  Context context)
     {
-        dbLineItem = new SQLiteDatabaseLineItemHandler(context);
+        if(db!= null)
+            db = new DatabaseHandler(context);
         for(int i =0 ; i<lineitems.size() ; i++)
         {
-            dbLineItem.updateLineItems(lineitems.get(i), id);
+            db.updateLineItems(lineitems.get(i), id);
         }
     }
 
     public void DeletePicklists(List<Picklist> picklists, Context context)
     {
-        db = new SQLiteDatabaseHandler(context);
+        if(db!= null)
+            db = new DatabaseHandler(context);
         for(int i=0; i<picklists.size();i++)
         {
             DeleteLineItems(picklists.get(i).getRecnum(),context);
@@ -335,8 +337,9 @@ public class Picklist implements Parcelable {
 
     public void DeleteLineItems(long recnum, Context context)
     {
-        dbLineItem = new SQLiteDatabaseLineItemHandler(context);
-        dbLineItem.deleteLineItems(recnum);
+        if(db!= null)
+            db = new DatabaseHandler(context);
+        db.deleteLineItems(recnum);
     }
 
 }
