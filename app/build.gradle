@@ -1,12 +1,14 @@
 apply plugin: 'com.android.application'
 
+apply from: rootProject.file('gradle/jacoco.gradle')
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
 
     defaultConfig {
         applicationId "com.intuit.qbes.mobilescanner"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -16,6 +18,13 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testCoverageEnabled = true
+        }
+        debug {
+            debuggable true
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testCoverageEnabled true
         }
     }
 
@@ -28,7 +37,7 @@ ext {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'], exclude: ['com.symbol.emdk.jar'])
-    provided fileTree(dir: '/Users/ashah9/Library/Android/sdk/add-ons/addon-symbol_emdk-symbol-19/libs', include: ['com.symbol.emdk.jar'])
+    provided fileTree(dir: '/Users/ckumar5/Library/Android/sdk/add-ons/addon-symbol-emdk_v5.0-API-19/libs', include: ['com.symbol.emdk.jar'])
     testCompile 'junit:junit:4.12'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
