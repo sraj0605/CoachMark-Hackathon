@@ -134,6 +134,10 @@ public class DetailPickListFragment1Test {
     {
         TextView sortby = (TextView) detailPicklistFragment1.getView().findViewById(R.id.sortby);
         junit.framework.Assert.assertNotNull(sortby);
+
+        TextView mSortOrderSelection = (TextView)detailPicklistFragment1.getView().findViewById(R.id.sortbyselection);
+        mSortOrderSelection.performClick();
+
     }
 
 @Test
@@ -191,6 +195,18 @@ public class DetailPickListFragment1Test {
         detailPicklistFragment1.onOptionsItemSelected(menuItem);
         Assert.assertEquals(detailPicklistFragment1.getFragmentManager().getBackStackEntryCount(),0);
 
+    }
+
+    @Test
+    public void test_sort_selection()
+    {
+        detailPicklistFragment1.onSortingOptionSelection(SortFilterOption.Items);
+    }
+
+    @Test
+    public void test_scandata_rec()
+    {
+        detailPicklistFragment1.scanDataReceived("yes");
     }
 
 }
