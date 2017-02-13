@@ -74,9 +74,9 @@ public class DetailPickListFragment1Test {
     public void createDummyModel()
     {
         mLineitems = new ArrayList<>();
-        mLineItem  = new LineItem(1, "Redmi2", "pick it", "8901238910005", "",1,"1", 10.2, 1, 10.2, "abc", "_",110,NOTPICKED,null);
+        mLineItem = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",NOTPICKED);
         mLineitems.add(mLineItem);
-        mPickList = new Picklist(mLineitems, 1, "Picklist1", "1", "20160929", "20160929", 1);
+        mPickList = new Picklist(1, 1,1, "Picklist1",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",mLineitems,"false");
 
     }
 
@@ -111,16 +111,14 @@ public class DetailPickListFragment1Test {
         Assert.assertNotNull(salesOrder);
         Assert.assertNotNull(quantityToPick);
         assertTrue("Item Name contains incorrect text",
-                mLineItem.getName().toString().equals(itemName.getText().toString()));
+                mLineItem.getItemName().toString().equals(itemName.getText().toString()));
         assertTrue("Description Nmae contains incorrect text",
-                mLineItem.getDescription().toString().equals(itemDescription.getText().toString()));
+                mLineItem.getItemDesc().toString().equals(itemDescription.getText().toString()));
 
-        String locationFormat = String.format("Bin No : %s",mLineItem.getBin().toString());
-        String salesOrderFormat = String.format("Sales Order: %d",mLineItem.getSalesOrderId());
+        String locationFormat = String.format("Bin No : %s",mLineItem.getBinLocation().toString());
+        String salesOrderFormat = String.format("Sales Order: %s",mLineItem.getDocNum());
         String  qtyTopickFormat = String.format("Qty : %s", mLineItem.getQtyToPick());
         String  qtyTopickFormat1 = quantityToPick.getText().toString();
-
-
         assertTrue(" Location contains incorrect text",
                 locationFormat.equals(locationName.getText().toString()));
         assertTrue(" Sales Order contains incorrect text",
@@ -180,7 +178,7 @@ public class DetailPickListFragment1Test {
     @Test
     public void test_updatelineitem()
     {
-       LineItem testlineitem  = new LineItem(1, "Redmi3", "pick it", "8901238910005", "",1,"1", 10.2, 1, 10.2, "abc", "_",110,NOTPICKED,null);
+       LineItem testlineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",NOTPICKED);
 
         detailPicklistFragment1.updateLineItem(testlineitem);
 

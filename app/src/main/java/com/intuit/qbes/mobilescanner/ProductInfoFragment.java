@@ -177,73 +177,52 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStart() {
         super.onStart();
-
-        if(mlineItem.getSNArr().size()>0 && mlineItem.getBarcodeEntered().isEmpty())
-        {
-
-            showUPCDialog();
-
+        //chandan - There can be case when serial number aarray will be null hence putting null check
+        if(mlineItem.getSerialLotNumbers() != null) {
+            if (mlineItem.getSerialLotNumbers().size() > 0 && mlineItem.getBarcodeEntered().isEmpty())
+                showUPCDialog();
         }
-
-
-
         mUPC_background = (View)view.findViewById(R.id.UPC_Error);
-
-
         mQty_picked.setFilters(new InputFilter[]{new DecimalDigitsInputFilter(11, 4)});
 
-
-        if(mlineItem.getSNArr().size() == 0)
-        {
+        if(mlineItem.getSerialLotNumbers() != null && mlineItem.getSerialLotNumbers().size() == 0) {
             mSerialView.setVisibility(view.GONE);
-
         }
-        else
-        {
+        else {
             mSerialNo.setVisibility(view.GONE);
             mSerialView.setPaintFlags(mSerialView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-
-
         }
-
-        if(mlineItem.getBarcode().isEmpty())
-        {
+        if(mlineItem.getBarcode() != null && mlineItem.getBarcode().isEmpty()) {
             mUPC_Header.setVisibility(view.GONE);
             mUPC_Value.setVisibility(view.GONE);
         }
 
-        if(mlineItem.getIsSNO() == 0)
-        {
-          mSNO_Header.setVisibility(view.GONE);
+        if(mlineItem.isShowSerialNo() == false) {
+            mSNO_Header.setVisibility(view.GONE);
             mSerialNo.setVisibility(view.GONE);
             mSerialView.setVisibility(view.GONE);
             mVDivider.setVisibility(view.GONE);
 
         }
-
-        if(mlineItem.getIsSNO() == 0 && (mlineItem.getBarcode().isEmpty())) {
+        if(mlineItem.isShowSerialNo() == false && (mlineItem.getBarcode().isEmpty())) {
             mHDivider.setVisibility(view.GONE);
-
         }
-
         if(mbarcodePassed.compareTo("") != 0)
         {
             mUPC_Value.setText(mbarcodePassed);
-            if(mlineItem.getIsSNO() == 1) {
+            if(mlineItem.isShowSerialNo() == true) {
 
-                mQty_picked.setText(String.valueOf(mlineItem.getSNArr().size()));
+                mQty_picked.setText(String.valueOf(mlineItem.getSerialLotNumbers().size()));
             }
 
             else {
                 if (noDecimal(mlineItem.getQtyPicked())) {
 
                     mQty_picked.setText(String.valueOf((int) mlineItem.getQtyPicked()));
-
                 }
                 else
                 {
                     mQty_picked.setText(String.valueOf(mlineItem.getQtyPicked()));
-
                 }
             }
             onClick(mIncrement);
@@ -264,9 +243,9 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         mQtyToPick = (TextView)view.findViewById(R.id.item_qty);
 
 
-        mItemName.setText(lineitem.getName().toString());
-        mItemDescription.setText(lineitem.getDescription().toString());
-        mLocation.setText(lineitem.getBin().toString());
+        mItemName.setText(lineitem.getItemName().toString());
+        mItemDescription.setText(lineitem.getItemDesc().toString());
+        mLocation.setText(lineitem.getBinLocation().toString());
         if(lineitem.getBarcode().equals(lineitem.getBarcodeEntered()))
           mUPC_Value.setText(lineitem.getBarcode());
 
@@ -275,17 +254,15 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         if(noDecimal(lineitem.getQtyToPick())){
 
             mQtyToPick.setText((String.valueOf((int)lineitem.getQtyToPick())));
-
         }
         else
         {
             mQtyToPick.setText(String.valueOf(lineitem.getQtyToPick()));
-
         }
 
-        if(lineitem.getIsSNO() == 1) {
+        if(lineitem.isShowSerialNo() == true) {
 
-            mQty_picked.setText(String.valueOf(lineitem.getSNArr().size()));
+            mQty_picked.setText(String.valueOf(lineitem.getSerialLotNumbers().size()));
         }
 
         else {
@@ -294,16 +271,13 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             mQty_picked.setText(String.valueOf((int) lineitem.getQtyPicked()));
 
         }
-        else
-        {
+        else {
             mQty_picked.setText(String.valueOf(lineitem.getQtyPicked()));
 
             }
         }
 
         getActivity().setTitle(mItemName.getText().toString());
-
-
     }
 
     @Override
@@ -334,8 +308,6 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             {
 
             }
-
-
             if (Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick()) {
 
                 error.setVisibility(view.VISIBLE);
@@ -351,17 +323,17 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             }
             if(!mlineItem.getBarcode().isEmpty()) {
 
-                if (mUPC_Value.getText().toString().isEmpty() && Double.parseDouble(mQty_picked.getText().toString()) == 0 && mlineItem.getSNArr().size() == 0) {
+                if (mUPC_Value.getText().toString().isEmpty() && Double.parseDouble(mQty_picked.getText().toString()) == 0 && mlineItem.getSerialLotNumbers().size() == 0) {
                     mUPC_background.setVisibility(view.GONE);
                     mUPC_ErrorText.setVisibility(view.GONE);
-                } else if (mUPC_Value.getText().toString().isEmpty() && (Double.parseDouble(mQty_picked.getText().toString()) > 0 || (mlineItem.getSNArr().size() > 0))) {
+                } else if (mUPC_Value.getText().toString().isEmpty() && (Double.parseDouble(mQty_picked.getText().toString()) > 0 || (mlineItem.getSerialLotNumbers().size() > 0))) {
                     mUPC_background.setVisibility(view.VISIBLE);
                     mUPC_ErrorText.setVisibility(view.VISIBLE);
 
                 }
             }
-           if(mlineItem.getIsSNO() == 1) {
-            mlineItem.setQtyPicked(mlineItem.getSNArr().size());
+           if(mlineItem.isShowSerialNo() == true) {
+            mlineItem.setQtyPicked(mlineItem.getSerialLotNumbers().size());
            }
             else {
             mlineItem.setQtyPicked(Double.parseDouble(mQty_picked.getText().toString()));
@@ -377,7 +349,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
                     mUPC_background.setVisibility(view.GONE);
                     mUPC_ErrorText.setVisibility(view.GONE);
 
-                } else if (mUPC_Value.getText().toString().isEmpty() && ((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSNArr().size() > 0))) {
+                } else if (mUPC_Value.getText().toString().isEmpty() && ((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSerialLotNumbers().size() > 0))) {
                     mUPC_background.setVisibility(view.VISIBLE);
                     mUPC_ErrorText.setVisibility(view.VISIBLE);
 
@@ -391,7 +363,6 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-
     public void onClick(View v) {
 
         switch(v.getId()) {
@@ -399,7 +370,6 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             case R.id.increase:
                 mQty_picked = (EditText)view.findViewById(R.id.qty_picked_value);
                 mQtyToPick = (TextView)view.findViewById(R.id.item_qty);
-
                 isInt  = isInteger(mQty_picked.getText().toString());
                 if(isInt)
                 {
@@ -560,8 +530,8 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     public void GotoDetailPicklist()
     {
         if(!mlineItem.getBarcode().isEmpty()) {
-            if(mlineItem.getIsSNO() == 0) {
-                if (!(((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSNArr().size() > 0)) && (mUPC_Value.getText().toString().isEmpty())) && !(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick())) {
+            if(mlineItem.isShowSerialNo() == false) {
+                if (!(((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSerialLotNumbers().size() > 0)) && (mUPC_Value.getText().toString().isEmpty())) && !(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick())) {
 
                     Intent data = new Intent();
                     data.putExtra(EXTRA_LINEITEM, mlineItem);
@@ -571,14 +541,14 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             }
             else
             {
-                if (!(((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSNArr().size() > 0)) && (mUPC_Value.getText().toString().isEmpty())) && !(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick()) && !(Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSNArr().size()) ) {
+                if (!(((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSerialLotNumbers().size() > 0)) && (mUPC_Value.getText().toString().isEmpty())) && !(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick()) && !(Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSerialLotNumbers().size()) ) {
 
                     Intent data = new Intent();
                     data.putExtra(EXTRA_LINEITEM, mlineItem);
                     getActivity().setResult(Activity.RESULT_OK, data);
                     getActivity().finish();
                 }
-                else if((Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSNArr().size()))
+                else if((Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSerialLotNumbers().size()))
                 {
                     new AlertDialog.Builder(getContext())
                             .setMessage("Quantity picked does not match the number of serial numbers for this item. Please check.").setCancelable(false)
@@ -597,7 +567,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         }
         else if(mlineItem.getBarcode().isEmpty())
         {
-            if(mlineItem.getIsSNO() == 0) {
+            if(mlineItem.isShowSerialNo() == false) {
                 if (!(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick())) {
 
                     Intent data = new Intent();
@@ -608,14 +578,14 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             }
             else
             {
-                if (!(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick()) && !(Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSNArr().size()) ) {
+                if (!(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick()) && !(Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSerialLotNumbers().size()) ) {
 
                     Intent data = new Intent();
                     data.putExtra(EXTRA_LINEITEM, mlineItem);
                     getActivity().setResult(Activity.RESULT_OK, data);
                     getActivity().finish();
                 }
-                else if((Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSNArr().size()))
+                else if((Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSerialLotNumbers().size()))
                 {
                     new AlertDialog.Builder(getContext())
                             .setMessage("Quantity picked does not match the number of serial numbers for this item. Please check.").setCancelable(false)
@@ -699,7 +669,7 @@ public boolean noDecimal(double val)
         Double qtyPicked = mlineItem.getQtyPicked();
         Double qtyToPick = mlineItem.getQtyToPick();
         LineItem.Status status  = getItemStatus(qtyPicked,qtyToPick);
-        mlineItem.setItemStatus(status);
+        mlineItem.setmItemStatus(status);
 
     }
 

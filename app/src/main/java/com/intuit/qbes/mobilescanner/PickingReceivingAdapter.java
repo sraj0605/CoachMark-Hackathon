@@ -48,8 +48,8 @@ public class PickingReceivingAdapter extends RecyclerView.Adapter<PickingReceivi
     public void onBindViewHolder(PickingReceivingViewHolder pickingViewHolder, int i) {
         Picklist pi = pickingdata.get(i);
         pickingViewHolder.mPicklistName.setText(pi.getName());
-        pickingViewHolder.mPicklistItems.setText(String.valueOf(pi.getTotalItems()) + " " + "items");
-        pickingViewHolder.mPicklistNote.setText(pi.getNote());
+        pickingViewHolder.mPicklistItems.setText(String.valueOf(pi.getTotalitems()) + " " + "items");
+        pickingViewHolder.mPicklistNote.setText(pi.getNotes());
 
         pickingViewHolder.bindPickList(pi);
     }

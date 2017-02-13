@@ -103,28 +103,28 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
     public void onStart() {
         super.onStart();
 
-        mItemName.setText(lineitem.getName());
+        mItemName.setText(lineitem.getItemName());
        if(noDecimal(lineitem.getQtyToPick())) {
             Qty = String.valueOf((int)lineitem.getQtyToPick());
 
-            if (lineitem.getSNArr().size() == 0) {
+            if (lineitem.getSerialLotNumbers().size() == 0) {
                 //mAdded.setText("To be added: " + Qty);
                 mAddedValue.setText(Qty);
             } else {
                 mAdded.setText("ADDED");// + " " + lineitem.getSNArr().size() + "/" + Qty);
-                mAddedValue.setText(lineitem.getSNArr().size() + "/" + Qty);
+                mAddedValue.setText(lineitem.getSerialLotNumbers().size() + "/" + Qty);
             }
         }
         else
         {
             Qty = String.valueOf(lineitem.getQtyToPick());
 
-            if (lineitem.getSNArr().size() == 0) {
+            if (lineitem.getSerialLotNumbers().size() == 0) {
                // mAdded.setText("To be added: " + Qty);
                 mAddedValue.setText(Qty);
             } else {
                 mAdded.setText("ADDED");// + " " + lineitem.getSNArr().size() + "/" + Qty);
-                mAddedValue.setText(lineitem.getSNArr().size() + "/" + Qty);
+                mAddedValue.setText(lineitem.getSerialLotNumbers().size() + "/" + Qty);
             }
         }
 
@@ -186,7 +186,7 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
 
     public void toProductInfo() {
         if (getFragmentManager().getBackStackEntryCount() > 0) {
-            lineitem.setSNArr(mySerialNumberAdapter.getSerialnoList());
+            lineitem.setSerialLotNumbers(mySerialNumberAdapter.getSerialnoList());
             getFragmentManager().popBackStack();
 
         }
@@ -230,7 +230,7 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         public SerialNumberAdapter(LineItem lineItem){
            // this.serialNOList = new ArrayList<String>();
          //   this.serialNOList = serialnos;
-            this.serialNOList = lineItem.getSNArr();
+            this.serialNOList = lineItem.getSerialLotNumbers();
 
         }
 

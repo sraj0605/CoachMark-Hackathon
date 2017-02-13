@@ -130,7 +130,7 @@ public void test_dialogdismiss()
 
     public void create_dummy()
     {
-        lineitem  = new LineItem(1, "Redmi2", "pick it", "8901238910005", "",1,"1", 10.2, 1, 3, "abc", "_",110,NOTPICKED,serialnos1);
+        lineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",NOTPICKED);
 
     }
 

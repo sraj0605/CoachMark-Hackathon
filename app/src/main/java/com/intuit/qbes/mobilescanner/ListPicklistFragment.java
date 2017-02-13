@@ -41,27 +41,19 @@ import static com.intuit.qbes.mobilescanner.model.LineItem.Status.PICKED;
 public class ListPicklistFragment extends Fragment implements PickingReceivingAdapter.AdapterCallback{
 
     private static final String LOG_TAG = "ListPicklistFragment";
-
+    public static final String EXTRA_PICKLIST = "com.intuit.qbes.mobilescanner.picklist";
 
     private RecyclerView mRecyclerView;
     private Callbacks mCallbacks;
-    private List<Picklist> mPicklists;
-    private List<Picklist> dummyPicklists;
+    private List<Picklist> mPicklists = null;
+    private List<Picklist> dummyPicklists = null;
     private ProgressDialog mProgressDialog;
     private DatabaseHandler db;
     private List<LineItem> lineitems = null;
-    public static final String EXTRA_PICKLIST = "com.intuit.qbes.mobilescanner.picklist";
-
-
-
     private ArrayList<String> serialnos1 = new ArrayList<String>();
-
     private ArrayList<String> serialnos2 = new ArrayList<String>();
-
     private ArrayList<String> serialnos3 = new ArrayList<String>();
-
     private ArrayList<String> serialnos4 = new ArrayList<String>();
-
     private ArrayList<String> serialnos5 = new ArrayList<String>();
 
 
@@ -71,9 +63,7 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
 
     @Override
     public void onClickCallback(Picklist picklist) {
-
-    mCallbacks.onPickSelected(picklist);
-
+        mCallbacks.onPickSelected(picklist);
     }
 
     public ListPicklistFragment() {
@@ -93,9 +83,7 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dummyPicklists = createList(5);
-
         db = new DatabaseHandler(getActivity().getApplicationContext());
-
         mPicklists =  db.allPickLists();
         //fetchPicklists();
         setHasOptionsMenu(true);
@@ -106,36 +94,33 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list_picklist, container, false);
-
-
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list_picklist_rv);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setHasFixedSize(true);
         dummyPicklists = createList(5);
         PickingReceivingAdapter pa = new PickingReceivingAdapter(dummyPicklists, this);
         mRecyclerView.setAdapter(pa);
-
         return view;
-
-
     }
 
- /*   private void fetchPicklists()
+   /*private void fetchPicklists()
     {
         mProgressDialog = ProgressDialog.show(getActivity(),
                 "Fetching Picklists", "Working real hard on it", true);
         new FetchPicklistTask().execute();
-    }
-*/
+    }*/
+
     @Override
     public void onAttach(Context context) {
+
         super.onAttach(context);
+
         try {
             mCallbacks = (Callbacks) context;
         }
-        catch(Exception e)
+        catch(Exception exp)
         {
-
+            exp.printStackTrace();
         }
     }
 
@@ -176,34 +161,36 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
         return true;
     }
 
-    public void updatePicklist(Picklist picklist)
+    /*public void updatePicklist(Picklist picklist)
     {
         if (picklist == null)
         {
             throw new IllegalArgumentException("Picklist is null");
         }
 
-    //    int idx = mPicklists.indexOf(picklist);
-int idx = dummyPicklists.indexOf(picklist);
+        //int idx = mPicklists.indexOf(picklist);
+
+        int idx = dummyPicklists.indexOf(picklist);
+
         if (idx == -1)
         {
             throw new IllegalArgumentException("Picklist is not found");
         }
-dummyPicklists.set(idx,picklist);
-     //   mPicklists.set(idx, picklist);
-     //   mRecyclerView.getAdapter().notifyItemChanged(idx);
-     //   mRecyclerView.scrollToPosition(idx);
-    }
+        dummyPicklists.set(idx,picklist);
+        //mPicklists.set(idx, picklist);
+        //mRecyclerView.getAdapter().notifyItemChanged(idx);
+        //mRecyclerView.scrollToPosition(idx);
+    }*/
 
 
 
-   /* private class FetchPicklistTask extends AsyncTask<Void, Void, Void> {
+    /*private class FetchPicklistTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             try
             {
 
-                String urlStr = String.format("%s/picklists", MSUtils.getServerUrl(getActivity()));
+                String urlStr = "http://172.16.100.28:9999/api/v1/company/666667/tasks/35";
 
                 String result = new PicklistHttp().
                         getUrlString(urlStr);
@@ -217,13 +204,13 @@ dummyPicklists.set(idx,picklist);
                 mPicklists = Picklist.picklistsFromJSON(result);
                 Picklist.StorePickList(mPicklists, getContext());
 
-                db = new SQLiteDatabaseHandler(getActivity().getApplicationContext());
+                //db = new SQLiteDatabaseHandler(getActivity().getApplicationContext());
                 mPicklists =  db.allPickLists();
             }
             catch (Exception ioe)
             {
                 Log.e(LOG_TAG, "Failed to fetch URL: ", ioe);
-                db = new SQLiteDatabaseHandler(getActivity().getApplicationContext());
+                //db = new SQLiteDatabaseHandler(getActivity().getApplicationContext());
                 mPicklists =  db.allPickLists();
             }
 //            catch (IOException ioe)
@@ -240,9 +227,9 @@ dummyPicklists.set(idx,picklist);
         }
 
 
-    }
+    }*/
 
-*/
+
 //Dummy as of now
     public List<Picklist> createList(int size) {
 
@@ -257,44 +244,35 @@ dummyPicklists.set(idx,picklist);
         if (lineitems == null)
             lineitems = new ArrayList<LineItem>();
         //cahdan -start - only for testing
-
-        LineItem obj1 = new LineItem(1, "Redmi", "pick it", "8901238910005", "",1,"1", 10, 1, 10, "abc", "_",110,NOTPICKED,serialnos1);
-        LineItem obj2 = new LineItem(2, "Iphone", "hardware", "8901057310062", "",0,"1", 10, 0, 8, "def", "def_123", 111,NOTPICKED,serialnos2);
-        LineItem obj3 = new LineItem(3, "Motorola", "hardware", "MotoRolaBarcode","",0,"1", 10, 0, 7, "ghi", "def_12",112,NOTAVAILABLE, serialnos3);
-        LineItem obj4 = new LineItem(4, "Zebra", "awesome phone", "ZebraBarcode", "",1,"1", 10, 0, 21.9, "wow", "jkl", 113,NOTPICKED,serialnos4);
-        LineItem obj5 = new LineItem(5, "1 plus 3", "struggling phone", "1PlusBarcode", "",1, "1", 10, 0, 5, "mno", "wer", 114,NOTPICKED,serialnos5);
+        LineItem obj1 = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",NOTPICKED);
+        LineItem obj2 = new LineItem(2,2,2,"Iphone","hardware it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901057310062","Rack 1",12,"custom",serialnos1,"true","true","false",NOTPICKED);
+        LineItem obj3 = new LineItem(3,3,3,"Motorola","awesome phone",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",NOTPICKED);
+        LineItem obj4 = new LineItem(4,4,4,"Zebra","hardware it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",NOTPICKED);
+        LineItem obj5 = new LineItem(5,5,5,"1 plus 3","struggling phone it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",NOTPICKED);
         lineitems.add(obj1);
         lineitems.add(obj2);
         lineitems.add(obj3);
         lineitems.add(obj4);
         lineitems.add(obj5);
-        Picklist p1 = new Picklist(lineitems, 1, "Picklist1", "1", "20160929", "20160929", 1);
-        Picklist p2 = new Picklist(lineitems, 1, "Picklist2", "2", "20160929", "20160929", 1);
-        Picklist p3 = new Picklist(lineitems, 1, "Picklist3", "3", "20160929", "20160929", 1);
-        Picklist p4 = new Picklist(lineitems, 1, "Picklist4", "4", "20160929", "20160929", 1);
-        Picklist p5 = new Picklist(lineitems, 1, "Picklist5", "5", "20160929", "20160929", 1);
 
-            p1.setTotalItems(35 * 1);
-            p1.setNote("Note:" + " " + 1);
-            result.add(p1);
+        Picklist p1 = new Picklist(1, 1,1, "Picklist1",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
+        Picklist p2 = new Picklist(1, 1,1, "Picklist2",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
+        Picklist p3 = new Picklist(1, 1,1, "Picklist3",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
+        Picklist p4 = new Picklist(1, 1,1, "Picklist4",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
+        Picklist p5 = new Picklist(1, 1,1, "Picklist4",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
 
-            p2.setTotalItems(35 * 2);
-            p2.setNote("Note:" + " " + 2);
-            result.add(p2);
+        p1.setTotalitems(10);
+        result.add(p1);
+        p2.setTotalitems(10);
+        result.add(p2);
+        p3.setTotalitems(10);
+        result.add(p3);
+        p4.setTotalitems(10);
+        result.add(p4);
+        p5.setTotalitems(10);
+        result.add(p5);
 
-            p3.setTotalItems(35 * 3);
-            p3.setNote("Note:" + " " + 3);
-            result.add(p3);
-
-            p4.setTotalItems(35 * 4);
-            p4.setNote("Note:" + " " + 4);
-            result.add(p4);
-
-            p5.setTotalItems(35 * 5);
-            p5.setNote("Note:" + " " + 5);
-            result.add(p5);
-
-          return result;
+        return result;
     }
 
  /*   public class PickingAdapter extends RecyclerView.Adapter<PickingAdapter.PickingViewHolder> {

@@ -85,7 +85,10 @@ public class ProductInfoFragmentTest{
     }
     public void createDummyModel()
     {
-        mLineItem  = new LineItem(1, "Redmi2", "pick it", "8901238910005", "",1,"1", 10.2, 1.2, 10.2, "abc", "_",110,NOTPICKED,serialnos1);
+        ArrayList<String> arr = new ArrayList<>();
+        arr.add("1234");
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",arr,"true","true","false",NOTPICKED);
+        mLineItem.setBarcodeEntered("");
 
     }
 
@@ -148,13 +151,13 @@ public class ProductInfoFragmentTest{
                 String.valueOf(mLineItem.getQtyToPick()).equals(mQtytoBePicked.getText().toString()));
 
         assertTrue("Item Name contains incorrect text",
-                mLineItem.getName().equals(mItemName.getText().toString()));
+                mLineItem.getItemName().equals(mItemName.getText().toString()));
 
         assertTrue("Description contains incorrect text",
-                mLineItem.getDescription().equals(mItemDesc.getText().toString()));
+                mLineItem.getItemDesc().equals(mItemDesc.getText().toString()));
 
         assertTrue("Location contains incorrect text",
-                mLineItem.getBin().equals(mItemLocation.getText().toString()));
+                mLineItem.getBinLocation().equals(mItemLocation.getText().toString()));
 
         //To - do sales order
 
@@ -210,7 +213,7 @@ public class ProductInfoFragmentTest{
         mLineItem.setQtyToPick(5.0);
         productInfoFragment.updateItemStatus();
 
-        Assert.assertEquals(mLineItem.getItemStatus(),LineItem.Status.PICKED);
+        Assert.assertEquals(mLineItem.getmItemStatus(),LineItem.Status.PICKED);
 
     }
 

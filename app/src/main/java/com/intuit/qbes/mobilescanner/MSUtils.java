@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
  */
 public class MSUtils {
 
-    public static SimpleDateFormat yyyyMMddFormat = new SimpleDateFormat("yyyyMMdd");
+    public static SimpleDateFormat yyyyMMddFormat = new SimpleDateFormat("yyyy-MM-dd");
     public static SimpleDateFormat MMddyyyyFormat = new SimpleDateFormat("MM/dd/yyyy");
 
     public static String getServerUrl(Context context)

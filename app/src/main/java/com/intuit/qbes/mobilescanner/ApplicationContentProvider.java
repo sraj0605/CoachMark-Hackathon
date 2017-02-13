@@ -4,10 +4,13 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.intuit.qbes.mobilescanner.model.Picklist;
 
@@ -52,26 +55,36 @@ public class ApplicationContentProvider extends ContentProvider{
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         int uriType = Integer.parseInt(getType(uri));
-        SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
         int rowsUpdated = 0;
-        switch (uriType) {
-            case PICKLISTS:
-                rowsUpdated = sqlDB.update(mDbHandler.TABLE_PICKLISTINFO_NAME,
-                        values,
-                        selection,
-                        selectionArgs);
-                break;
+        try {
+            SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
+            switch (uriType) {
+                case PICKLISTS:
+                    rowsUpdated = sqlDB.update(mDbHandler.TABLE_PICKLISTINFO_NAME,
+                            values,
+                            selection,
+                            selectionArgs);
+                    break;
 
-            case LINEITEMS:
-                rowsUpdated = sqlDB.update(mDbHandler.TABLE_LINEITEMINFO_NAME,
-                        values,
-                        selection,
-                        selectionArgs);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown URI: " + uri);
+                case LINEITEMS:
+                    rowsUpdated = sqlDB.update(mDbHandler.TABLE_LINEITEMINFO_NAME,
+                            values,
+                            selection,
+                            selectionArgs);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown URI: " + uri);
+            }
+            getContext().getContentResolver().notifyChange(uri, null);
         }
-        getContext().getContentResolver().notifyChange(uri, null);
+        catch (SQLiteException exp )
+        {
+            Log.e("ContentProvider",exp.getMessage().toString());
+        }
+        catch (Exception exp)
+        {
+            exp.printStackTrace();
+        }
         return rowsUpdated;
     }
 
@@ -79,23 +92,33 @@ public class ApplicationContentProvider extends ContentProvider{
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         int uriType = Integer.parseInt(getType(uri));
-        SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
         long id = 0;
-        Uri  ret;
-        switch (uriType) {
+        Uri  ret = null;
+        try {
+            SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
+            switch (uriType) {
 
-            case PICKLISTS:
-                id = sqlDB.insert(mDbHandler.TABLE_PICKLISTINFO_NAME, null, values);
-                ret = Uri.parse(PICKLIST_TABLE + "/" + id);
-                break;
+                case PICKLISTS:
+                    id = sqlDB.insert(mDbHandler.TABLE_PICKLISTINFO_NAME, null, values);
+                    ret = Uri.parse(PICKLIST_TABLE + "/" + id);
+                    break;
 
-            case LINEITEMS:
-                id = sqlDB.insert(mDbHandler.TABLE_LINEITEMINFO_NAME, null, values);
-                ret = Uri.parse(LINEITEM_TABLE + "/" + id);
-                break;
+                case LINEITEMS:
+                    id = sqlDB.insert(mDbHandler.TABLE_LINEITEMINFO_NAME, null, values);
+                    ret = Uri.parse(LINEITEM_TABLE + "/" + id);
+                    break;
 
-            default:
-                throw new IllegalArgumentException("Unknown URI: " + uri);
+                default:
+                    throw new IllegalArgumentException("Unknown URI: " + uri);
+            }
+        }
+        catch (SQLiteException exp)
+        {
+            Log.e("ContentProvider",exp.getMessage().toString());
+        }
+        catch (Exception exp)
+        {
+            exp.printStackTrace();
         }
 
         return ret;
@@ -108,6 +131,7 @@ public class ApplicationContentProvider extends ContentProvider{
 
         if(mDbHandler !=null)
             return true;
+
         return false;
     }
 
@@ -115,24 +139,34 @@ public class ApplicationContentProvider extends ContentProvider{
     public int delete(Uri uri, String selection, String[] selectionArgs) {
 
         int uriType = Integer.parseInt(getType(uri));
-        SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
         int rowsDeleted = 0;
-        switch (uriType) {
-            case PICKLISTS:
+        try {
+            SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
+            switch (uriType) {
+                case PICKLISTS:
 
-                rowsDeleted = sqlDB.delete(mDbHandler.TABLE_PICKLISTINFO_NAME,
-                        selection,
-                        selectionArgs);
-                break;
-            case LINEITEMS:
-                rowsDeleted = sqlDB.delete(mDbHandler.TABLE_LINEITEMINFO_NAME,
-                        selection,
-                        selectionArgs);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown URI: " + uri);
+                    rowsDeleted = sqlDB.delete(mDbHandler.TABLE_PICKLISTINFO_NAME,
+                            selection,
+                            selectionArgs);
+                    break;
+                case LINEITEMS:
+                    rowsDeleted = sqlDB.delete(mDbHandler.TABLE_LINEITEMINFO_NAME,
+                            selection,
+                            selectionArgs);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown URI: " + uri);
+            }
+            getContext().getContentResolver().notifyChange(uri, null);
         }
-        getContext().getContentResolver().notifyChange(uri, null);
+        catch (SQLiteException exp)
+        {
+            Log.e("ContentProvider",exp.getMessage().toString());
+        }
+        catch (Exception exp)
+        {
+            exp.printStackTrace();
+        }
         return rowsDeleted;
     }
 
@@ -141,10 +175,16 @@ public class ApplicationContentProvider extends ContentProvider{
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         //chandan - need to change
-        int uriType = sURIMatcher.match(uri);
-        SQLiteDatabase sqlDB = mDbHandler.getReadableDatabase();
         Cursor cursor = null;
-        cursor = sqlDB.rawQuery(selection,null);
+        int uriType = sURIMatcher.match(uri);
+        try {
+            SQLiteDatabase sqlDB = mDbHandler.getReadableDatabase();
+            cursor = sqlDB.rawQuery(selection, null);
+        }
+        catch (SQLiteException exp)
+        {
+            Log.e("ContentProvider",exp.getMessage().toString());
+        }
         return cursor;
     }
 

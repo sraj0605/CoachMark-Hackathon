@@ -65,8 +65,8 @@ public class ListPicklistFragmentTest {
         Assert.assertNotNull(picklistitems);
 
        Assert.assertEquals(picklistname.getText().toString(),"Picklist1");
-        Assert.assertEquals(picklistnote.getText().toString(),"Note: 1");
-        Assert.assertEquals(picklistitems.getText().toString(),"35 items");
+        Assert.assertEquals(picklistnote.getText().toString(),"note1");
+        Assert.assertEquals(picklistitems.getText().toString(),"10 items");
 
 
     }

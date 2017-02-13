@@ -76,7 +76,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
 
 
     private ProgressDialog mProgressDialog;
-    private DatabaseHandler db;
+    private DatabaseHandler db = null;
     private List<LineItem> lineitems = null;
 
 
@@ -191,12 +191,12 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
     public void onStart() {
         super.onStart();
 
-        db = new DatabaseHandler(getActivity().getApplicationContext());
-
+        if(db != null)
+            db = new DatabaseHandler(getActivity().getApplicationContext());
         if(lineitems == null)
-            lineitems = mPicklist.getLines();
+            lineitems = mPicklist.getLineitems();
         if(lineitems == null)
-            lineitems = db.allLineItems(mPicklist.getRecnum());
+            lineitems = db.allLineItems(mPicklist.getId());
 
         if(mAdapter ==  null)
             mAdapter = new LineItemAdapter(lineitems);
@@ -247,22 +247,8 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         if(lineitems.contains(lineItem))
         {
             lineItem = lineitems.get(lineitems.indexOf(lineItem));
-            /*if model has to get updated from this activity itself*/
-            /*Double dQtyPicked = lineItem.getQtyPicked();
-            Double dQtyToPick = lineItem.getQtyToPick();
-            BigDecimal temp = BigDecimal.valueOf(dQtyPicked);
-            BigDecimal tempToAdd = new BigDecimal(1);
-            BigDecimal result = temp.add(tempToAdd);
-            dQtyPicked = result.doubleValue();
-            lineItem.setQtyPicked(dQtyPicked);
-            if(dQtyPicked > 0 && dQtyPicked < dQtyToPick)
-                lineItem.setItemStatus(PARTIALPICKED);
-            else if(dQtyPicked == dQtyToPick)
-                lineItem.setItemStatus(PICKED);
-            else
-                lineItem.setItemStatus(NOTPICKED);*/
-
-            mCallbacks.onLineItemSelected(lineItem,sData);
+            if(mCallbacks != null)
+                mCallbacks.onLineItemSelected(lineItem,sData);
         }
         else
         {
@@ -273,13 +259,16 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
 
     @Override
     public void onAttach(Context context) {
+
         super.onAttach(context);
+
         try {
+
             mCallbacks = (Callbacks) context;
         }
-        catch (Exception ex)
+        catch (Exception exp)
         {
-
+            exp.printStackTrace();
         }
     }
 
@@ -354,13 +343,13 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
             throw new IllegalArgumentException("Lineitem is null");
         }
 
-        int idx = mPicklist.getLines().indexOf(lineItem);
+        int idx = mPicklist.getLineitems().indexOf(lineItem);
 
         if (idx == -1)
         {
             throw new IllegalArgumentException("Lineitem is not found in picklist");
         }
-        mPicklist.getLines().set(idx,lineItem);
+        mPicklist.getLineitems().set(idx,lineItem);
         //mPicklist.getLines().get(idx).setQtyPicked(lineItem.getQtyPicked());
         return idx;
     }
@@ -372,11 +361,11 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         //mAdapter.sortDataSetByUserOption(SortFilterOption.Status,false);
     }
 
-    private void savePicklist()
+    /*private void savePicklist()
     {
         mProgressDialog = ProgressDialog.show(getActivity(), "", "Updating Picklist");
         new UpdatePicklistTask().execute(mPicklist);
-    }
+    }*/
 
     private class LineItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -403,10 +392,10 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         public void bindLineItem(LineItem item)
         {
             mItem = item;
-            mItemName.setText(item.getName());
-            mItemDesc.setText(item.getDescription());
-            mLocation.setText(String.format("Bin No : %s",item.getBin()));
-            mSalesOrder.setText(String.format("Sales Order: %d",item.getSalesOrderId()));
+            mItemName.setText(item.getItemName());
+            mItemDesc.setText(item.getItemDesc());
+            mLocation.setText(String.format("Bin No : %s",item.getBinLocation()));
+            mSalesOrder.setText(String.format("Sales Order: %s",item.getDocNum()));
             if(isInteger(item.getQtyToPick()))
             {
                 long qtyTopick = (long) item.getQtyToPick();
@@ -415,11 +404,11 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
             else
                 mQtyToPick.setText(String.format("Qty : %s", (item.getQtyToPick())));
 
-            if(item.getItemStatus() == Status.PICKED)
+            if(item.getmItemStatus() == Status.PICKED)
                 mPickOrNonPickImage.setImageResource(R.drawable.ic_picked_test);
-            else if(item.getItemStatus() == Status.NOTPICKED)
+            else if(item.getmItemStatus() == Status.NOTPICKED)
                 mPickOrNonPickImage.setImageResource(R.drawable.ic_notpicked_test);
-            else if(item.getItemStatus() == Status.PARTIALPICKED)
+            else if(item.getmItemStatus() == Status.PARTIALPICKED)
                 mPickOrNonPickImage.setImageResource(R.drawable.ic_action_partial);
             else
                 mPickOrNonPickImage.setImageResource(R.drawable.ic_notpicked_test);
@@ -439,21 +428,19 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         }
     }
     //Recycle View Adpter
-    private class LineItemAdapter extends RecyclerView.Adapter<LineItemHolder> implements Filterable{
+    private class LineItemAdapter extends RecyclerView.Adapter<LineItemHolder> /*implements Filterable*/{
 
+        //Member Varaibles
         private List<LineItem> mLineItems = Collections.emptyList();;
-
         private List<LineItem> originalLineItems = Collections.emptyList();
-
         private SortFilterOption filterOption;
-
         private SortFilterOption sortOption;
 
         public LineItemAdapter(List<LineItem> lineItems)
         {
 
             mLineItems = lineItems;//This is to keep track of last sort opton done on dataset,which will be helpful in removing filter
-            originalLineItems = lineItems;//This is only for filter
+           // originalLineItems = lineItems;//This is only for filter
         }
 
         @Override
@@ -487,7 +474,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
             notifyDataSetChanged();//Notify Layout manager that dataset has changed to re render
         }
 
-        public void filterDatasetByUserOption(SortFilterOption filterOption,String strToFilter)
+       /* public void filterDatasetByUserOption(SortFilterOption filterOption,String strToFilter)
         {
             this.filterOption = filterOption;
             getFilter().filter(strToFilter);
@@ -534,7 +521,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
                 case Items:
                 {
                     for (LineItem item : originalLineItems) {
-                        if (item.getName().toLowerCase().contains(constraint)) {
+                        if (item.getItemName().toLowerCase().contains(constraint)) {
                             results.add(item);
                         }
                     }
@@ -543,7 +530,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
                 case Location:
                 {
                     for (LineItem item : originalLineItems) {
-                        if (item.getBin().toLowerCase().contains(constraint)) {
+                        if (item.getBinLocation().toLowerCase().contains(constraint)) {
                             results.add(item);
                         }
                     }
@@ -551,14 +538,14 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
                 case SalesOrder:
                 {
                     for (LineItem item : originalLineItems) {
-                        if (item.getDescription().toLowerCase().contains(constraint)) {
+                        if (item.getItemDesc().toLowerCase().contains(constraint)) {
                             results.add(item);
                         }
                     }
                 }
             }
             return results;
-        }
+        }*/
 
         @Override
         public int getItemCount() {
@@ -571,40 +558,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         }
     }
 
-    //process scanned data
-    private class AsyncDataUpdate extends
-            AsyncTask<String, Void, Integer> {
-
-        @Override
-        protected Integer doInBackground(String... params) {
-
-            int idx = -1;
-            String dataStr = params[0].toString();
-            for(idx = 0; idx < mPicklist.getLines().size(); idx++)
-            {
-                LineItem lineItem = mPicklist.getLines().get(idx);
-                if (lineItem.getBarcode().equals(dataStr))
-                {
-                    lineItem.setQtyPicked(lineItem.getQtyPicked() + 1);
-                    break;
-                }
-            }
-            if (idx == mPicklist.getLines().size())
-            {
-                Log.e("Barcode not found",dataStr.toString());
-                idx = -1;
-            }
-            return idx;
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-            mRecyclerView.getAdapter().notifyItemChanged(integer);
-            mRecyclerView.scrollToPosition(integer);
-        }
-    }
-
-    private class UpdatePicklistTask extends AsyncTask<Picklist, Void, Integer> {
+    /*private class UpdatePicklistTask extends AsyncTask<Picklist, Void, Integer> {
 
         @Override
         protected Integer doInBackground(Picklist... params) {
@@ -619,7 +573,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
                 responseCode = new PicklistHttp().
                         putUrlString(String.format("%s/picklists/%d",
                                 MSUtils.getServerUrl(getActivity()),
-                                picklist.getRecnum()), picklistJSONStr, result);
+                                picklist.getId()), picklistJSONStr, result);
 
                 if (responseCode != 201 && responseCode != 200)
                 {
@@ -649,7 +603,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
                 mCallbacks.onPicklistSaved(response, mPicklist);
             }
         }
-    }
+    }*/
 
 
 }

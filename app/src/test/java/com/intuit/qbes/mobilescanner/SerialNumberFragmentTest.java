@@ -60,7 +60,7 @@ public class SerialNumberFragmentTest {
 
     public void createDummyModel()
     {
-        mlineitem  = new LineItem(1, "Redmi2", "pick it", "8901238910005", "",1,"1", 10.2, 0, 3, "abc", "_",110,NOTPICKED,serialnos1);
+        mlineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",1,0,"8901238910005","Rack 1",4,"custom",serialnos1,"true","true","false",NOTPICKED);
 
     }
 
@@ -93,7 +93,9 @@ public class SerialNumberFragmentTest {
         Assert.assertNotNull(plus);
 
 
-        Assert.assertEquals(mlineitem.getName(), item_name.getText().toString());
+        Assert.assertEquals(mlineitem.getItemName(), item_name.getText().toString());
+        int n = (int)mlineitem.getQtyToPick();
+        int n1 = Integer.parseInt(sno_added_value.getText().toString());
         Assert.assertEquals((int)mlineitem.getQtyToPick(), Integer.parseInt(sno_added_value.getText().toString()));
 
 

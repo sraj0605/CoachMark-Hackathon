@@ -42,12 +42,12 @@ public class ParcelTest {
 
     @Before
     public void setUp() {
-        LineItem obj1 = new LineItem(1, "Redmi", "pick it", "RedmiBarcode", "",1,"1", 10, 1, 5, "abc", "_",110,NOTPICKED,serialnos1);
+        LineItem obj1 = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",NOTPICKED);
         lineitems.add(obj1);
-        picklist = new Picklist(lineitems, 1, "Picklist1", "1", "20160929", "20160929", 1);
-        picklist.setNote("TestNote");
-        picklist.setTotalItems(100);
-        lineItem = new LineItem(1, "Redmi", "pick it", "RedmiBarcode", "",1,"1", 10, 1, 5, "abc", "_",110,NOTPICKED,serialnos1);
+        picklist = new Picklist(1, 1,1, "Picklist1",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
+        picklist.setNotes("TestNote");
+        picklist.setTotalitems(100);
+        lineItem = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",NOTPICKED);
         resultpicklist = "[{\"_id\":26021,\"customerjob\":\"Dunning's Pool Depot, Inc.:Las Wages Store # 554\",\"date\":\"2021115\",\"items\":[{\"Needed\":5,\"_id\":26024,\"barcode\":\"6921734900210\",\"desc\":\"POWER MANUAL 1500\",\"name\":\"1500-PM\",\"to_pick\":0,\"uom\":\"ea\"},{\"Needed\":8,\"_id\":26023,\"barcode\":\"QB:0103358660139\",\"desc\":\"Pool Cover, Forest Green\",\"name\":\"Pool Covers:Cover -FG\",\"to_pick\":8,\"uom\":\"ea\"}],\"num\":\"8793\",\"shipdate\":\"20211115\",\"status\":1}]";
 
 

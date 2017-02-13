@@ -5,13 +5,23 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonToken;
 import com.intuit.qbes.mobilescanner.DatabaseHandler;
 import com.intuit.qbes.mobilescanner.MSUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import java.io.IOException;
+import java.io.StringReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,194 +43,270 @@ public class Picklist implements Parcelable {
     private static final String JSON_TAG_ITEMARR = "items";
     private static DatabaseHandler db = null;
 
-    private long mRecnum;
-    private String mNumber;
-    private int mStatus; //change to enum later
-    private Date mOrderDate;
-    private Date mShipDate;
-    private String mName;
-    private String mNote;
-    private int mTotalItems;
-    private List<LineItem> mLines;
+    //chandan
+    private long id;
+    private long companyId;
+    private long taskType;
+    private String name;
+    private long assigneeId;
+    private long createdById;
+    private int status; //change to enum later
+    private long siteId;
+    private String notes;
+    private boolean showNotes;
+    private long syncToken;
+    private Date createdTimestamp;
+    private Date modifiedTimestamp;
+    private List<LineItem> lineitems = null;
+    private boolean deleted;
+    private long totalitems;
+
+    //This Constructor is for Creating Dummy PickList
     public Picklist() {
-        mRecnum = -1;
-        mLines = new ArrayList<LineItem>();
-        mStatus = 0;
+        id = -1;
+        lineitems = new ArrayList<LineItem>();
     }
 
-    public Picklist(List<LineItem> lines,
-                    long recnum,
+    public Picklist(long id,
+                    long companyId,
+                    long taskType,
                     String name,
-                    String number,
-                    String orderDate,
-                    String shipDate,
-                    int status) {
-        try {
-            mLines = lines;
-            mName = name;
-            mNumber = number;
-            mOrderDate = MSUtils.yyyyMMddFormat.parse(orderDate);
-            mRecnum = recnum;
-            mShipDate = MSUtils.yyyyMMddFormat.parse(shipDate);
-            mStatus = status;
+                    long assigneeId,
+                    long createdById,
+                    int status,
+                    long siteId,
+                    String notes,
+                    String showNotes,
+                    long syncToken,
+                    String createdTimeStamp,
+                    String modifiedTimeStamp,
+                    List<LineItem> lines,
+                    String deleted)
+    {
+        try
+        {
+            this.id         = id;
+            this.companyId  = companyId;
+            this.taskType   = taskType;
+            this.name            = name;
+            this.assigneeId     = assigneeId;
+            this.createdById    = createdById;
+            this.status         = status; //change to enum later
+            this.siteId         = siteId;
+            this.notes           = notes;
+            this.showNotes      = Boolean.valueOf(showNotes);
+            this.syncToken           = syncToken;
+            this.createdTimestamp = MSUtils.yyyyMMddFormat.parse(createdTimeStamp);;
+            this.modifiedTimestamp = MSUtils.yyyyMMddFormat.parse(modifiedTimeStamp);;
+            this.lineitems = lines;
+            this.deleted = Boolean.valueOf(deleted);
         }
-        catch (ParseException e) {
-            Log.e(LOG_TAG, e.toString());
+        catch (ParseException exp)
+        {
+            exp.printStackTrace();
+        }
+        catch (Exception exp)
+        {
+            exp.printStackTrace();
         }
     }
 
     public Picklist(Parcel in)
     {
-     /*   mRecnum = in.readLong();
-        mNumber = in.readString();
-        mStatus = in.readInt();
-     /*   try {
-            mOrderDate = MSUtils.yyyyMMddFormat.parse(in.readString());
-            mShipDate = MSUtils.yyyyMMddFormat.parse(in.readString());
-
+        try {
+            id = in.readLong();
+            companyId = in.readLong();
+            taskType = in.readLong();
+            name = in.readString();
+            assigneeId = in.readLong();
+            createdById = in.readLong();
+            status = in.readInt(); //change to enum later
+            siteId = in.readLong();
+            notes = in.readString();
+            showNotes = Boolean.valueOf(in.readString());
+            syncToken = in.readLong();
+            createdTimestamp = (java.util.Date) in.readSerializable();
+            modifiedTimestamp = (java.util.Date) in.readSerializable();
+            lineitems = new ArrayList<LineItem>(Arrays.asList(in.createTypedArray(LineItem.CREATOR)));
+            deleted   = Boolean.valueOf(in.readString());
         }
-        catch (ParseException e) {
-            Log.e(LOG_TAG, e.toString());
-        }*/
-     /*   mOrderDate = (java.util.Date) in.readSerializable();
-        mShipDate = (java.util.Date) in.readSerializable();
-        mName = in.readString();*/
-        //chandan - commenting as of now,to find why it is taking time
-        mLines = new ArrayList<LineItem>(Arrays.asList(in.createTypedArray(LineItem.CREATOR)));
-        mNote = in.readString();
-        mRecnum = in.readLong();
-        mNumber = in.readString();
-        mStatus = in.readInt();
-        mOrderDate = (java.util.Date) in.readSerializable();
-        mShipDate = (java.util.Date) in.readSerializable();
-        mName = in.readString();
-
+        catch (Exception exp)
+        {
+            exp.printStackTrace();
+        }
+    }
+    public long getId() {
+        return id;
     }
 
-    public List<LineItem> getLines() {
-        return mLines;
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(long companyId) {
+        this.companyId = companyId;
+    }
+
+    public long getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(long taskType) {
+        this.taskType = taskType;
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
-
-    public String getNumber() {
-        return mNumber;
-    }
-
-    public Date getOrderDate(){
-
-            return mOrderDate;
-
-    }
-
-    public long getRecnum() {
-        return mRecnum;
-    }
-
-    public Date getShipDate() {
-        return mShipDate;
-    }
-
-    public String getNote() { return mNote ;}
-
-    public int getTotalItems() { return mTotalItems ;}
-
-    public int getStatus() {
-        return mStatus;
-    }
-
-
 
     public void setName(String name) {
-        this.mName = name;
+        this.name = name;
     }
 
-    public void setNumber(String number) {
-        this.mNumber = number;
+    public long getAssigneeId() {
+        return assigneeId;
     }
 
-    public void setOrderDate(String OrderDate) {
-       try {
-            this.mOrderDate = MSUtils.yyyyMMddFormat.parse(OrderDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+    public void setAssigneeId(long assigneeId) {
+        this.assigneeId = assigneeId;
     }
 
-    public void setRecnum(long recnum) {
-        this.mRecnum = recnum;
+    public long getCreatedById() {
+        return createdById;
     }
 
-    public void setShipDate(String ShipDate) {
-        try {
-            this.mShipDate = MSUtils.yyyyMMddFormat.parse(ShipDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+    public void setCreatedById(long createdById) {
+        this.createdById = createdById;
     }
-   public void setNote(String note)
-   {
-       this.mNote = note;
-   }
 
-   public void setTotalItems(int item_total)
-   {
-       this.mTotalItems = item_total;
-   }
+    public int getStatus() {
+        return status;
+    }
 
-    public void setStatus(int status)
-    {
-        mStatus = status;
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public long getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(long siteId) {
+        this.siteId = siteId;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public boolean isShowNotes() {
+        return showNotes;
+    }
+
+    public void setShowNotes(boolean showNotes) {
+        this.showNotes = showNotes;
+    }
+
+    public long getSyncToken() {
+        return syncToken;
+    }
+
+    public void setSyncToken(long syncToken) {
+        this.syncToken = syncToken;
+    }
+
+    public Date getCreatedTimestamp() {
+        return createdTimestamp;
+    }
+
+    public void setCreatedTimestamp(Date createdTimestamp) {
+        this.createdTimestamp = createdTimestamp;
+    }
+
+    public Date getModifiedTimestamp() {
+        return modifiedTimestamp;
+    }
+
+    public void setModifiedTimestamp(Date modifiedTimestamp) {
+        this.modifiedTimestamp = modifiedTimestamp;
+    }
+
+    public List<LineItem> getLineitems() {
+        return lineitems;
+    }
+
+    public void setLineitems(List<LineItem> lineitems) {
+        this.lineitems = lineitems;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+    public long getTotalitems() {
+        return totalitems;
+    }
+
+    public void setTotalitems(long totalitems) {
+        this.totalitems = totalitems;
     }
 
     public static List<Picklist> picklistsFromJSON(String plJsonStr )
     {
-        List<Picklist> plArr = new ArrayList<Picklist>();
-        try
-        {
-            JSONArray plJsonArr = new JSONArray(plJsonStr);
-            for (int i = 0; i < plJsonArr.length(); i++)
-            {
-                JSONObject jsonPl = plJsonArr.getJSONObject(i);
-                plArr.add(new Picklist(LineItem.lineItemsFromJSON(jsonPl.getJSONArray(JSON_TAG_ITEMARR)),
-                        jsonPl.getLong(JSON_TAG_RECNUM),
-                        jsonPl.getString(JSON_TAG_CUSTJOB),
-                        jsonPl.getString(JSON_TAG_NUMBER),
-                        jsonPl.getString(JSON_TAG_DATE),
-                        jsonPl.getString(JSON_TAG_SHIPDATE),
-                        jsonPl.optInt(JSON_TAG_STATUS)));
+        try {
+            GsonBuilder builder = new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd");
+            Gson gson = builder.create();
+            Picklist[] objList = gson.fromJson(plJsonStr, Picklist[].class);
+            List<Picklist> picklists = new ArrayList<>();
+            for (int i = 0; i < objList.length; i++) {
+                picklists.add(objList[i]);
             }
+            gson = null;
+            builder = null;
+            return picklists;
         }
-        catch (JSONException ex)
+        catch (Exception exp)
         {
-            Log.e(LOG_TAG, ex.toString());
+            exp.printStackTrace();
         }
-        return plArr;
+
+        return null;
     }
 
+    public static Picklist picklistFromJSON(String plJsonStr )
+    {
+        try {
+              GsonBuilder builder = new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd");
+              Gson gson = builder.create();
+              Picklist objList = gson.fromJson(plJsonStr, Picklist.class);
+              gson = null;
+              builder = null;
+              return objList;
+        }
+        catch (Exception exp)
+        {
+            exp.printStackTrace();
+        }
 
-
+        return  null;
+    }
+    //chandan - Need to Decide
     public JSONObject toJSON() throws JSONException
     {
         JSONObject picklistJSON = new JSONObject();
-
-        picklistJSON.put(JSON_TAG_RECNUM, getRecnum());
-        picklistJSON.put(JSON_TAG_CUSTJOB, getName());
-        picklistJSON.put(JSON_TAG_NUMBER, getNumber());
-        picklistJSON.put(JSON_TAG_DATE, MSUtils.yyyyMMddFormat.format(getOrderDate()));
-        picklistJSON.put(JSON_TAG_SHIPDATE, MSUtils.yyyyMMddFormat.format(getShipDate()));
-        picklistJSON.put(JSON_TAG_STATUS, getStatus());
-
-        JSONArray lineItemsArray = new JSONArray();
-        for (LineItem line : mLines)
-        {
-            lineItemsArray.put(line.toJSON());
-        }
-
-        picklistJSON.put(JSON_TAG_ITEMARR, lineItemsArray);
-
         return picklistJSON;
     }
 
@@ -232,25 +318,27 @@ public class Picklist implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         try {
-           // dest.writeInt(getTotalItems());
-            dest.writeTypedArray(getLines().toArray(new LineItem[getLines().size()]), 0);
-            dest.writeString(getNote());
-            dest.writeLong(getRecnum());
-            dest.writeString(getNumber());
-            dest.writeInt(getStatus());
-            dest.writeSerializable(getOrderDate());
-            dest.writeSerializable(getShipDate());
+            dest.writeLong(getId());
+            dest.writeLong(getCompanyId());
+            dest.writeLong(getTaskType());
             dest.writeString(getName());
-
-       //     dest.writeString(MSUtils.yyyyMMddFormat.format(getOrderDate()));
-       //     dest.writeString(MSUtils.yyyyMMddFormat.format(getShipDate()));
-
+            dest.writeLong(getAssigneeId());
+            dest.writeLong(getCreatedById());
+            dest.writeInt(getStatus());
+            dest.writeLong(getSiteId());
+            dest.writeString(getNotes());
+            dest.writeString(String.valueOf(isShowNotes()));
+            dest.writeLong(getSyncToken());
+            dest.writeSerializable(getCreatedTimestamp());
+            dest.writeSerializable(getModifiedTimestamp());
+            dest.writeTypedArray(getLineitems().toArray(new LineItem[getLineitems().size()]), 0);
+            dest.writeString(String.valueOf(isDeleted()));
         }
         catch (Exception exp)
         {
-
+            exp.printStackTrace();
         }
-       //dest.writeTypedArray(getLines().toArray(new LineItem[getLines().size()]), 0);
+
     }
 
     public static final Parcelable.Creator<Picklist> CREATOR = new Parcelable.Creator<Picklist>() {
@@ -272,7 +360,7 @@ public class Picklist implements Parcelable {
         if (o instanceof Picklist)
         {
             Picklist rhs = (Picklist) o;
-            ret = rhs.mRecnum == this.mRecnum;
+            ret = rhs.id == this.id;
         }
 
         return ret;
@@ -281,7 +369,7 @@ public class Picklist implements Parcelable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 17 * hash + (int)this.mRecnum;
+        hash = 17 * hash + (int)this.id;
         return hash;
     }
 
@@ -291,14 +379,14 @@ public class Picklist implements Parcelable {
         db = new DatabaseHandler(context);
         for(int i =0 ; i<picklists.size() ; i++)
         {
-            if(db.PickListExists(picklists.get(i).getRecnum())) {
-                db.updatePickList(picklists.get(i), picklists.get(i).getRecnum());
-                UpdateLineItems(picklists.get(i).getLines(),picklists.get(i).getRecnum(),context);
+            if(db.PickListExists(picklists.get(i).getId())) {
+                db.updatePickList(picklists.get(i), picklists.get(i).getId());
+                UpdateLineItems(picklists.get(i).getLineitems(),picklists.get(i).getId(),context);
             }
             else
             {
                 db.addPickList(picklists.get(i));
-                StoreLineItem(picklists.get(i).getLines(), picklists.get(i).getRecnum(), context);
+                StoreLineItem(picklists.get(i).getLineitems(), picklists.get(i).getId(), context);
             }
         }
     }
@@ -330,7 +418,7 @@ public class Picklist implements Parcelable {
             db = new DatabaseHandler(context);
         for(int i=0; i<picklists.size();i++)
         {
-            DeleteLineItems(picklists.get(i).getRecnum(),context);
+            DeleteLineItems(picklists.get(i).getId(),context);
             db.deleteOnePicklist(picklists.get(i));
         }
     }

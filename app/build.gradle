@@ -24,7 +24,9 @@ android {
             debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            testCoverageEnabled true
+            testCoverageEnabled = true
+
+
         }
     }
 
@@ -51,6 +53,5 @@ dependencies {
     testCompile 'org.json:json:20140107'
     testCompile "org.mockito:mockito-core:2.0.57-beta"
     androidTestCompile 'junit:junit:4.12'
-
-
+    compile 'com.google.code.gson:gson:2.2.4'
 }

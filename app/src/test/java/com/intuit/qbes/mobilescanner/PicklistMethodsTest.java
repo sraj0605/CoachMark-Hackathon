@@ -24,29 +24,24 @@ public class PicklistMethodsTest {
     @Before
     public void setUp() {
 
-        picklist.setTotalItems(100);
-        picklist.setRecnum(1);
+        picklist.setId(1);
+        picklist.setCompanyId(1);
         picklist.setName("Picklist1");
-        picklist.setNumber("1");
-        picklist.setOrderDate("20160929");
-        picklist.setShipDate("20160929");
+        picklist.setTaskType(1);
+        picklist.setAssigneeId(12);
+        picklist.setCreatedById(12);
         picklist.setStatus(1);
-        picklist.setNote("TestNote");
-        picklist.setTotalItems(100);
-
+        picklist.setSiteId(1);
+        picklist.setNotes("notes");
+        picklist.setShowNotes(true);
+        picklist.setSyncToken(1);
+        picklist.setDeleted(true);
     }
 
     @Test
     public void TestPicklist() throws Exception {
 
-        assertEquals(picklist.getNote(), "TestNote");
-        assertEquals(picklist.getTotalItems(), 100);
-        assertEquals(picklist.getRecnum(), 1);
-        assertEquals(picklist.getName(), "Picklist1");
-        assertEquals(picklist.getNumber(), "1");
-     //   assertEquals(picklist.getOrderDate().toString(), "Thu Sep 29 00:00:00 IST 2016");
-     //   assertEquals(picklist.getShipDate().toString(), "Thu Sep 29 00:00:00 IST 2016");
-        assertEquals(picklist.getStatus(), 1);
+
 
 
     }

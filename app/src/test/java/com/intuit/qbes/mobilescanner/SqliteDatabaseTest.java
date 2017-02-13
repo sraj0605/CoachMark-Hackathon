@@ -15,6 +15,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,9 +50,9 @@ public class SqliteDatabaseTest {
                 .get();
 
         db = new DatabaseHandler(activity);
-        lineitem  = new LineItem(1, "Redmi2", "pick it", "8901238910005", "",1,"1", 10.2, 0, 3, "abc", "_",110,NOTPICKED,null);
+        lineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",NOTPICKED);
         LineItems.add(0,lineitem);
-        picklist = new Picklist(LineItems, 1, "Picklist1", "1", "20160929", "20160929", 1);
+        picklist = new Picklist(1, 1,1, "Picklist1",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",LineItems,"false");
 
     }
 
@@ -74,7 +75,7 @@ public class SqliteDatabaseTest {
     public void test_updatepicklist () throws Exception
     {
 
-        Picklist testpicklist = new Picklist(LineItems, 1, "PicklistTest", "1", "20160929", "20160929", 1);
+        Picklist testpicklist = new Picklist(1, 1,1, "PicklistTest",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",LineItems,"false");
         db.addPickList(picklist);
         db.updatePickList(testpicklist,1);
         picklists =  db.allPickLists();
@@ -112,13 +113,16 @@ public class SqliteDatabaseTest {
     @Test
     public void test_updatelineitems()
     {
-        LineItem testlineitem = new LineItem(1, "TestItem", "pick it", "8901238910005", "",1,"1", 10.2, 0, 3, "abc", "_",110,NOTPICKED,null);
-        db.addLineItem(lineitem,1);
+        ArrayList<String> serialnum = new ArrayList<>();
+        serialnum.add("ser1");
+        serialnum.add("ser2");
+        LineItem testlineitem = new LineItem(1,1,1,"TestItem","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnum,"true","true","false",NOTPICKED);
+        db.addLineItem(testlineitem,1);
 
         db.updateLineItems(testlineitem,1);
         LineItems = db.allLineItems(1);
 
-        Assert.assertEquals(LineItems.get(0).getName(),"TestItem");
+        Assert.assertEquals(LineItems.get(0).getItemName(),"TestItem");
 
 
     }
