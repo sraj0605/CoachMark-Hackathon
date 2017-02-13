@@ -178,7 +178,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     public void onStart() {
         super.onStart();
         //chandan - There can be case when serial number aarray will be null hence putting null check
-        if(mlineItem.getSerialLotNumbers() != null) {
+        if(mlineItem.getSerialLotNumbers() != null && mlineItem.getBarcodeEntered()!= null) {
             if (mlineItem.getSerialLotNumbers().size() > 0 && mlineItem.getBarcodeEntered().isEmpty())
                 showUPCDialog();
         }

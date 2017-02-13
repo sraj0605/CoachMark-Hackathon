@@ -360,7 +360,7 @@ public class LineItem implements Parcelable {
             showSerialNo = Boolean.valueOf(in.readString());
             showLotNo = Boolean.valueOf(in.readString());
             mItemStatus = Status.valueOf(in.readString());
-
+            barcodeEntered = in.readString();
         }
         catch(Exception exp)
         {
@@ -444,6 +444,7 @@ public class LineItem implements Parcelable {
             dest.writeString(String.valueOf(isShowSerialNo()));
             dest.writeString(String.valueOf(isShowLotNo()));
             dest.writeString((mItemStatus == null) ? "" : mItemStatus.name());
+            dest.writeString(String.valueOf(getBarcodeEntered()));
         }
         catch (Exception exp)
         {
