@@ -409,7 +409,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
             else if(item.getmItemStatus() == Status.NOTPICKED)
                 mPickOrNonPickImage.setImageResource(R.drawable.ic_notpicked_test);
             else if(item.getmItemStatus() == Status.PARTIALPICKED)
-                mPickOrNonPickImage.setImageResource(R.drawable.ic_action_partial);
+                mPickOrNonPickImage.setImageResource(R.mipmap.ic_partialpicked);
             else
                 mPickOrNonPickImage.setImageResource(R.drawable.ic_notpicked_test);
 
