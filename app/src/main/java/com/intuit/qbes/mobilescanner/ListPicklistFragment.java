@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.networking.AppController;
+import com.intuit.qbes.mobilescanner.networking.DataSync;
 import com.intuit.qbes.mobilescanner.networking.PicklistHttp;
 import com.symbol.emdk.barcode.ScannerConfig;
 
@@ -49,7 +51,9 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     private List<Picklist> dummyPicklists = null;
     private ProgressDialog mProgressDialog;
     private DatabaseHandler db;
+    private DataSync dataSync = null;
     private List<LineItem> lineitems = null;
+    private static final String fetchTAG = "Fetch";
     private ArrayList<String> serialnos1 = new ArrayList<String>();
     private ArrayList<String> serialnos2 = new ArrayList<String>();
     private ArrayList<String> serialnos3 = new ArrayList<String>();
@@ -131,6 +135,16 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        if(AppController.getInstance().getRequestQueue()!=null)
+        {
+            AppController.getInstance().getRequestQueue().cancelAll(fetchTAG);
+        }
+    }
+
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_list_picklist, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -149,6 +163,8 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
 
             case R.id.action_sync:
                // fetchPicklists();
+                dataSync = new DataSync();
+                dataSync.FetchPicklists(getContext());
                 break;
 
             case android.R.id.home:

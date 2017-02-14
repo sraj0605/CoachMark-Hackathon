@@ -209,7 +209,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<LineItem> allLineItems(long id) {
 
         List<LineItem> mLineItems = new LinkedList<LineItem>();
-        String query = "SELECT  * FROM " + TABLE_LINEITEMINFO_NAME + " where " + "extId" + " = " + id;
+        String query = "SELECT  * FROM " + TABLE_LINEITEMINFO_NAME + " where " + "taskId" + " = " + id;
         Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE,null,query,null,null);
         LineItem mLineItem = null;
 
@@ -228,7 +228,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     mLineItem.setTxnDate(MSUtils.yyyyMMddFormat.parse((cursor.getString(8))));
                     mLineItem.setTxnDate(MSUtils.yyyyMMddFormat.parse((cursor.getString(9))));
                     mLineItem.setNotes(cursor.getString(10));
-                    mLineItem.setmItemStatus(LineItem.Status.values()[cursor.getInt(11)]);
+                    mLineItem.setmItemStatus( LineItem.Status.valueOf(cursor.getString(11)));
                     mLineItem.setUom(cursor.getString(12));
                     mLineItem.setQtyToPick(cursor.getDouble(13));
                     mLineItem.setQtyPicked(cursor.getDouble(14));

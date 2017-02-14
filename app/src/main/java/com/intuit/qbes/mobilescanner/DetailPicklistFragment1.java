@@ -2,6 +2,7 @@ package com.intuit.qbes.mobilescanner;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
@@ -19,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -31,6 +34,8 @@ import com.intuit.qbes.mobilescanner.barcode.DeviceManager;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.model.LineItem.Status;
+import com.intuit.qbes.mobilescanner.networking.AppController;
+import com.intuit.qbes.mobilescanner.networking.DataSync;
 import com.intuit.qbes.mobilescanner.networking.PicklistHttp;
 
 import org.json.JSONException;
@@ -60,6 +65,8 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
 
     private RecyclerView mRecyclerView;
     private LineItemAdapter mAdapter = null;
+    private static final String updateTAG = "Update";
+
 
     private Picklist mPicklist = null;
     private DetailPicklistFragment1.Callbacks mCallbacks;
@@ -67,15 +74,19 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
     private BarcodeFactory mBarcodeFactory = null;
     private BarcodeScannerDevice mBarcodeScannerDevice = null;
 
+    private DataSync dataSync = null;
+
+
     private DeviceManager mDeviceManager = null;
 
     private RelativeLayout mLayoutForFilter;
     private RelativeLayout mLayoutForSort;
     private ImageView mReverseSortingOption;
+    private Button mSync;
+    private Button mComplete;
     private TextView mSortOrderSelection;
 
 
-    private ProgressDialog mProgressDialog;
     private DatabaseHandler db = null;
     private List<LineItem> lineitems = null;
 
@@ -84,6 +95,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         void onLineItemSelected(LineItem selectedLineItem,String barcodeEntered);
         void onPicklistSaved(Integer responseCode, Picklist picklist);
         void onBarcodeReady();
+        void onPicklistComplete();
     }
 
     public static DetailPicklistFragment1 newInstance(Picklist picklist)
@@ -145,8 +157,12 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         mLayoutForSort = (RelativeLayout) view.findViewById(R.id.sortlayout);
         mReverseSortingOption = (ImageView) view.findViewById(R.id.sorticon);
         mSortOrderSelection = (TextView)view.findViewById(R.id.sortbyselection);
+        mSync = (Button)view.findViewById(R.id.update_sync);
+        mComplete = (Button)view.findViewById(R.id.update_complete);
         //mLayoutForFilter = (RelativeLayout)view.findViewById(R.id.filter);
         //chandan - is there any chances of above variables getting null,dont think so
+        mComplete.setOnClickListener(this);
+        mSync.setOnClickListener(this);
         mLayoutForSort.setOnClickListener(this);
         mReverseSortingOption.setOnClickListener(this);
         mSortOrderSelection.setOnClickListener(this);
@@ -211,26 +227,26 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
     //@callback from sorting Dialog fragment
     @Override
     public void onSortingOptionSelection(SortFilterOption userSelection) {
-    if(mSortOrderSelection!=null && mAdapter!=null) {
-    switch (userSelection) {
+        if(mSortOrderSelection!=null && mAdapter!=null) {
+            switch (userSelection) {
 
-        case Items:
-            mSortOrderSelection.setText("Items");
-            break;
-        case Location:
-            mSortOrderSelection.setText("Locations");
-            break;
-        case SalesOrder:
-            mSortOrderSelection.setText("SalesOrder");
-            break;
-        case Status:
-            mSortOrderSelection.setText("Status");
-            break;
+                case Items:
+                    mSortOrderSelection.setText("Items");
+                    break;
+                case Location:
+                    mSortOrderSelection.setText("Locations");
+                    break;
+                case SalesOrder:
+                    mSortOrderSelection.setText("SalesOrder");
+                    break;
+                case Status:
+                    mSortOrderSelection.setText("Status");
+                    break;
 
-    }
+            }
 
-    mAdapter.sortDataSetByUserOption(userSelection, false);
-}
+            mAdapter.sortDataSetByUserOption(userSelection, false);
+        }
     }
 ///@Filter - in future we can enable this
    /* @Override
@@ -281,7 +297,10 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
     @Override
     public void onStop() {
         super.onStop();
-
+        if(AppController.getInstance().getRequestQueue()!=null)
+        {
+            AppController.getInstance().getRequestQueue().cancelAll(updateTAG);
+        }
     }
 
     @Override
@@ -310,6 +329,16 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
                 break;
             }
 
+            case R.id.update_sync:
+            {
+                savePicklist(mPicklist);
+                break;
+            }
+            case R.id.update_complete:
+            {
+                CompleteList_Dialog();
+                break;
+            }
             /*case R.id.filter:
             {
                 FragmentManager fm = getFragmentManager();
@@ -361,11 +390,11 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         //mAdapter.sortDataSetByUserOption(SortFilterOption.Status,false);
     }
 
-    /*private void savePicklist()
+    private void savePicklist(Picklist picklist)
     {
-        mProgressDialog = ProgressDialog.show(getActivity(), "", "Updating Picklist");
-        new UpdatePicklistTask().execute(mPicklist);
-    }*/
+        dataSync = new DataSync();
+        dataSync.UpdatePicklist(picklist,getContext());
+    }
 
     private class LineItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -440,7 +469,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         {
 
             mLineItems = lineItems;//This is to keep track of last sort opton done on dataset,which will be helpful in removing filter
-           // originalLineItems = lineItems;//This is only for filter
+            // originalLineItems = lineItems;//This is only for filter
         }
 
         @Override
@@ -479,13 +508,11 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
             this.filterOption = filterOption;
             getFilter().filter(strToFilter);
         }
-
         public void RemoveFilter(SortFilterOption sortingOption)
         {
             mLineItems = originalLineItems;
             sortDataSetByUserOption(sortOption,false);
         }
-
         @Override
         public Filter getFilter() {
             return new Filter() {
@@ -498,22 +525,17 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
                         //provide your custom logic
                         filteredResults = getFilteredResults(charSequence.toString().toLowerCase(),filterOption);
                     }
-
                     FilterResults results = new FilterResults();
                     results.values = filteredResults;
-
                     return results;
                 }
-
                 @Override
                 protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
                     mLineItems = (List<LineItem>) filterResults.values;
                     notifyDataSetChanged();
-
                 }
             };
         }
-
         protected List<LineItem> getFilteredResults(String constraint,SortFilterOption sortingOption) {
             List<LineItem> results = new ArrayList<>();
             switch (sortingOption)
@@ -525,7 +547,6 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
                             results.add(item);
                         }
                     }
-
                 }
                 case Location:
                 {
@@ -559,13 +580,10 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
     }
 
     /*private class UpdatePicklistTask extends AsyncTask<Picklist, Void, Integer> {
-
         @Override
         protected Integer doInBackground(Picklist... params) {
-
             Picklist picklist = params[0];
             int responseCode = -1;
-
             try {
                 String result = "";
                 picklist.setStatus(2);
@@ -574,7 +592,6 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
                         putUrlString(String.format("%s/picklists/%d",
                                 MSUtils.getServerUrl(getActivity()),
                                 picklist.getId()), picklistJSONStr, result);
-
                 if (responseCode != 201 && responseCode != 200)
                 {
                     Log.e(LOG_STR, result);
@@ -590,10 +607,8 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
                 Log.e(LOG_STR, "Failed to update picklist");
                 Log.e(LOG_STR, ioe.toString());
             }
-
             return responseCode;
         }
-
         @Override
         protected void onPostExecute(Integer response) {
             super.onPostExecute(response);
@@ -605,7 +620,24 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         }
     }*/
 
+    public void CompleteList_Dialog()
+    {
 
+        new AlertDialog.Builder(getContext())
+                .setMessage("Are you sure you want to complete this picklist?")
+                .setPositiveButton(R.string.Yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Check if any item is not completely picked and complete or show discrepency screen accordingly.
+                        db.deleteOnePicklist(mPicklist);
+                        mCallbacks.onPicklistComplete();
+                    }
+                })
+                .setNegativeButton(R.string.No, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .show();
+
+    }
 }
-
-

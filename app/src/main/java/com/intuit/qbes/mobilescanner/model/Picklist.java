@@ -296,7 +296,7 @@ public class Picklist implements Parcelable {
           return objList;
     }
 
-    public String JSONStringFromPicklist(Picklist picklist)
+    public static String JSONStringFromPicklist(Picklist picklist)
     {
         GsonBuilder builder = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd");

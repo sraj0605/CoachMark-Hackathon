@@ -57,6 +57,12 @@ public class DetailPicklistActivity extends SingleFrameActivity implements Detai
     }
 
     @Override
+    public void onPicklistComplete() {
+        Intent intent = new Intent(this, PicklistCompleteActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK)
             return;
