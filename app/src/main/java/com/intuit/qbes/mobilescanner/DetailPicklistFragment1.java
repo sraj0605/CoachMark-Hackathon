@@ -269,7 +269,6 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         catch (Exception exp)
         {
             exp.printStackTrace();
-            throw new RuntimeException(exp.getMessage().toString());
         }
     }
 
