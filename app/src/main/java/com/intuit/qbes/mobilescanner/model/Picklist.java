@@ -59,7 +59,7 @@ public class Picklist implements Parcelable {
     private Date modifiedTimestamp;
     private List<LineItem> lineitems = null;
     private boolean deleted;
-    private long totalitems;
+    private transient long totalitems;
 
     //This Constructor is for Creating Dummy PickList
     public Picklist() {
@@ -303,11 +303,25 @@ public class Picklist implements Parcelable {
 
         return  null;
     }
-    //chandan - Need to Decide
-    public JSONObject toJSON() throws JSONException
+
+    public String JSONStringFromPicklist(Picklist picklist)
     {
-        JSONObject picklistJSON = new JSONObject();
-        return picklistJSON;
+        GsonBuilder builder = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd");
+        Gson gson = builder.create();
+        String jsonString = gson.toJson(picklist);
+
+        return jsonString;
+    }
+
+    public String JSONStringArrayFromPicklistArray(List<Picklist> picklists)
+    {
+        GsonBuilder builder = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd");
+        Gson gson = builder.create();
+        String jsonString = gson.toJson(picklists);
+
+        return jsonString;
     }
 
     @Override
@@ -333,6 +347,7 @@ public class Picklist implements Parcelable {
             dest.writeSerializable(getModifiedTimestamp());
             dest.writeTypedArray(getLineitems().toArray(new LineItem[getLineitems().size()]), 0);
             dest.writeString(String.valueOf(isDeleted()));
+
         }
         catch (Exception exp)
         {

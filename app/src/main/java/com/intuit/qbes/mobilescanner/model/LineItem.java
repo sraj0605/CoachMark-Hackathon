@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import com.intuit.qbes.mobilescanner.MSUtils;
 
 import org.json.JSONArray;
@@ -48,9 +49,13 @@ public class LineItem implements Parcelable {
     private String notes;
     public enum Status
     {
+        @SerializedName("0")
         NOTAVAILABLE,
+        @SerializedName("1")
         NOTPICKED,
+        @SerializedName("2")
         PARTIALPICKED,
+        @SerializedName("3")
         PICKED
 
     }
@@ -65,8 +70,9 @@ public class LineItem implements Parcelable {
     private boolean deleted;
     private boolean showSerialNo;
     private  boolean showLotNo;
+    @SerializedName("status")
     private Status mItemStatus;
-    private String barcodeEntered;
+    private transient String barcodeEntered;
 
     public long getTaskId() {
         return taskId;
@@ -405,12 +411,24 @@ public class LineItem implements Parcelable {
         }
         return lineItems;
     }
-
-    //Need to see
-    public JSONObject toJSON() throws JSONException
+    public String JSONStringFromLineitem(LineItem lineItem)
     {
-        JSONObject json = new JSONObject();
-        return json;
+        GsonBuilder builder = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd");
+        Gson gson = builder.create();
+        String jsonString = gson.toJson(lineItem);
+
+        return jsonString;
+    }
+
+    public String JSONStringArrayFromPicklistArray(List<LineItem> lineItems)
+    {
+        GsonBuilder builder = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd");
+        Gson gson = builder.create();
+        String jsonString = gson.toJson(lineItems);
+
+        return jsonString;
     }
 
     @Override
