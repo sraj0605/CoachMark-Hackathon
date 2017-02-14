@@ -81,10 +81,6 @@ public class ApplicationContentProvider extends ContentProvider{
         {
             Log.e("ContentProvider",exp.getMessage().toString());
         }
-        catch (Exception exp)
-        {
-            exp.printStackTrace();
-        }
         return rowsUpdated;
     }
 
@@ -115,10 +111,6 @@ public class ApplicationContentProvider extends ContentProvider{
         catch (SQLiteException exp)
         {
             Log.e("ContentProvider",exp.getMessage().toString());
-        }
-        catch (Exception exp)
-        {
-            exp.printStackTrace();
         }
 
         return ret;
@@ -162,10 +154,6 @@ public class ApplicationContentProvider extends ContentProvider{
         catch (SQLiteException exp)
         {
             Log.e("ContentProvider",exp.getMessage().toString());
-        }
-        catch (Exception exp)
-        {
-            exp.printStackTrace();
         }
         return rowsDeleted;
     }

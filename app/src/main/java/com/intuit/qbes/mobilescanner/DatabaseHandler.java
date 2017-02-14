@@ -131,11 +131,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             exp.printStackTrace();
         }
 
-        catch (Exception exp)
-        {
-            exp.printStackTrace();
-        }
-
         return mPickLists;
     }
 
@@ -157,7 +152,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getModifiedTimestamp()));
             myCR.insert(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE, values);
         }
-        catch (Exception exp)
+        catch (IllegalArgumentException exp)
         {
             exp.printStackTrace();
         }
@@ -184,7 +179,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             myCR.update(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE, values, whereClause, null);
         }
-        catch (Exception exp)
+        catch (IllegalArgumentException exp)
         {
             exp.printStackTrace();
         }
@@ -309,7 +304,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(KEY_SERIALOTNUMBBER, serialNumberList);
             myCR.insert(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE, values);
         }
-        catch (Exception exp)
+        catch (IllegalArgumentException exp)
         {
             exp.printStackTrace();
         }
@@ -346,7 +341,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             String whereClause = "id = " + String.valueOf(lineItem.getId());
             myCR.update(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE, values, whereClause, null);
         }
-        catch (Exception exp)
+        catch (IllegalArgumentException exp)
         {
             exp.printStackTrace();
         }

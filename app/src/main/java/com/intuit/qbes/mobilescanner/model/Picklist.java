@@ -287,21 +287,13 @@ public class Picklist implements Parcelable {
 
     public static Picklist picklistFromJSON(String plJsonStr )
     {
-        try {
-              GsonBuilder builder = new GsonBuilder()
-                    .setDateFormat("yyyy-MM-dd");
-              Gson gson = builder.create();
-              Picklist objList = gson.fromJson(plJsonStr, Picklist.class);
-              gson = null;
-              builder = null;
-              return objList;
-        }
-        catch (Exception exp)
-        {
-            exp.printStackTrace();
-        }
-
-        return  null;
+          GsonBuilder builder = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd");
+          Gson gson = builder.create();
+          Picklist objList = gson.fromJson(plJsonStr, Picklist.class);
+          gson = null;
+          builder = null;
+          return objList;
     }
 
     public String JSONStringFromPicklist(Picklist picklist)
@@ -390,7 +382,7 @@ public class Picklist implements Parcelable {
 
     public static void StorePickList(List<Picklist> picklists, Context context)
     {
-        if(db!= null)
+        if(db == null)
         db = new DatabaseHandler(context);
         for(int i =0 ; i<picklists.size() ; i++)
         {
@@ -408,7 +400,7 @@ public class Picklist implements Parcelable {
 
     public static void StoreLineItem(List<LineItem> lineitems, long id, Context context)
     {
-        if(db!= null)
+        if(db == null)
         db = new DatabaseHandler(context);
         for(int i =0 ; i<lineitems.size() ; i++)
         {
@@ -419,7 +411,7 @@ public class Picklist implements Parcelable {
 
     public static void UpdateLineItems(List<LineItem> lineitems, long id,  Context context)
     {
-        if(db!= null)
+        if(db == null)
             db = new DatabaseHandler(context);
         for(int i =0 ; i<lineitems.size() ; i++)
         {
@@ -429,7 +421,7 @@ public class Picklist implements Parcelable {
 
     public void DeletePicklists(List<Picklist> picklists, Context context)
     {
-        if(db!= null)
+        if(db == null)
             db = new DatabaseHandler(context);
         for(int i=0; i<picklists.size();i++)
         {
@@ -440,7 +432,7 @@ public class Picklist implements Parcelable {
 
     public void DeleteLineItems(long recnum, Context context)
     {
-        if(db!= null)
+        if(db == null)
             db = new DatabaseHandler(context);
         db.deleteLineItems(recnum);
     }

@@ -191,7 +191,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
     public void onStart() {
         super.onStart();
 
-        if(db != null)
+        if(db == null)
             db = new DatabaseHandler(getActivity().getApplicationContext());
         if(lineitems == null)
             lineitems = mPicklist.getLineitems();
@@ -269,6 +269,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         catch (Exception exp)
         {
             exp.printStackTrace();
+            throw new RuntimeException(exp.getMessage().toString());
         }
     }
 
