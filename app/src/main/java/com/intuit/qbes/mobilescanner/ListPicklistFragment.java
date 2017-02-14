@@ -8,28 +8,23 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.networking.AppController;
 import com.intuit.qbes.mobilescanner.networking.DataSync;
-import com.intuit.qbes.mobilescanner.networking.PicklistHttp;
-import com.symbol.emdk.barcode.ScannerConfig;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTAVAILABLE;
 import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.PICKED;
 
 
 /**
