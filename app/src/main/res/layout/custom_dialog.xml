@@ -16,7 +16,7 @@
         <Button
             android:text="@string/OK"
             android:id="@+id/btnOk"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:layout_below="@+id/alert_msg2"
@@ -30,7 +30,7 @@
             android:id="@+id/alert_msg2"
             android:layout_width="match_parent"
             android:layout_marginTop="6dp"
-            android:layout_marginLeft="60dp"
+            android:layout_marginLeft="40dp"
             android:layout_below="@+id/alert_msg1"
             />
 
@@ -41,7 +41,7 @@
             android:id="@+id/alert_msg1"
             android:layout_width="match_parent"
             android:layout_marginTop="3dp"
-            android:layout_marginLeft="60dp"
+            android:layout_marginLeft="40dp"
             android:textStyle="bold"
             android:layout_below="@+id/imgAlert"
             />
