@@ -1,11 +1,14 @@
 package com.intuit.qbes.mobilescanner;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -269,6 +273,47 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         else
         {
             //chandan- scanned barcode is not available in list
+            //sunder - Added Code for - QBWG-41184
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+
+                    final Dialog openDialog = new Dialog(getContext());
+
+                  /* if (openDialog != null) {
+                        final int dividerId = openDialog.getContext().getResources()
+                                .getIdentifier("android:id/titleDivider", null, null);
+                        View divider = openDialog.findViewById(dividerId);
+                        if  (divider != null) {
+                            divider.setBackground(null);
+                        }
+                    }*/
+                    openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                    openDialog.setContentView(R.layout.custom_dialog);
+                    ImageView dialogImage = (ImageView) openDialog.findViewById(R.id.imgAlert);
+                    TextView dialogTextContent = (TextView) openDialog.findViewById(R.id.alert_msg1);
+                    TextView dialogTextContent2 = (TextView) openDialog.findViewById(R.id.alert_msg2);
+                    Button dialogCloseButton = (Button) openDialog.findViewById(R.id.btnOk);
+                    dialogCloseButton.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+
+                        public void onClick(View v) {
+
+
+                            openDialog.dismiss();
+
+                        }
+
+                    });
+
+                    openDialog.show();
+
+                }
+
+
+            });
+
         }
 
     }
