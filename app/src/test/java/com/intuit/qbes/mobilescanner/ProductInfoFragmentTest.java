@@ -104,7 +104,7 @@ public class ProductInfoFragmentTest{
     public void test_UI_Control_Validation_Against_Model()
     {
         view = productInfoFragment.getView();
-        EditText mUPC_Value =   (EditText)view.findViewById(R.id.item_upc) ;
+        TextView mUPC_Value =   (TextView)view.findViewById(R.id.item_upc) ;
         TextView mUPC_Header = (TextView)view.findViewById(R.id.UPC_code);
         TextView mSNO_Header = (TextView)view.findViewById(R.id.SNO);
         TextView mLocationHeader = (TextView)view.findViewById(R.id.location);

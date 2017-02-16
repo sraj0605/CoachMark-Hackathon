@@ -212,16 +212,14 @@
         android:id="@+id/UPC_code" />
 
 
-       <EditText
+       <TextView
            app:layout_widthPercent = "30%"
         android:layout_height="wrap_content"
            android:textSize="12dp"
            android:layout_below="@+id/UPC_code"
-           android:maxLines="1"
-        android:layout_marginLeft="10dp"
-        android:hint="Enter UPC Code"
+           android:layout_marginLeft="10dp"
            android:textColorHint="#d3d3cd"
-           android:background="@android:color/transparent"
+           android:hint="Enter UPC Code"
            android:id="@+id/item_upc" />
 
   <!-- </android.support.design.widget.TextInputLayout> -->

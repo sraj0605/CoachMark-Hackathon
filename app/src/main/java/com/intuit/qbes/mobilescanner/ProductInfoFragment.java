@@ -63,7 +63,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     private TextView mSerialView;
     private TextView mUPC_ErrorText;
     private View mUPC_background;
-    private EditText mUPC_Value;
+    private TextView mUPC_Value;
     private TextView mUPC_Header;
     private TextView mSNO_Header;
     private TextView mLocationHeader;
@@ -128,7 +128,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
         mDecrement = (ImageView)view.findViewById(R.id.decrease);
 
-        mUPC_Value =   (EditText)view.findViewById(R.id.item_upc) ;
+        mUPC_Value =   (TextView)view.findViewById(R.id.item_upc) ;
 
         mUPC_Header = (TextView)view.findViewById(R.id.UPC_code);
 
@@ -168,7 +168,9 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
         mQty_picked.addTextChangedListener(this);
 
-        mUPC_Value.addTextChangedListener(this);
+       // mUPC_Value.addTextChangedListener(this);
+
+        mUPC_Value.setOnClickListener(this);
 
         return view;
 
@@ -341,24 +343,6 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
         }
 
-        else if(mUPC_Value.getText().hashCode() == editable.hashCode())
-        {
-            if(!mlineItem.getBarcode().isEmpty()) {
-
-                if (!mUPC_Value.getText().toString().isEmpty()) {
-                    mUPC_background.setVisibility(view.GONE);
-                    mUPC_ErrorText.setVisibility(view.GONE);
-
-                } else if (mUPC_Value.getText().toString().isEmpty() && ((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSerialLotNumbers().size() > 0))) {
-                    mUPC_background.setVisibility(view.VISIBLE);
-                    mUPC_ErrorText.setVisibility(view.VISIBLE);
-
-                }
-            }
-            mlineItem.setBarcodeEntered(mUPC_Value.getText().toString());
-
-        }
-
 
     }
 
@@ -461,7 +445,11 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
                 updateItemStatus();
                 GotoDetailPicklist();
                 break;
+            case R.id.item_upc :
 
+                showUPCDialog();
+
+                break;
 
         }
 
@@ -713,9 +701,27 @@ public boolean noDecimal(double val)
                     mlineItem = data.getParcelableExtra("lineitem");
                     if(!mlineItem.getBarcodeEntered().isEmpty())
                         mUPC_Value.setText(mlineItem.getBarcodeEntered());
+                         UPC_ErrorCheck();
                 }
                 break;
         }
+    }
+
+    public void UPC_ErrorCheck()
+    {
+        if(!mlineItem.getBarcode().isEmpty()) {
+
+            if (!mUPC_Value.getText().toString().isEmpty()) {
+                mUPC_background.setVisibility(view.GONE);
+                mUPC_ErrorText.setVisibility(view.GONE);
+
+            } else if (mUPC_Value.getText().toString().isEmpty() && ((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSerialLotNumbers().size() > 0))) {
+                mUPC_background.setVisibility(view.VISIBLE);
+                mUPC_ErrorText.setVisibility(view.VISIBLE);
+
+            }
+        }
+        mlineItem.setBarcodeEntered(mUPC_Value.getText().toString());
     }
 }
 
