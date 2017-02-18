@@ -26,7 +26,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String TABLE_PICKLISTINFO_NAME = "PickListInfo";
     public static final String TABLE_LINEITEMINFO_NAME = "LineItemInfo";
 
-//Table - 1
+    //Table - 1
     private static final String KEY_ID = "id";
     private static final String KEY_COMPANYID = "companyId";
     private static final String KEY_TASKTYPE = "taskType";
@@ -64,6 +64,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_BINEXTID = "binExtId";
     private static final String KEY_CUSTOMFIELD = "customFields";
     private static final String KEY_SERIALOTNUMBBER = "serialLotNumbers";
+    private static final String KEY_SERIANUMBER = "showSerialNo";
+    private static final String KEY_LOTNUMBER = "showLotNo";
+
 
     //Context object
     private ContentResolver myCR = null;
@@ -80,7 +83,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         //need to change
         db.execSQL("create table LineItemInfo " +
-                "(id long, taskId long,extId long,itemName text,itemDesc text,lineitemPos long,docNum text,txnId long,txnDate text,shipDate text,notes text,status int, uom text,qtyToPick real, qtyPicked real,barcode text,binLocation text,binExtId long,customFields text,serialLotNumbers text)");
+                "(id long, taskId long,extId long,itemName text,itemDesc text,lineitemPos long,docNum text,txnId long,txnDate text,shipDate text,notes text,status int, uom text,qtyToPick real, qtyPicked real,barcode text,binLocation text,binExtId long,customFields text,serialLotNumbers text, showSerialNo boolean, showLotNo boolean)");
 
     }
 
@@ -241,6 +244,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     if(serialNumber != null)
                         serialNumberArray = convertStringToArray(serialNumber);
                     mLineItem.setSerialLotNumbers(serialNumberArray);
+                    mLineItem.setShowSerialNo(Boolean.parseBoolean(cursor.getString(20)));
+                    mLineItem.setShowLotNo(Boolean.parseBoolean(cursor.getString(21)));
                     mLineItems.add(mLineItem);
                 }
                 catch (ParseException exp)
@@ -302,6 +307,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             if (lineItem.getSerialLotNumbers() != null)
                 serialNumberList = convertArrayToString(lineItem.getSerialLotNumbers());
             values.put(KEY_SERIALOTNUMBBER, serialNumberList);
+            values.put(KEY_SERIANUMBER,String.valueOf(lineItem.isShowSerialNo()));
+            values.put(KEY_LOTNUMBER,String.valueOf(lineItem.isShowLotNo()));
             myCR.insert(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE, values);
         }
         catch (IllegalArgumentException exp)
@@ -338,6 +345,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             if (lineItem.getSerialLotNumbers() != null)
                 serialNumberList = convertArrayToString(lineItem.getSerialLotNumbers());
             values.put(KEY_SERIALOTNUMBBER, serialNumberList);
+            values.put(KEY_SERIANUMBER,String.valueOf(lineItem.isShowSerialNo()));
+            values.put(KEY_LOTNUMBER,String.valueOf(lineItem.isShowLotNo()));
             String whereClause = "id = " + String.valueOf(lineItem.getId());
             myCR.update(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE, values, whereClause, null);
         }

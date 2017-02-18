@@ -15,6 +15,7 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.intuit.qbes.mobilescanner.DatabaseHandler;
+import com.intuit.qbes.mobilescanner.ListPicklistFragment;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 
@@ -34,16 +35,22 @@ public class DataSync {
     private String fetchTAG  = "Fetch";
     private List<Picklist> mPicklists = new ArrayList<>();
     private ProgressDialog mProgressDialog;
+    private DataSyncCallback mCallback;
 
+
+
+    public interface DataSyncCallback {
+        void onFetchPicklist(List<Picklist> mPicklists);
+    }
 
 
     public void UpdatePicklist(Picklist mPicklist, Context context)
     {
-        init_dialog(context);
+      //  init_dialog(context);
 
         try {
-            showDialog();
-            String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/35?merge=true";
+     //       showDialog();
+            String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/98?merge=true";
          //   String URL = "https://posttestserver.com/post.php";
             final String picklistJSONStr = Picklist.JSONStringFromPicklist(mPicklist);
 
@@ -51,13 +58,13 @@ public class DataSync {
                 @Override
                 public void onResponse(String response) {
                     Log.i("VOLLEY", response);
-                    hideDialog();
+      //              hideDialog();
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.e("VOLLEY", error.toString());
-                    hideDialog();
+      //              hideDialog();
                 }
             }) {
                 @Override
@@ -98,13 +105,13 @@ public class DataSync {
         }
     }
 
-    public void FetchPicklists(final Context context)
+    public void FetchPicklists(final Context context, final DataSyncCallback callback)
     {
-        init_dialog(context);
+     //   init_dialog(context);
 
         try {
-            showDialog();
-            String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/35";
+     //       showDialog();
+            String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/98";
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                     new Response.Listener<String>() {
@@ -113,14 +120,16 @@ public class DataSync {
                             // Display the first 500 characters of the response string.
                             try {
                                 mPicklists.add(Picklist.picklistFromJSON(response));
-                                Picklist.StorePickList(mPicklists, context);
+                              //  Picklist.StorePickList(mPicklists, context);
+                                mCallback = callback;
+                                mCallback.onFetchPicklist(mPicklists);
 
                             } catch (Exception e) {
 
                                 Log.d("Error:", e.getMessage());
 
                             }
-                            hideDialog();
+         //                   hideDialog();
                         }
                     }, new Response.ErrorListener() {
                 @Override
@@ -128,7 +137,7 @@ public class DataSync {
                     VolleyLog.d("Response", "Error: " + error.getMessage());
                     Toast.makeText(context,
                             error.getMessage(), Toast.LENGTH_SHORT).show();
-                    hideDialog();
+        //            hideDialog();
                 }
             });
 
@@ -146,7 +155,7 @@ public class DataSync {
         }
     }
 
-    private void init_dialog(Context context)
+  /*  private void init_dialog(Context context)
     {
         mProgressDialog = new ProgressDialog(context);
         mProgressDialog.setMessage("Updating Information...");
@@ -162,5 +171,5 @@ public class DataSync {
         if (mProgressDialog.isShowing())
             mProgressDialog.dismiss();
     }
-
+*/
 }

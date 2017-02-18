@@ -35,7 +35,7 @@ import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
  * Use the {@link ListPicklistFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListPicklistFragment extends Fragment implements PickingReceivingAdapter.AdapterCallback{
+public class ListPicklistFragment extends Fragment implements PickingReceivingAdapter.AdapterCallback, DataSync.DataSyncCallback{
 
     private static final String LOG_TAG = "ListPicklistFragment";
     public static final String EXTRA_PICKLIST = "com.intuit.qbes.mobilescanner.picklist";
@@ -54,6 +54,12 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     private ArrayList<String> serialnos3 = new ArrayList<String>();
     private ArrayList<String> serialnos4 = new ArrayList<String>();
     private ArrayList<String> serialnos5 = new ArrayList<String>();
+
+    @Override
+    public void onFetchPicklist(List<Picklist> mPicklists) {
+      //  List<Picklist> test = new ArrayList<>();
+      //  test = mPicklists;
+    }
 
 
     public interface Callbacks {
@@ -158,8 +164,8 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
 
             case R.id.action_sync:
                // fetchPicklists();
-                dataSync = new DataSync();
-                dataSync.FetchPicklists(getContext());
+              //  dataSync = new DataSync();
+              //  dataSync.FetchPicklists(getContext(), this);
                 break;
 
             case android.R.id.home:
