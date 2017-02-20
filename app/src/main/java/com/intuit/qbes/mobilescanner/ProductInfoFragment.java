@@ -1,6 +1,7 @@
 package com.intuit.qbes.mobilescanner;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -538,15 +540,9 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
                 }
                 else if((Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSerialLotNumbers().size()))
                 {
-                    new AlertDialog.Builder(getContext())
-                            .setMessage("Quantity picked does not match the number of serial numbers for this item. Please check.").setCancelable(false)
 
-                            .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            })
-                            .show();                }
+                    QntyMismatchDialog();
+                }
                 else
                 {
 
@@ -575,15 +571,9 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
                 }
                 else if((Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSerialLotNumbers().size()))
                 {
-                    new AlertDialog.Builder(getContext())
-                            .setMessage("Quantity picked does not match the number of serial numbers for this item. Please check.").setCancelable(false)
-
-                            .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            })
-                            .show();                  }
+                 
+                    QntyMismatchDialog();
+                }
                 else
                 {
 
@@ -722,6 +712,29 @@ public boolean noDecimal(double val)
             }
         }
         mlineItem.setBarcodeEntered(mUPC_Value.getText().toString());
+    }
+
+    public void QntyMismatchDialog()
+    {
+        final Dialog openDialog = new Dialog(getContext());
+        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        openDialog.setContentView(R.layout.quantitysno_mismatch_dialog);
+        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.MismatchbtnOk);
+        openDialog.setCancelable(false);
+        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+
+            public void onClick(View v) {
+
+
+                openDialog.dismiss();
+
+            }
+
+        });
+
+        openDialog.show();
     }
 }
 
