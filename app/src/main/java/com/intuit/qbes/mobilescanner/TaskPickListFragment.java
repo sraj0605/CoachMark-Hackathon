@@ -274,21 +274,12 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
                 public void run() {
 
                     final Dialog openDialog = new Dialog(getContext());
-
-                  /* if (openDialog != null) {
-                        final int dividerId = openDialog.getContext().getResources()
-                                .getIdentifier("android:id/titleDivider", null, null);
-                        View divider = openDialog.findViewById(dividerId);
-                        if  (divider != null) {
-                            divider.setBackground(null);
-                        }
-                    }*/
                     openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
                     openDialog.setContentView(R.layout.custom_dialog);
-                    ImageView dialogImage = (ImageView) openDialog.findViewById(R.id.imgAlert);
-                    TextView dialogTextContent = (TextView) openDialog.findViewById(R.id.alert_msg1);
-                    TextView dialogTextContent2 = (TextView) openDialog.findViewById(R.id.alert_msg2);
-                    Button dialogCloseButton = (Button) openDialog.findViewById(R.id.btnOk);
+                    ImageView dialogImage = (ImageView) openDialog.findViewById(R.id.alert);
+                    TextView dialogTextContent = (TextView) openDialog.findViewById(R.id.select_right_item);
+                    TextView dialogTextContent2 = (TextView) openDialog.findViewById(R.id.item_not_in_picklist);
+                    Button dialogCloseButton = (Button) openDialog.findViewById(R.id.dismiss_dialog);
                     dialogCloseButton.setOnClickListener(new View.OnClickListener() {
 
                         @Override

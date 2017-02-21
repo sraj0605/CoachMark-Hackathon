@@ -7,7 +7,7 @@
         android:layout_gravity="center" xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <ImageView
-            android:id="@+id/imgAlert"
+            android:id="@+id/alert"
             android:layout_height="wrap_content"
             android:src="@drawable/alert"
             android:layout_width="match_parent"
@@ -15,35 +15,35 @@
 
         <Button
             android:text="@string/OK"
-            android:id="@+id/btnOk"
-            android:textSize="15sp"
+            android:id="@+id/dismiss_dialog"
+            android:textSize="15dp"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_below="@+id/alert_msg2"
+            android:layout_below="@+id/select_right_item"
             android:layout_centerHorizontal="true"
             />
 
         <TextView
             android:text= "Please make sure you have the right item"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:id="@+id/alert_msg2"
+            android:textSize="16dp"
+            android:id="@+id/select_right_item"
             android:layout_width="match_parent"
             android:layout_marginTop="6dp"
-            android:layout_marginLeft="40dp"
-            android:layout_below="@+id/alert_msg1"
+            android:layout_marginLeft="48dp"
+            android:layout_below="@+id/item_not_in_picklist"
             />
 
         <TextView
             android:text="This item is not in your picklist"
             android:layout_height="wrap_content"
-            android:textSize="22sp"
-            android:id="@+id/alert_msg1"
+            android:textSize="22dp"
+            android:id="@+id/item_not_in_picklist"
             android:layout_width="match_parent"
             android:layout_marginTop="3dp"
-            android:layout_marginLeft="40dp"
+            android:layout_marginLeft="50dp"
             android:textStyle="bold"
-            android:layout_below="@+id/imgAlert"
+            android:layout_below="@+id/alert"
             />
 
     </RelativeLayout>

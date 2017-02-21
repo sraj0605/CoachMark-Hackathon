@@ -54,12 +54,13 @@
         android:id="@+id/serialno_added_value"
         />
 
-
+    <!-- Sunder Added QBWG-40571 - android:maxLength="41" attribute for field length -->
     <EditText
         app:layout_widthPercent="70%"
         android:layout_height="wrap_content"
         android:inputType="text"
         android:hint="Enter Serial Number"
+        android:maxLength="41"
         android:ems="10"
         android:layout_below="@+id/serialno_added_value"
         android:layout_marginLeft="30dp"
