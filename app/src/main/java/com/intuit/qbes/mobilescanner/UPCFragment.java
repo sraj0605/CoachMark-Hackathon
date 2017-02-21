@@ -14,6 +14,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,6 +55,7 @@ private EditText mUPC_entered;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         return inflater.inflate(R.layout.fragment_upc, container);
     }
 

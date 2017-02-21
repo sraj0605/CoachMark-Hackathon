@@ -61,7 +61,7 @@ public class LineItem implements Parcelable {
     private String notes;
     @Expose(serialize = false)
     private String uom;
-    @Expose(serialize = true)
+    @Expose(serialize = false)
     private double qtyToPick;
     @Expose(serialize = true)
     private double qtyPicked;
