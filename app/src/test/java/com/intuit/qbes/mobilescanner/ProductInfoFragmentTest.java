@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
+import com.intuit.qbes.mobilescanner.model.Status;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,8 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.intuit.qbes.mobilescanner.ProductInfoFragment.EXTRA_LINEITEM;
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTAVAILABLE;
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
+
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
@@ -55,7 +56,7 @@ public class ProductInfoFragmentTest{
     private ProductInfoActivity productInfoActivity;
     private ProductInfoFragment productInfoFragment;
     private LineItem mLineItem;
-    private ArrayList<String> serialnos1 = new ArrayList<String>();
+    private List<SerialLotNumber> serialnos1 = new ArrayList<SerialLotNumber>();
     ImageView mIncrement;
     EditText mQty_picked;
     ImageView mDecrement;
@@ -87,7 +88,7 @@ public class ProductInfoFragmentTest{
     {
         //ArrayList<String> arr = new ArrayList<>();
         //arr.add("1234");
-        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",NOTPICKED);
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
         mLineItem.setBarcodeEntered("");
 
     }
@@ -213,7 +214,7 @@ public class ProductInfoFragmentTest{
         mLineItem.setQtyToPick(5.0);
         productInfoFragment.updateItemStatus();
 
-        Assert.assertEquals(mLineItem.getmItemStatus(),LineItem.Status.PICKED);
+        Assert.assertEquals(mLineItem.getmItemStatus(),Status.Picked);
 
     }
 

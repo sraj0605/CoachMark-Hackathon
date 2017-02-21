@@ -39,7 +39,7 @@ public class PicklisthttpTest {
     public void setup()
     {
         Intent intent = new Intent(RuntimeEnvironment.application, DetailPicklistActivity.class);
-        intent.putExtra(DetailPicklistFragment1.EXTRA_PICKLIST, mPickList);
+        intent.putExtra(TaskPickListFragment.EXTRA_PICKLIST, mPickList);
         detailPicklistActivity = Robolectric.buildActivity(DetailPicklistActivity.class)
                 .withIntent(intent)
                 .create()

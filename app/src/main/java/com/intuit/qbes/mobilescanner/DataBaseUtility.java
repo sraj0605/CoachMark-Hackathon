@@ -11,6 +11,7 @@ import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
 import com.intuit.qbes.mobilescanner.model.Status;
+import com.intuit.qbes.mobilescanner.model.Task;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -18,18 +19,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by ckumar5 on 05/02/17.
+ * Created by ckumar5 on 18/02/17.
  */
 
-public class DatabaseHandler extends SQLiteOpenHelper {
+public class DataBaseUtility extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 21;
     private static final String DATABASE_NAME = "MobileScanner.db";
-    public static final String TABLE_PICKLISTINFO_NAME = "PickListInfo";
     public static final String TABLE_LINEITEMINFO_NAME = "LineItemInfo";
     public static final String TABLE_SERIALNUBERINFO = "SerialNumberInfo";
+    public static final String TABLE_TASKINFO_NAME = "TasksInfo";
 
-//Table - 1
+    //Table - 1
     private static final String KEY_ID = "id";
     private static final String KEY_COMPANYID = "companyId";
     private static final String KEY_TASKTYPE = "taskType";
@@ -77,14 +78,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //Context object
     private ContentResolver myCR = null;
 
-    public DatabaseHandler(Context context) {
+    public DataBaseUtility(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         myCR = context.getContentResolver();
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL("create table PickListInfo " +
+        db.execSQL("create table TasksInfo " +
                 "(id long, companyId long,taskType long,name text,assigneeId long,createdById long,Status int,siteId long,notes text,showNotes text,syncToken long,createdTimestamp text, modifiedTimestamp text)");
 
         //need to change
@@ -101,43 +102,39 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // you can implement here migration process
     }
 
-
-    public void deleteOnePicklist(Picklist mPickList) {
-
-        //String selection = "recnum = \" " + String.valueOf(mPickList.getRecnum()) + "\"";
+    public void deleteTask(Task task)
+    {
         String selection = "id = ?";
-        String [] selectionArgs = new String[] {String.valueOf(mPickList.getId())};
+        String [] selectionArgs = new String[] {String.valueOf(task.getId())};
         myCR.delete(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE,selection,selectionArgs);
-
     }
 
-    public List<Picklist> allPickLists() {
+    public List<Task> getTasks(long taskType) {
 
-        List<Picklist> mPickLists = new LinkedList<Picklist>();
+        List<Task> tasks = new LinkedList<Task>();
+
         try {
-            /*String query = "SELECT  * FROM " + TABLE_PICKLISTINFO_NAME;
-            Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE, null, query, null, null);*/
             String selection = "taskType = ?";
-            String [] selectionArgs = new String[] {String.valueOf(1)};
+            String [] selectionArgs = new String[] {String.valueOf(taskType)};
             Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE,null,selection,selectionArgs,null,null);
-            Picklist mPickList = null;
+            Task task = null;
             if (cursor.moveToFirst()) {
                 do {
-                    mPickList = new Picklist();
-                    mPickList.setId((cursor.getLong(0)));
-                    mPickList.setCompanyId((cursor.getLong(1)));
-                    mPickList.setTaskType((cursor.getLong(2)));
-                    mPickList.setName((cursor.getString(3)));
-                    mPickList.setAssigneeId((cursor.getLong(4)));
-                    mPickList.setCreatedById((cursor.getLong(5)));
-                    mPickList.setStatus(Status.valueOf(cursor.getString(6)));
-                    mPickList.setSiteId((cursor.getLong(7)));
-                    mPickList.setNotes((cursor.getString(8)));
-                    mPickList.setShowNotes(Boolean.valueOf(cursor.getString(9)));
-                    mPickList.setSyncToken((cursor.getLong(10)));
-                    mPickList.setCreatedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(11))));
-                    mPickList.setModifiedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(12))));
-                    mPickLists.add(mPickList);
+                    task = new Task();
+                    task.setId((cursor.getLong(0)));
+                    task.setCompanyId((cursor.getLong(1)));
+                    task.setTaskType((cursor.getLong(2)));
+                    task.setName((cursor.getString(3)));
+                    task.setAssigneeId((cursor.getLong(4)));
+                    task.setCreatedById((cursor.getLong(5)));
+                    task.setStatus(Status.valueOf(cursor.getString(6)));
+                    task.setSiteId((cursor.getLong(7)));
+                    task.setNotes((cursor.getString(8)));
+                    task.setShowNotes(Boolean.valueOf(cursor.getString(9)));
+                    task.setSyncToken((cursor.getLong(10)));
+                    task.setCreatedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(11))));
+                    task.setModifiedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(12))));
+                    tasks.add(task);
                 } while (cursor.moveToNext());
             }
         }
@@ -146,85 +143,72 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             exp.printStackTrace();
         }
 
-        return mPickLists;
+        return tasks;
     }
 
-    public Picklist getPickList(long id)
-    {
-        Picklist mPickList = null;
-        try
-        {
-            String selection = "taskType=? and id=?";
-            String [] selectionArgs = new String[] {String.valueOf(1),String.valueOf(id)};
-            Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE,null,selection,selectionArgs,null,null);
-            if (cursor.moveToFirst()) {
-                do {
-                    mPickList = new Picklist();
-                    mPickList.setId((cursor.getLong(0)));
-                    mPickList.setCompanyId((cursor.getLong(1)));
-                    mPickList.setTaskType((cursor.getLong(2)));
-                    mPickList.setName((cursor.getString(3)));
-                    mPickList.setAssigneeId((cursor.getLong(4)));
-                    mPickList.setCreatedById((cursor.getLong(5)));
-                    mPickList.setStatus(Status.valueOf(cursor.getString(6)));
-                    mPickList.setSiteId((cursor.getLong(7)));
-                    mPickList.setNotes((cursor.getString(8)));
-                    mPickList.setShowNotes(Boolean.valueOf(cursor.getString(9)));
-                    mPickList.setSyncToken((cursor.getLong(10)));
-                    mPickList.setCreatedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(11))));
-                    mPickList.setModifiedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(12))));
-                } while (cursor.moveToNext());
-            }
-        }
-        catch (ParseException exp)
-        {
-
-        }
-        return  mPickList;
-    }
-
-    public void addPickList(Picklist mPickList) {
+    public void addTask(Task task) {
         try {
             ContentValues values = new ContentValues();
-            values.put(KEY_ID, mPickList.getId());
-            values.put(KEY_COMPANYID, mPickList.getCompanyId());
-            values.put(KEY_TASKTYPE, mPickList.getTaskType());
-            values.put(KEY_NAME, mPickList.getName());
-            values.put(KEY_ASSIGNEDID, mPickList.getAssigneeId());
-            values.put(KEY_CREATEDBYID, mPickList.getCreatedById());
-            values.put(KEY_STATUS, String.valueOf(mPickList.getStatus()));
-            values.put(KEY_SITEID, mPickList.getSiteId());
-            values.put(KEY_NOTES, mPickList.getNotes());
-            values.put(KEY_SHOWNOTES, String.valueOf(mPickList.isShowNotes()));
-            values.put(KEY_SYNCTOKEN, mPickList.getSyncToken());
-            values.put(KEY_CREATEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getCreatedTimestamp()));
-            values.put(KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getModifiedTimestamp()));
+            values.put(KEY_ID, task.getId());
+            values.put(KEY_COMPANYID, task.getCompanyId());
+            values.put(KEY_TASKTYPE, task.getTaskType());
+            values.put(KEY_NAME, task.getName());
+            values.put(KEY_ASSIGNEDID, task.getAssigneeId());
+            values.put(KEY_CREATEDBYID, task.getCreatedById());
+            values.put(KEY_STATUS, String.valueOf(task.getStatus()));
+            values.put(KEY_SITEID, task.getSiteId());
+            values.put(KEY_NOTES, task.getNotes());
+            values.put(KEY_SHOWNOTES, String.valueOf(task.isShowNotes()));
+            values.put(KEY_SYNCTOKEN, task.getSyncToken());
+            values.put(KEY_CREATEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(task.getCreatedTimestamp()));
+            values.put(KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(task.getModifiedTimestamp()));
             myCR.insert(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE, values);
+            //Add Line item
+            if(task.getLineitems()!= null && task.getLineitems().size() > 0)
+            {
+                for (int i = 0; i<task.getLineitems().size();i++)
+                {
+                    LineItem lineItem = new LineItem();
+                    lineItem = task.getLineitems().get(i);
+                    addLineItem(lineItem,lineItem.getId());
+                    //Add serial lot number
+                    if(lineItem.getSerialLotNumbers() !=null && lineItem.getSerialLotNumbers().size() > 0) {
+                        for (int j = 0; j < lineItem.getSerialLotNumbers().size(); j++) {
+                            SerialLotNumber serialLotNumber = new SerialLotNumber();
+                            serialLotNumber = lineItem.getSerialLotNumbers().get(j);
+                            addSerialLotNumber(serialLotNumber);
+                        }
+                    }
+
+                }
+            }
         }
         catch (IllegalArgumentException exp)
         {
             exp.printStackTrace();
         }
     }
-    public void updatePickList(Picklist mPickList, long recnum) {
+
+
+    public void UpdateTask(Task task) {
         try {
 
             ContentValues values = new ContentValues();
-            values.put(KEY_ID, mPickList.getId());
-            values.put(KEY_COMPANYID, mPickList.getCompanyId());
-            values.put(KEY_TASKTYPE, mPickList.getTaskType());
-            values.put(KEY_NAME, mPickList.getName());
-            values.put(KEY_ASSIGNEDID, mPickList.getAssigneeId());
-            values.put(KEY_CREATEDBYID, mPickList.getCreatedById());
-            values.put(KEY_STATUS, String.valueOf(mPickList.getStatus()));
-            values.put(KEY_SITEID, mPickList.getSiteId());
-            values.put(KEY_NOTES, mPickList.getNotes());
-            values.put(KEY_SHOWNOTES, String.valueOf(mPickList.isShowNotes()));
-            values.put(KEY_SYNCTOKEN, mPickList.getSyncToken());
-            values.put(KEY_CREATEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getCreatedTimestamp()));
-            values.put(KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getModifiedTimestamp()));
+            values.put(KEY_ID, task.getId());
+            values.put(KEY_COMPANYID, task.getCompanyId());
+            values.put(KEY_TASKTYPE, task.getTaskType());
+            values.put(KEY_NAME, task.getName());
+            values.put(KEY_ASSIGNEDID, task.getAssigneeId());
+            values.put(KEY_CREATEDBYID, task.getCreatedById());
+            values.put(KEY_STATUS, String.valueOf(task.getStatus()));
+            values.put(KEY_SITEID, task.getSiteId());
+            values.put(KEY_NOTES, task.getNotes());
+            values.put(KEY_SHOWNOTES, String.valueOf(task.isShowNotes()));
+            values.put(KEY_SYNCTOKEN, task.getSyncToken());
+            values.put(KEY_CREATEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(task.getCreatedTimestamp()));
+            values.put(KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(task.getModifiedTimestamp()));
 
-            String whereClause = "id = " + String.valueOf(mPickList.getId());
+            String whereClause = "id = " + String.valueOf(task.getId());
 
             myCR.update(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE, values, whereClause, null);
         }
@@ -233,11 +217,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             exp.printStackTrace();
         }
     }
-    public boolean PickListExists(long id)
+
+    public boolean taskExists(long id)
     {
-        String selection = "id=?";
-        String [] selectionArgs = new String[] {String.valueOf(id)};
-        Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE,null,selection,selectionArgs,null,null);
+        String Query = "Select * from " + TABLE_TASKINFO_NAME + " where " + "id" + " = " + id;
+        Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE,null,Query,null,null);
         if(cursor.getCount() <= 0){
             cursor.close();
             return false;
@@ -246,8 +230,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return true;
 
     }
-
-
     //Line item related methods
     public void deleteLineItems(long id) {
         String selection = "id = ?";
@@ -255,52 +237,49 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         myCR.delete(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE,selection,selectionArgs);
 
     }
-
     public List<LineItem> allLineItems(long id) {
-
-        List<LineItem> mLineItems = new LinkedList<LineItem>();
-        String selection = "taskId = ?";
-        String [] selectionArgs = new String[] {String.valueOf(id)};
-        Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE,null,selection,selectionArgs,null,null);
-        LineItem mLineItem = null;
-        if(cursor != null) {
-            if (cursor.moveToFirst()) {
-                do {
-                    try {
-                        mLineItem = new LineItem();
-                        mLineItem.setId(cursor.getLong(0));
-                        mLineItem.setTaskId(cursor.getLong(1));
-                        mLineItem.setExtId(cursor.getLong(2));
-                        mLineItem.setItemName(cursor.getString(3));
-                        mLineItem.setItemDesc(cursor.getString(4));
-                        mLineItem.setLineitemPos(cursor.getLong(5));
-                        mLineItem.setDocNum(cursor.getString(6));
-                        mLineItem.setTxnId(cursor.getLong(7));
-                        mLineItem.setTxnDate(MSUtils.yyyyMMddFormat.parse((cursor.getString(8))));
-                        mLineItem.setTxnDate(MSUtils.yyyyMMddFormat.parse((cursor.getString(9))));
-                        mLineItem.setNotes(cursor.getString(10));
-                        mLineItem.setmItemStatus(Status.valueOf(cursor.getString(11)));
-                        mLineItem.setUom(cursor.getString(12));
-                        mLineItem.setQtyToPick(cursor.getDouble(13));
-                        mLineItem.setQtyPicked(cursor.getDouble(14));
-                        mLineItem.setBarcode(cursor.getString(15));
-                        mLineItem.setBinLocation(cursor.getString(16));
-                        mLineItem.setBinExtId(cursor.getLong(17));
-						mLineItem.setCustomFields(cursor.getString(18));
-                        mLineItem.setShowSerialNo(Boolean.parseBoolean(cursor.getString(20)));
-                        mLineItem.setShowLotNo(Boolean.parseBoolean(cursor.getString(21)));
-                        mLineItems.add(mLineItem);
-                    } catch (ParseException exp) {
-                        exp.printStackTrace();
-                    }
-                } while (cursor.moveToNext());
-            }
+    List<LineItem> mLineItems = new LinkedList<LineItem>();
+    String query = "SELECT  * FROM " + TABLE_LINEITEMINFO_NAME + " where " + "taskId" + " = " + id;
+    Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE,null,query,null,null);
+    LineItem mLineItem = null;
+    if(cursor != null) {
+        if (cursor.moveToFirst()) {
+            do {
+                try {
+                    mLineItem = new LineItem();
+                    mLineItem.setId(cursor.getLong(0));
+                    mLineItem.setTaskId(cursor.getLong(1));
+                    mLineItem.setExtId(cursor.getLong(2));
+                    mLineItem.setItemName(cursor.getString(3));
+                    mLineItem.setItemDesc(cursor.getString(4));
+                    mLineItem.setLineitemPos(cursor.getLong(5));
+                    mLineItem.setDocNum(cursor.getString(6));
+                    mLineItem.setTxnId(cursor.getLong(7));
+                    mLineItem.setTxnDate(MSUtils.yyyyMMddFormat.parse((cursor.getString(8))));
+                    mLineItem.setTxnDate(MSUtils.yyyyMMddFormat.parse((cursor.getString(9))));
+                    mLineItem.setNotes(cursor.getString(10));
+                    mLineItem.setmItemStatus(Status.valueOf(cursor.getString(11)));
+                    mLineItem.setUom(cursor.getString(12));
+                    mLineItem.setQtyToPick(cursor.getDouble(13));
+                    mLineItem.setQtyPicked(cursor.getDouble(14));
+                    mLineItem.setBarcode(cursor.getString(15));
+                    mLineItem.setBinLocation(cursor.getString(16));
+                    mLineItem.setBinExtId(cursor.getLong(17));
+                    mLineItem.setCustomFields(cursor.getString(18));
+                    mLineItem.setShowSerialNo(Boolean.parseBoolean(cursor.getString(20)));
+                    mLineItem.setShowLotNo(Boolean.parseBoolean(cursor.getString(21)));
+                    mLineItems.add(mLineItem);
+                } catch (ParseException exp) {
+                    exp.printStackTrace();
+                }
+            } while (cursor.moveToNext());
         }
-        else
-            mLineItems = null;
-
-        return mLineItems;
     }
+    else
+     mLineItems = null;
+
+    return mLineItems;
+}
     public void addLineItem(LineItem lineItem, long id) {
         try {
             ContentValues values = new ContentValues();
@@ -388,9 +367,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<SerialLotNumber> allSerialLotNumbers(long id) {
 
         List<SerialLotNumber> serialLotNumbers = new ArrayList<>();
-        String selection = "id = ?";
-        String [] selectionArgs = new String[] {String.valueOf(id)};
-        Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE,null,selection,selectionArgs,null,null);
+        String query = "SELECT  * FROM " + TABLE_SERIALNUBERINFO + " where " + "id" + " = " + id;
+        Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE, null, query, null, null);
+
         SerialLotNumber serialLotNumber = null;
         if(cursor != null) {
             if (cursor.moveToFirst()) {

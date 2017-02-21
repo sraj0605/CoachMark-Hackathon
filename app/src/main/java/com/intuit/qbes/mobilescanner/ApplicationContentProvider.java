@@ -25,13 +25,16 @@ public class ApplicationContentProvider extends ContentProvider{
     //Content URI
     public static final Uri CONTENT_URI_PICKLIST_TABLE = Uri.parse("content://" + AUTHORITY + "/PickListInfo");
     public static final Uri CONTENT_URI_LINEITEM_TABLE = Uri.parse("content://" + AUTHORITY + "/LineItemInfo");
+    public static final Uri CONTENT_URI_SERIALLOTNUMBER_TABLE = Uri.parse("content://" + AUTHORITY + "/SerialNumberInfo");
 
     //Table Name
     private static final String PICKLIST_TABLE = "PickListInfo";
     private static final String LINEITEM_TABLE = "LineItemInfo";
+    public static final String SERIALLOTNUMBER_TABLE = "SerialNumberInfo";
 
     public static final int PICKLISTS = 1;
     public static final int LINEITEMS = 2;
+    public static final int SERIALLOTNUMBERS = 3;
 
     //DataBase Handler
     private DatabaseHandler mDbHandler = null;
@@ -44,6 +47,7 @@ public class ApplicationContentProvider extends ContentProvider{
 
         sURIMatcher.addURI(AUTHORITY, PICKLIST_TABLE,PICKLISTS);
         sURIMatcher.addURI(AUTHORITY, LINEITEM_TABLE,LINEITEMS);
+        sURIMatcher.addURI(AUTHORITY, SERIALLOTNUMBER_TABLE,SERIALLOTNUMBERS);
     }
     @Nullable
     @Override
@@ -72,6 +76,12 @@ public class ApplicationContentProvider extends ContentProvider{
                             selection,
                             selectionArgs);
                     break;
+                case SERIALLOTNUMBERS:
+                    rowsUpdated = sqlDB.update(mDbHandler.TABLE_SERIALNUBERINFO,
+                            values,
+                            selection,
+                            selectionArgs);
+
                 default:
                     throw new IllegalArgumentException("Unknown URI: " + uri);
             }
@@ -100,8 +110,12 @@ public class ApplicationContentProvider extends ContentProvider{
                     break;
 
                 case LINEITEMS:
-                    id = sqlDB.insert(mDbHandler.TABLE_LINEITEMINFO_NAME, null, values);
+                    id = sqlDB.insertOrThrow(mDbHandler.TABLE_LINEITEMINFO_NAME, null, values);
                     ret = Uri.parse(LINEITEM_TABLE + "/" + id);
+                    break;
+                case SERIALLOTNUMBERS:
+                    id = sqlDB.insert(mDbHandler.TABLE_SERIALNUBERINFO, null, values);
+                    ret = Uri.parse(SERIALLOTNUMBER_TABLE + "/" + id);
                     break;
 
                 default:
@@ -146,6 +160,11 @@ public class ApplicationContentProvider extends ContentProvider{
                             selection,
                             selectionArgs);
                     break;
+                case SERIALLOTNUMBERS:
+                    rowsDeleted = sqlDB.delete(mDbHandler.TABLE_SERIALNUBERINFO,
+                            selection,
+                            selectionArgs);
+                    break;
                 default:
                     throw new IllegalArgumentException("Unknown URI: " + uri);
             }
@@ -167,7 +186,18 @@ public class ApplicationContentProvider extends ContentProvider{
         int uriType = sURIMatcher.match(uri);
         try {
             SQLiteDatabase sqlDB = mDbHandler.getReadableDatabase();
-            cursor = sqlDB.rawQuery(selection, null);
+            switch (uriType) {
+                case PICKLISTS:
+                    cursor = sqlDB.query(mDbHandler.TABLE_PICKLISTINFO_NAME,null,selection,selectionArgs,null,null,null);
+                    break;
+                case LINEITEMS:
+                    cursor = sqlDB.query(mDbHandler.TABLE_LINEITEMINFO_NAME,null,selection,selectionArgs,null,null,null);
+                    break;
+                case SERIALLOTNUMBERS:
+                    cursor = sqlDB.query(mDbHandler.TABLE_LINEITEMINFO_NAME,null,selection,selectionArgs,null,null,null);
+            }
+            //cursor = sqlDB.rawQuery(selection, null);
+            //cursor = sqlDB.query(mDbHandler.TABLE_PICKLISTINFO_NAME,null,selection,selectionArgs,null,null,null);
         }
         catch (SQLiteException exp)
         {

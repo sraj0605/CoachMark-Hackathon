@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.model.Status;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +21,6 @@ import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 
 /**
  * Created by ashah9 on 2/9/17.
@@ -31,7 +31,7 @@ import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 public class DividerItemDecorationTest {
 
     private DetailPicklistActivity detailPicklistActivity;
-    private DetailPicklistFragment1 detailPicklistFragment1;
+    private TaskPickListFragment testPickListFragment;
     private Picklist mPickList;
     private List<LineItem> mLineitems;
     private DividerItemDecoration obj;
@@ -43,22 +43,22 @@ public class DividerItemDecorationTest {
     public void setUp() throws Exception {
         createDummyModel();
         Intent intent = new Intent(RuntimeEnvironment.application, DetailPicklistActivity.class);
-        intent.putExtra(DetailPicklistFragment1.EXTRA_PICKLIST, mPickList);
+        intent.putExtra(TaskPickListFragment.EXTRA_PICKLIST, mPickList);
         detailPicklistActivity = Robolectric.buildActivity(DetailPicklistActivity.class)
                 .withIntent(intent)
                 .create()
                 .start()
                 .get();
-        detailPicklistFragment1 = DetailPicklistFragment1.newInstance(mPickList);
+        testPickListFragment = TaskPickListFragment.newInstance(mPickList);
         //SupportFragmentTestUtil.startFragment(detailPicklistFragment1);
-        SupportFragmentTestUtil.startVisibleFragment(detailPicklistFragment1);
+        SupportFragmentTestUtil.startVisibleFragment(testPickListFragment);
 
     }
 
     public void createDummyModel()
     {
         mLineitems = new ArrayList<>();
-        mPickList = new Picklist(1, 1,1, "Picklist1",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",mLineitems,"false");
+        mPickList = new Picklist(1, 1,1, "Picklist1",1,1, Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",mLineitems,"false");
 
     }
 
@@ -72,7 +72,7 @@ public class DividerItemDecorationTest {
     public void test_onDraw()
     {
         obj = new DividerItemDecoration(detailPicklistActivity,com.intuit.qbes.mobilescanner.DividerItemDecoration.VERTICAL_LIST);
-        RecyclerView recycleview = (RecyclerView)detailPicklistFragment1.getView().findViewById(R.id.detail_picklist_rv2);
+        RecyclerView recycleview = (RecyclerView)testPickListFragment.getView().findViewById(R.id.detail_picklist_rv2);
         obj.onDraw(c,recycleview);
     }
 }

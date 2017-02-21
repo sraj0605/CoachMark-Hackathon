@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
+import com.intuit.qbes.mobilescanner.model.Status;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,7 +20,6 @@ import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
 
 import java.util.ArrayList;
 
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 
 /**
  * Created by ashah9 on 2/7/17.
@@ -130,7 +130,7 @@ public void test_dialogdismiss()
 
     public void create_dummy()
     {
-        lineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",NOTPICKED);
+        lineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false", Status.NotPicked);
 
     }
 

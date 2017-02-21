@@ -20,7 +20,6 @@ import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
 
 import java.util.ArrayList;
 
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 
 
 

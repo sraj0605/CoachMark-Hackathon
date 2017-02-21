@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity
     public void onPickSelected(Picklist selectedPick) {
 
         Intent intent = new Intent(this, DetailPicklistActivity.class);
-        intent.putExtra(DetailPicklistFragment1.EXTRA_PICKLIST, selectedPick);
+        intent.putExtra(TaskPickListFragment.EXTRA_PICKLIST, selectedPick);
         startActivityForResult(intent, REQUEST_DETAIL_PICKLIST);
 
     }

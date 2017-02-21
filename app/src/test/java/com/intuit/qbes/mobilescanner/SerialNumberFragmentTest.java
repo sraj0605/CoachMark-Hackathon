@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
+import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
+import com.intuit.qbes.mobilescanner.model.Status;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,8 +29,8 @@ import org.robolectric.shadows.ShadowAlertDialog;
 import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 import static org.junit.Assert.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -44,7 +46,7 @@ public class SerialNumberFragmentTest {
     private SerialNumberFragment serialnoFragment;
     private LineItem mlineitem;
     private SerialNumberFragment.SerialNumberAdapter obj;
-    private ArrayList<String> serialnos1 = new ArrayList<String>();
+    private List<SerialLotNumber> serialnos1 = new ArrayList<SerialLotNumber>();
     private Class fragmentClass = null;
 
 
@@ -60,7 +62,7 @@ public class SerialNumberFragmentTest {
 
     public void createDummyModel()
     {
-        mlineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",1,0,"8901238910005","Rack 1",4,"custom",serialnos1,"true","true","false",NOTPICKED);
+        mlineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",1,0,"8901238910005","Rack 1",4,"custom",serialnos1,"true","true","false", Status.NotPicked);
 
     }
 

@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
+import com.google.gson.annotations.Expose;
 import com.google.gson.stream.JsonToken;
 import com.intuit.qbes.mobilescanner.DatabaseHandler;
 import com.intuit.qbes.mobilescanner.MSUtils;
@@ -44,21 +46,37 @@ public class Picklist implements Parcelable {
     private static DatabaseHandler db = null;
 
     //chandan
+    @Expose(serialize = false)
     private long id;
+    @Expose(serialize = false)
     private long companyId;
+    @Expose(serialize = false)
     private long taskType;
+    @Expose(serialize = false)
     private String name;
+    @Expose(serialize = false)
     private long assigneeId;
+    @Expose(serialize = false)
     private long createdById;
-    private int status; //change to enum later
+    @Expose(serialize = true)
+    private Status status; //change to enum later
+    @Expose(serialize = false)
     private long siteId;
+    @Expose(serialize = false)
     private String notes;
+    @Expose(serialize = false)
     private boolean showNotes;
+    @Expose(serialize = false)
     private long syncToken;
+    @Expose(serialize = false)
     private Date createdTimestamp;
+    @Expose(serialize = false)
     private Date modifiedTimestamp;
+    @Expose(serialize = true)
     private List<LineItem> lineitems = null;
+    @Expose(serialize = false)
     private boolean deleted;
+    @Expose(serialize = false)
     private transient long totalitems;
 
     //This Constructor is for Creating Dummy PickList
@@ -73,7 +91,7 @@ public class Picklist implements Parcelable {
                     String name,
                     long assigneeId,
                     long createdById,
-                    int status,
+                    Status status,
                     long siteId,
                     String notes,
                     String showNotes,
@@ -120,7 +138,7 @@ public class Picklist implements Parcelable {
             name = in.readString();
             assigneeId = in.readLong();
             createdById = in.readLong();
-            status = in.readInt(); //change to enum later
+            status = Status.valueOf(in.readString());//in.readInt(); //change to enum later
             siteId = in.readLong();
             notes = in.readString();
             showNotes = Boolean.valueOf(in.readString());
@@ -183,11 +201,11 @@ public class Picklist implements Parcelable {
         this.createdById = createdById;
     }
 
-    public int getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -267,6 +285,7 @@ public class Picklist implements Parcelable {
         try {
             GsonBuilder builder = new GsonBuilder()
                     .setDateFormat("yyyy-MM-dd");
+            builder.excludeFieldsWithoutExposeAnnotation();
             Gson gson = builder.create();
             Picklist[] objList = gson.fromJson(plJsonStr, Picklist[].class);
             List<Picklist> picklists = new ArrayList<>();
@@ -277,7 +296,7 @@ public class Picklist implements Parcelable {
             builder = null;
             return picklists;
         }
-        catch (Exception exp)
+        catch (JsonParseException exp)
         {
             exp.printStackTrace();
         }
@@ -287,31 +306,60 @@ public class Picklist implements Parcelable {
 
     public static Picklist picklistFromJSON(String plJsonStr )
     {
-          GsonBuilder builder = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd");
-          Gson gson = builder.create();
-          Picklist objList = gson.fromJson(plJsonStr, Picklist.class);
-          gson = null;
-          builder = null;
-          return objList;
+        Picklist objList = null;
+        try {
+            GsonBuilder builder = new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd");
+            builder.excludeFieldsWithoutExposeAnnotation();
+            Gson gson = builder.create();
+            objList = gson.fromJson(plJsonStr, Picklist.class);
+            gson = null;
+            builder = null;
+        }
+        catch (JsonParseException exp)
+        {
+            exp.printStackTrace();
+            objList = null;
+        }
+        return objList;
     }
 
     public static String JSONStringFromPicklist(Picklist picklist)
     {
-        GsonBuilder builder = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd");
-        Gson gson = builder.create();
-        String jsonString = gson.toJson(picklist);
+        String jsonString = new String();
+        try {
+            GsonBuilder builder = new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd");
+            builder.excludeFieldsWithoutExposeAnnotation();
+            Gson gson = builder.create();
+            jsonString = gson.toJson(picklist);
+            builder = null;
+            gson = null;
+        }
+        catch (JsonParseException exp)
+        {
+            exp.printStackTrace();
+            jsonString = null;
+        }
 
         return jsonString;
     }
 
     public String JSONStringArrayFromPicklistArray(List<Picklist> picklists)
     {
-        GsonBuilder builder = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd");
-        Gson gson = builder.create();
-        String jsonString = gson.toJson(picklists);
+        String jsonString = new String();
+        try {
+            GsonBuilder builder = new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd");
+            builder.excludeFieldsWithoutExposeAnnotation();
+            Gson gson = builder.create();
+            jsonString = gson.toJson(picklists);
+        }
+        catch (JsonParseException exp)
+        {
+            exp.printStackTrace();
+            jsonString = null;
+        }
 
         return jsonString;
     }
@@ -330,7 +378,8 @@ public class Picklist implements Parcelable {
             dest.writeString(getName());
             dest.writeLong(getAssigneeId());
             dest.writeLong(getCreatedById());
-            dest.writeInt(getStatus());
+            //dest.writeInt(getStatus());
+            dest.writeString((status == null) ? "" : status.name());
             dest.writeLong(getSiteId());
             dest.writeString(getNotes());
             dest.writeString(String.valueOf(isShowNotes()));

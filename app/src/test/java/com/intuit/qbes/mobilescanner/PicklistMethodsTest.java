@@ -2,6 +2,7 @@ package com.intuit.qbes.mobilescanner;
 
 
 import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.model.Status;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class PicklistMethodsTest {
         picklist.setTaskType(1);
         picklist.setAssigneeId(12);
         picklist.setCreatedById(12);
-        picklist.setStatus(1);
+        picklist.setStatus(Status.NotPicked);
         picklist.setSiteId(1);
         picklist.setNotes("notes");
         picklist.setShowNotes(true);

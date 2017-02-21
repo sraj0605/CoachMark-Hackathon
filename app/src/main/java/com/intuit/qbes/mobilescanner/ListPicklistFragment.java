@@ -17,14 +17,14 @@ import android.view.ViewGroup;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.model.Status;
 import com.intuit.qbes.mobilescanner.networking.AppController;
 import com.intuit.qbes.mobilescanner.networking.DataSync;
-
+import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 
 
 /**
@@ -49,19 +49,22 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     private DataSync dataSync = null;
     private List<LineItem> lineitems = null;
     private static final String fetchTAG = "Fetch";
-    private ArrayList<String> serialnos1 = new ArrayList<String>();
+    /*private ArrayList<String> serialnos1 = new ArrayList<String>();
     private ArrayList<String> serialnos2 = new ArrayList<String>();
     private ArrayList<String> serialnos3 = new ArrayList<String>();
     private ArrayList<String> serialnos4 = new ArrayList<String>();
-    private ArrayList<String> serialnos5 = new ArrayList<String>();
+    private ArrayList<String> serialnos5 = new ArrayList<String>();*/
+    private List<SerialLotNumber> serialnos1 = new ArrayList<SerialLotNumber>();
+    private List<SerialLotNumber> serialnos2 = new ArrayList<SerialLotNumber>();
+    private List<SerialLotNumber> serialnos3 = new ArrayList<SerialLotNumber>();
+    private List<SerialLotNumber> serialnos4 = new ArrayList<SerialLotNumber>();
+    private List<SerialLotNumber> serialnos5 = new ArrayList<SerialLotNumber>();
 
-    @Override
+	 @Override
     public void onFetchPicklist(List<Picklist> mPicklists) {
       //  List<Picklist> test = new ArrayList<>();
       //  test = mPicklists;
     }
-
-
     public interface Callbacks {
         void onPickSelected(Picklist selectedPick);
     }
@@ -105,6 +108,7 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
         dummyPicklists = createList(5);
         PickingReceivingAdapter pa = new PickingReceivingAdapter(dummyPicklists, this);
         mRecyclerView.setAdapter(pa);
+        //SyncUtils.CreateSyncAccount(getContext());
         return view;
     }
 
@@ -261,22 +265,22 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
         if (lineitems == null)
             lineitems = new ArrayList<LineItem>();
         //cahdan -start - only for testing
-        LineItem obj1 = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",NOTPICKED);
-        LineItem obj2 = new LineItem(2,2,2,"Iphone","hardware it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901057310062","Rack 1",12,"custom",serialnos1,"true","true","false",NOTPICKED);
-        LineItem obj3 = new LineItem(3,3,3,"Motorola","awesome phone",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",NOTPICKED);
-        LineItem obj4 = new LineItem(4,4,4,"Zebra","hardware it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",NOTPICKED);
-        LineItem obj5 = new LineItem(5,5,5,"1 plus 3","struggling phone it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",NOTPICKED);
+        LineItem obj1 = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        LineItem obj2 = new LineItem(2,2,2,"Iphone","hardware it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901057310062","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
+        LineItem obj3 = new LineItem(3,3,3,"Motorola","awesome phone",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
+        LineItem obj4 = new LineItem(4,4,4,"Zebra","hardware it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
+        LineItem obj5 = new LineItem(5,5,5,"1 plus 3","struggling phone it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
         lineitems.add(obj1);
         lineitems.add(obj2);
         lineitems.add(obj3);
         lineitems.add(obj4);
         lineitems.add(obj5);
 
-        Picklist p1 = new Picklist(1, 1,1, "Picklist1",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
-        Picklist p2 = new Picklist(1, 1,1, "Picklist2",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
-        Picklist p3 = new Picklist(1, 1,1, "Picklist3",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
-        Picklist p4 = new Picklist(1, 1,1, "Picklist4",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
-        Picklist p5 = new Picklist(1, 1,1, "Picklist4",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
+        Picklist p1 = new Picklist(1, 1,1, "Picklist1",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
+        Picklist p2 = new Picklist(1, 1,1, "Picklist2",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
+        Picklist p3 = new Picklist(1, 1,1, "Picklist3",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
+        Picklist p4 = new Picklist(1, 1,1, "Picklist4",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
+        Picklist p5 = new Picklist(1, 1,1, "Picklist4",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
 
         p1.setTotalitems(10);
         result.add(p1);

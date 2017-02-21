@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.intuit.qbes.mobilescanner.barcode.BarcodeScannerDevice;
 import com.intuit.qbes.mobilescanner.barcode.DeviceManager;
 import com.intuit.qbes.mobilescanner.model.LineItem;
+import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -225,7 +226,7 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
 
     public class SerialNumberAdapter extends RecyclerView.Adapter<SerialNumberAdapter.ViewHolder> {
 
-        ArrayList serialNOList = new ArrayList();
+        List<SerialLotNumber> serialNOList = new ArrayList();
 
         public SerialNumberAdapter(LineItem lineItem){
            // this.serialNOList = new ArrayList<String>();
@@ -300,12 +301,16 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
 
             public void bindSerialNumber(Object sno)
             {
-                serialNO.setText(sno.toString());
+
+                SerialLotNumber obj = (SerialLotNumber) sno;
+                if(obj != null)
+                    serialNO.setText(obj.getValue());
             }
         }
         public void add(int location, String iName){
             try {
-                serialNOList.add(location, iName);
+                SerialLotNumber serialLotNumber = new SerialLotNumber(lineitem.getId(),lineitem.getTxnId(),0,iName);
+                serialNOList.add(serialLotNumber);
                 notifyItemInserted(location);
             }
             catch(ArrayIndexOutOfBoundsException e)
@@ -320,7 +325,7 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         }
 
 
-        public ArrayList<String> getSerialnoList()
+        public List<SerialLotNumber> getSerialnoList()
         {
             return serialNOList;
         }

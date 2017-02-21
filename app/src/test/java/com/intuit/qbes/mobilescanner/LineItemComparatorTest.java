@@ -3,6 +3,7 @@ package com.intuit.qbes.mobilescanner;
 import android.os.Build;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
+import com.intuit.qbes.mobilescanner.model.Status;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 
 /**
  * Created by ashah9 on 2/7/17.
@@ -37,8 +37,8 @@ public class LineItemComparatorTest {
     public void create_dummy()
     {
         sortingBy = SortFilterOption.Items;
-        l1  = new LineItem(1,1,1,"A","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",NOTPICKED);
-        l2  = new LineItem(1,1,1,"B","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",NOTPICKED);
+        l1  = new LineItem(1,1,1,"A","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false", Status.NotPicked);
+        l2  = new LineItem(1,1,1,"B","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",Status.NotPicked);
 
     }
 }

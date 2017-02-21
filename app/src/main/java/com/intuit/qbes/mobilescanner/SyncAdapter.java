@@ -5,6 +5,9 @@ package com.intuit.qbes.mobilescanner;
  */
 
 import com.intuit.qbes.mobilescanner.Account.GenericAccountService;
+import com.intuit.qbes.mobilescanner.model.LineItem;
+import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.networking.DataSync;
 
 import android.accounts.Account;
 import android.annotation.TargetApi;
@@ -45,15 +48,17 @@ import java.util.List;
  * The system calls onPerformSync() via an RPC call through the IBinder object supplied by
  * SyncService.
  */
-class SyncAdapter extends AbstractThreadedSyncAdapter {
+class SyncAdapter extends AbstractThreadedSyncAdapter implements DataSync.DataSyncCallback{
     public static final String TAG = "SyncAdapter";
     private final ContentResolver mContentResolver;
+    private final Context mContext;
     /**
      * Constructor. Obtains handle to content resolver for later use.
      */
     public SyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
         mContentResolver = context.getContentResolver();
+        mContext = context;
     }
 
     /**
@@ -63,6 +68,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     public SyncAdapter(Context context, boolean autoInitialize, boolean allowParallelSyncs) {
         super(context, autoInitialize, allowParallelSyncs);
         mContentResolver = context.getContentResolver();
+        mContext = context;
     }
 
     /**
@@ -85,7 +91,52 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                               ContentProviderClient provider, SyncResult syncResult) {
         Log.i(TAG, "Beginning network synchronization");
 
+        StartDataSync();
+
+    }
+
+
+    public void StartDataSync()
+    {
+        DataSync dataSync = new DataSync();
+        dataSync.FetchPicklists(mContext,this);
+    }
+
+    @Override
+    public void onFetchPicklist(List<Picklist> picklistsFromServer) {
+        updateContentProvider(picklistsFromServer);
+
+    }
+
+    public void updateContentProvider(List<Picklist> picklistsFromServer)
+    {
+        DatabaseHandler db = new DatabaseHandler(mContext);
+        List<Picklist> picklistsOnDevice = db.allPickLists();
+        for(int i = 0;i< picklistsFromServer.size();i++)
+        {
+            Picklist picklistServer = picklistsFromServer.get(i);
+            if(!db.PickListExists(picklistServer.getId())) //server has new Picklist,Put it on device
+            {
+                db.addPickList(picklistServer);
+
+                for(int j = 0; j < picklistServer.getLineitems().size(); j++)
+                {
+                    LineItem lineItem = new LineItem();
+                    lineItem = picklistServer.getLineitems().get(j);
+                    db.addLineItem(lineItem,lineItem.getId());
+                    lineItem = null;
+                }
+
             }
-
-
+            else //Picklist is on device - update server
+            {
+                Picklist picklistOnDevice = db.getPickList(picklistServer.getId());
+                List<LineItem> lineItemList = new ArrayList<>();
+                lineItemList = db.allLineItems(picklistOnDevice.getId());
+                picklistOnDevice.setLineitems(lineItemList);
+                DataSync dataSync = new DataSync();
+                dataSync.UpdatePicklist(picklistOnDevice,mContext);
+            }
+        }
+    }
 }

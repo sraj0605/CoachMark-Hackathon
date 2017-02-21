@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.intuit.qbes.mobilescanner.barcode.BarcodeScannerDevice;
 import com.intuit.qbes.mobilescanner.barcode.DeviceManager;
 import com.intuit.qbes.mobilescanner.model.LineItem;
+import com.intuit.qbes.mobilescanner.model.Status;
 
 import java.math.BigDecimal;
 import java.util.regex.Matcher;
@@ -646,31 +647,30 @@ public boolean noDecimal(double val)
     {
         Double qtyPicked = mlineItem.getQtyPicked();
         Double qtyToPick = mlineItem.getQtyToPick();
-        LineItem.Status status  = getItemStatus(qtyPicked,qtyToPick);
+        Status status  = getItemStatus(qtyPicked,qtyToPick);
         mlineItem.setmItemStatus(status);
 
     }
 
-    public LineItem.Status getItemStatus(Double qtyPicked,Double qtyToPick)
+    public Status getItemStatus(Double qtyPicked, Double qtyToPick)
     {
-        LineItem.Status status;
+        Status status = Status.Open;
         if(Double.compare(qtyPicked,qtyToPick) == 0)
         {
-            status = LineItem.Status.PICKED;
+            status = Status.Picked;
         }
 
         else if(Double.compare(qtyPicked,0) > 0 && Double.compare(qtyPicked,qtyToPick) < 0)
         {
-            status = LineItem.Status.PARTIALPICKED;
+            status = Status.PartiallyPicked;
         }
         else if(Double.compare(qtyPicked,0) == 0)
         {
-            status = LineItem.Status.NOTPICKED;
+            status = Status.NotPicked;
         }
         else
         {
-            //need to see
-            status = LineItem.Status.NOTAVAILABLE;
+            //check
         }
 
         return status;

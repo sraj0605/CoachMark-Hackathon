@@ -23,7 +23,7 @@ import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
 public class SortingDialogTest {
 
     private SortingDialog sortdialog;
-    private DetailPicklistFragment1 fragment = new DetailPicklistFragment1();
+    private TaskPickListFragment fragment = new TaskPickListFragment();
 
     @Before
     public void setUp() throws Exception {

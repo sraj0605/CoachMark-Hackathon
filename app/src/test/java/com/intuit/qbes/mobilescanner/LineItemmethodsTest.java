@@ -2,14 +2,17 @@ package com.intuit.qbes.mobilescanner;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
+import com.intuit.qbes.mobilescanner.model.Status;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.PICKED;
+
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -19,13 +22,15 @@ public class LineItemmethodsTest {
 
 
     LineItem lineItem = new LineItem();
-    private ArrayList<String> serialnos1 = new ArrayList<String>();
+    private List<SerialLotNumber> serialnos1 = new ArrayList<SerialLotNumber>();
 
 
 
     @Before
     public void setUp() {
-        serialnos1.add("s1");
+
+        SerialLotNumber test = new SerialLotNumber(1,1,1,"s1");
+        serialnos1.add(test);
         lineItem.setId(1);
         lineItem.setTaskId(2);
         lineItem.setExtId(3);
@@ -47,7 +52,7 @@ public class LineItemmethodsTest {
         lineItem.setShowLotNo(true);
         lineItem.setSerialLotNumbers(serialnos1);
         lineItem.setDeleted(true);
-        lineItem.setmItemStatus(PICKED);
+        lineItem.setmItemStatus(Status.Picked);
     }
 
     @Test
@@ -72,7 +77,7 @@ public class LineItemmethodsTest {
         assertEquals(lineItem.getBarcodeEntered(), "");
         assertEquals(String.valueOf(lineItem.getQtyPicked()), "1.0");
         assertEquals(String.valueOf(lineItem.getQtyToPick()), "5.0");
-        assertEquals(lineItem.getSerialLotNumbers(), test);
+        assertEquals(lineItem.getSerialLotNumbers().get(0).getValue().toString(), "s1");
 
     }
 

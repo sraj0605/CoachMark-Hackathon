@@ -37,7 +37,7 @@ import com.intuit.qbes.mobilescanner.barcode.BarcodeScannerDevice;
 import com.intuit.qbes.mobilescanner.barcode.DeviceManager;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
-import com.intuit.qbes.mobilescanner.model.LineItem.Status;
+import com.intuit.qbes.mobilescanner.model.Status;
 import com.intuit.qbes.mobilescanner.networking.AppController;
 import com.intuit.qbes.mobilescanner.networking.DataSync;
 import com.intuit.qbes.mobilescanner.networking.PicklistHttp;
@@ -51,21 +51,18 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTAVAILABLE;
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.PARTIALPICKED;
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.PICKED;
+
 import static java.lang.Math.E;
 
 /**
  * Created by ckumar5 on 08/01/17.
  */
 
-public class DetailPicklistFragment1 extends Fragment implements View.OnClickListener,SortingDialog.SortingSelectionDialogListener,BarcodeScannerDevice.ScanDataReceiver{
+public class TaskPickListFragment extends Fragment implements View.OnClickListener,SortingDialog.SortingSelectionDialogListener,BarcodeScannerDevice.ScanDataReceiver{
 
 
     public static final String EXTRA_PICKLIST = "com.intuit.qbes.mobilescanner.picklist";
-    private static final String LOG_STR = "DetailPicklistFragment";
+    private static final String LOG_STR = "TaskPickListFragment";
 
     private RecyclerView mRecyclerView;
     private LineItemAdapter mAdapter = null;
@@ -73,17 +70,15 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
 
 
     private Picklist mPicklist = null;
-    private DetailPicklistFragment1.Callbacks mCallbacks;
+    private TaskPickListFragment.Callbacks mCallbacks;
 
-    private BarcodeFactory mBarcodeFactory = null;
-    private BarcodeScannerDevice mBarcodeScannerDevice = null;
 
     private DataSync dataSync = null;
 
 
     private DeviceManager mDeviceManager = null;
 
-    private RelativeLayout mLayoutForFilter;
+    //private RelativeLayout mLayoutForFilter;
     private RelativeLayout mLayoutForSort;
     private ImageView mReverseSortingOption;
     private Button mSync;
@@ -102,18 +97,18 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
         void onPicklistComplete();
     }
 
-    public static DetailPicklistFragment1 newInstance(Picklist picklist)
+    public static TaskPickListFragment newInstance(Picklist picklist)
     {
         Bundle args = new Bundle();
         args.putParcelable(EXTRA_PICKLIST, picklist);
 
-        DetailPicklistFragment1 fragment = new DetailPicklistFragment1();
+        TaskPickListFragment fragment = new TaskPickListFragment();
 
         fragment.setArguments(args);
         return fragment;
     }
 
-    public DetailPicklistFragment1() {
+    public TaskPickListFragment() {
         // Required empty public constructor
     }
 
@@ -364,7 +359,7 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
             {
                 FragmentManager fm = getFragmentManager();
                 SortingDialog sortDialog = new SortingDialog();
-                sortDialog.setTargetFragment(DetailPicklistFragment1.this,300);
+                sortDialog.setTargetFragment(TaskPickListFragment.this,300);
                 sortDialog.show(fm,"sort by");
                 break;
             }
@@ -478,11 +473,11 @@ public class DetailPicklistFragment1 extends Fragment implements View.OnClickLis
             else
                 mQtyToPick.setText(String.format("Qty : %s", (item.getQtyToPick())));
 
-            if(item.getmItemStatus() == Status.PICKED)
+            if(item.getmItemStatus() == Status.Picked)
                 mPickOrNonPickImage.setImageResource(R.drawable.ic_picked_test);
-            else if(item.getmItemStatus() == Status.NOTPICKED)
+            else if(item.getmItemStatus() == Status.NotPicked)
                 mPickOrNonPickImage.setImageResource(R.drawable.ic_notpicked_test);
-            else if(item.getmItemStatus() == Status.PARTIALPICKED)
+            else if(item.getmItemStatus() == Status.PartiallyPicked)
                 mPickOrNonPickImage.setImageResource(R.mipmap.ic_partialpicked);
             else
                 mPickOrNonPickImage.setImageResource(R.drawable.ic_notpicked_test);

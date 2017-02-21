@@ -29,7 +29,6 @@ import org.robolectric.util.ServiceController;
 
 import java.util.ArrayList;
 
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 
 
 

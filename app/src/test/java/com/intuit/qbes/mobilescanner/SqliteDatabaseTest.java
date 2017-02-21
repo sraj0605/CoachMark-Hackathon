@@ -5,6 +5,8 @@ import android.os.Build;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
+import com.intuit.qbes.mobilescanner.model.Status;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,7 +21,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 
 /**
  * Created by ashah9 on 2/8/17.
@@ -50,9 +51,9 @@ public class SqliteDatabaseTest {
                 .get();
 
         db = new DatabaseHandler(activity);
-        lineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",NOTPICKED);
+        lineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false", Status.NotPicked);
         LineItems.add(0,lineitem);
-        picklist = new Picklist(1, 1,1, "Picklist1",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",LineItems,"false");
+        picklist = new Picklist(1, 1,1, "Picklist1",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",LineItems,"false");
 
     }
 
@@ -75,7 +76,7 @@ public class SqliteDatabaseTest {
     public void test_updatepicklist () throws Exception
     {
 
-        Picklist testpicklist = new Picklist(1, 1,1, "PicklistTest",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",LineItems,"false");
+        Picklist testpicklist = new Picklist(1, 1,1, "PicklistTest",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",LineItems,"false");
         db.addPickList(picklist);
         db.updatePickList(testpicklist,1);
         picklists =  db.allPickLists();
@@ -113,10 +114,12 @@ public class SqliteDatabaseTest {
     @Test
     public void test_updatelineitems()
     {
-        ArrayList<String> serialnum = new ArrayList<>();
-        serialnum.add("ser1");
-        serialnum.add("ser2");
-        LineItem testlineitem = new LineItem(1,1,1,"TestItem","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnum,"true","true","false",NOTPICKED);
+        List<SerialLotNumber> serialnum = new ArrayList<>();
+        SerialLotNumber obj = new SerialLotNumber(1,1,1,"ser1");
+        SerialLotNumber obj1 = new SerialLotNumber(1,1,1,"ser2");
+        serialnum.add(obj);
+        serialnum.add(obj1);
+        LineItem testlineitem = new LineItem(1,1,1,"TestItem","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnum,"true","true","false",Status.NotPicked);
         db.addLineItem(testlineitem,1);
 
         db.updateLineItems(testlineitem,1);
@@ -135,6 +138,7 @@ public class SqliteDatabaseTest {
         db.deleteLineItems(1);
 
         LineItems = db.allLineItems(1);
+
         Assert.assertEquals(LineItems.size(),0);
 
     }

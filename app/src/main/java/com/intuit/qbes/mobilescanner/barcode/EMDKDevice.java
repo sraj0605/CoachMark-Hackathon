@@ -9,11 +9,33 @@ import com.symbol.emdk.EMDKResults;
 import com.symbol.emdk.barcode.BarcodeManager;
 import com.symbol.emdk.barcode.ScanDataCollection;
 import com.symbol.emdk.barcode.Scanner;
+import com.symbol.emdk.barcode.ScannerConfig;
 import com.symbol.emdk.barcode.ScannerException;
 import com.symbol.emdk.barcode.ScannerInfo;
 import com.symbol.emdk.barcode.ScannerResults;
 import com.symbol.emdk.barcode.StatusData;
 import java.util.ArrayList;
+import com.symbol.emdk.EMDKManager;
+import com.symbol.emdk.EMDKManager.EMDKListener;
+import com.symbol.emdk.EMDKResults;
+import com.symbol.emdk.barcode.ScanDataCollection;
+import com.symbol.emdk.barcode.Scanner;
+import com.symbol.emdk.barcode.Scanner.DataListener;
+import com.symbol.emdk.barcode.Scanner.StatusListener;
+import com.symbol.emdk.barcode.StatusData;
+import com.symbol.emdk.barcode.BarcodeManager;
+import com.symbol.emdk.barcode.BarcodeManager.DeviceIdentifier;
+import com.symbol.emdk.barcode.ScannerException;
+import com.symbol.emdk.barcode.ScannerResults;
+import com.symbol.emdk.barcode.ScanDataCollection.ScanData;
+import com.symbol.emdk.barcode.ScanDataCollection.LabelType;
+import android.content.Context;
+import com.symbol.emdk.barcode.Scanner.TriggerType;
+import android.os.AsyncTask;
+import java.util.ArrayList;
+import android.os.Trace;
+import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Created by ckumar5 on 23/12/16.

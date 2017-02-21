@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.intuit.qbes.mobilescanner.MSUtils;
 
@@ -16,6 +17,7 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -35,43 +37,55 @@ public class LineItem implements Parcelable {
     private static final String JSON_TAG_TOPICK = "to_pick";
     private static final String JSON_TAG_BARCODE = "barcode";
     private static final String TAG_ID = "picklist_id";
-
+    @Expose(serialize = true)
     private long id;
+    @Expose(serialize = false)
     private long taskId;
+    @Expose(serialize = false)
     private  long extId;
+    @Expose(serialize = false)
     private String itemName;
+    @Expose(serialize = false)
     private String itemDesc;
+    @Expose(serialize = false)
     private long lineitemPos;
+    @Expose(serialize = false)
     private String docNum;
+    @Expose(serialize = false)
     private long txnId;
+    @Expose(serialize = false)
     private Date txnDate;
+    @Expose(serialize = false)
     private Date shipDate;
+    @Expose(serialize = true)
     private String notes;
-    public enum Status
-    {
-        @SerializedName("0")
-        NOTAVAILABLE,
-        @SerializedName("1")
-        NOTPICKED,
-        @SerializedName("2")
-        PARTIALPICKED,
-        @SerializedName("3")
-        PICKED
-
-    }
+    @Expose(serialize = false)
     private String uom;
+    @Expose(serialize = true)
     private double qtyToPick;
+    @Expose(serialize = true)
     private double qtyPicked;
+    @Expose(serialize = false)
     private  String barcode;
+    @Expose(serialize = true)
     private String binLocation;
+    @Expose(serialize = true)
     private  long binExtId;
+    @Expose(serialize = false)
     private  String customFields;
-    private ArrayList<String> serialLotNumbers = null;
+    // private ArrayList<String> serialLotNumbers = null;
+    @Expose(serialize = true)
+    List<SerialLotNumber> serialLotNumbers = null;
+    @Expose(serialize = false)
     private boolean deleted;
+    @Expose(serialize = false)
     private boolean showSerialNo;
+    @Expose(serialize = false)
     private  boolean showLotNo;
+    @Expose(serialize = true)
     @SerializedName("status")
     private Status mItemStatus;
+    @Expose(serialize = false)
     private transient String barcodeEntered;
 
     public long getTaskId() {
@@ -218,11 +232,11 @@ public class LineItem implements Parcelable {
         this.customFields = customFields;
     }
 
-    public ArrayList<String> getSerialLotNumbers() {
+    public List<SerialLotNumber> getSerialLotNumbers() {
         return serialLotNumbers;
     }
 
-    public void setSerialLotNumbers(ArrayList<String> serialLotNumbers) {
+    public void setSerialLotNumbers(List<SerialLotNumber> serialLotNumbers) {
         this.serialLotNumbers = serialLotNumbers;
     }
 
@@ -295,7 +309,7 @@ public class LineItem implements Parcelable {
                     String binLocation,
                     long binExtId,
                     String customFields,
-                    ArrayList<String> serialLotNumbers,
+                    List<SerialLotNumber> serialLotNumbers,
                     String deleted,
                     String showSerialNo,
                     String showLotNo,
@@ -361,7 +375,7 @@ public class LineItem implements Parcelable {
             binLocation = in.readString();
             binExtId = in.readLong();
             customFields = in.readString();
-            serialLotNumbers = (ArrayList<String>) in.readSerializable();
+            serialLotNumbers =  new ArrayList<SerialLotNumber>(Arrays.asList(in.createTypedArray(SerialLotNumber.CREATOR)));
             deleted = Boolean.valueOf(in.readString());
             showSerialNo = Boolean.valueOf(in.readString());
             showLotNo = Boolean.valueOf(in.readString());
@@ -413,18 +427,15 @@ public class LineItem implements Parcelable {
     }
     public String JSONStringFromLineitem(LineItem lineItem)
     {
-        GsonBuilder builder = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd");
+        GsonBuilder builder = new GsonBuilder().setDateFormat("yyyy-MM-dd");
         Gson gson = builder.create();
         String jsonString = gson.toJson(lineItem);
-
         return jsonString;
     }
 
     public String JSONStringArrayFromPicklistArray(List<LineItem> lineItems)
     {
-        GsonBuilder builder = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd");
+        GsonBuilder builder = new GsonBuilder().setDateFormat("yyyy-MM-dd");
         Gson gson = builder.create();
         String jsonString = gson.toJson(lineItems);
 
@@ -457,7 +468,7 @@ public class LineItem implements Parcelable {
             dest.writeString(getBinLocation());
             dest.writeLong(getExtId());
             dest.writeString(getCustomFields());
-            dest.writeSerializable(getSerialLotNumbers());
+            dest.writeTypedArray(getSerialLotNumbers().toArray(new SerialLotNumber[getSerialLotNumbers().size()]), 0);
             dest.writeString(String.valueOf(isDeleted()));
             dest.writeString(String.valueOf(isShowSerialNo()));
             dest.writeString(String.valueOf(isShowLotNo()));
@@ -496,7 +507,9 @@ public class LineItem implements Parcelable {
             if(this.getId() == -1) { //object of dummy barcode which will have recnum as -1
                 test = (rhs.getBarcode().toLowerCase().compareTo(this.getBarcode().toLowerCase()));
                 if (test == 0)
-                    ret = true;
+                {
+                    ret = rhs.getmItemStatus() != Status.Picked;
+                }
             }
             else
             {

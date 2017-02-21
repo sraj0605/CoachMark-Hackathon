@@ -14,7 +14,7 @@ import com.intuit.qbes.mobilescanner.model.Picklist;
 /**
  * Created by pdixit on 10/6/16.
  */
-public class DetailPicklistActivity extends SingleFrameActivity implements DetailPicklistFragment1.Callbacks {
+public class DetailPicklistActivity extends SingleFrameActivity implements TaskPickListFragment.Callbacks {
 
     private static final String LOG_TAG = "DetailPicklistActivity";
 
@@ -23,8 +23,8 @@ public class DetailPicklistActivity extends SingleFrameActivity implements Detai
     @Override
     protected Fragment createFragment()
     {
-        Picklist picklist = (Picklist) getIntent().getParcelableExtra(DetailPicklistFragment1.EXTRA_PICKLIST);
-        return DetailPicklistFragment1.newInstance(picklist);
+        Picklist picklist = (Picklist) getIntent().getParcelableExtra(TaskPickListFragment.EXTRA_PICKLIST);
+        return TaskPickListFragment.newInstance(picklist);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class DetailPicklistActivity extends SingleFrameActivity implements Detai
         else
         {
             Intent data = new Intent();
-            data.putExtra(DetailPicklistFragment1.EXTRA_PICKLIST, picklist);
+            data.putExtra(TaskPickListFragment.EXTRA_PICKLIST, picklist);
             setResult(Activity.RESULT_OK, data);
             finish();
         }
@@ -71,7 +71,7 @@ public class DetailPicklistActivity extends SingleFrameActivity implements Detai
             case REQUEST_DETAIL_ITEM:
                 FragmentManager fm = getSupportFragmentManager();
 
-                DetailPicklistFragment1 fragment = (DetailPicklistFragment1) fm.findFragmentById(R.id.flContent);
+                TaskPickListFragment fragment = (TaskPickListFragment) fm.findFragmentById(R.id.flContent);
                 if (fragment != null)
                 {
                     try

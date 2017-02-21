@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.model.Status;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,23 +36,22 @@ import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowDialog;
 import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
 import org.robolectric.util.ActivityController;
+import org.robolectric.util.FragmentTestUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.intuit.qbes.mobilescanner.ProductInfoFragment.EXTRA_LINEITEM;
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTAVAILABLE;
-import static com.intuit.qbes.mobilescanner.model.LineItem.Status.NOTPICKED;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 import static org.robolectric.util.FragmentTestUtil.startFragment;
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
 @RunWith(RobolectricTestRunner.class)
-public class DetailPickListFragment1Test {
+public class TaskPickListFragmentTest {
 
     private DetailPicklistActivity detailPicklistActivity;
-    private DetailPicklistFragment1 detailPicklistFragment1;
+    private TaskPickListFragment taskPickListFragment;
     private List<LineItem> mLineitems;
     private LineItem mLineItem;
     private Picklist mPickList;
@@ -59,24 +59,24 @@ public class DetailPickListFragment1Test {
     public void setUp() throws Exception {
         createDummyModel();
         Intent intent = new Intent(RuntimeEnvironment.application, DetailPicklistActivity.class);
-        intent.putExtra(DetailPicklistFragment1.EXTRA_PICKLIST, mPickList);
+        intent.putExtra(TaskPickListFragment.EXTRA_PICKLIST, mPickList);
         detailPicklistActivity = Robolectric.buildActivity(DetailPicklistActivity.class)
                 .withIntent(intent)
                 .create()
                 .start()
                 .get();
-        detailPicklistFragment1 = DetailPicklistFragment1.newInstance(mPickList);
+        taskPickListFragment = TaskPickListFragment.newInstance(mPickList);
         //SupportFragmentTestUtil.startFragment(detailPicklistFragment1);
-        SupportFragmentTestUtil.startVisibleFragment(detailPicklistFragment1);
+        SupportFragmentTestUtil.startVisibleFragment(taskPickListFragment);
 
     }
 
     public void createDummyModel()
     {
         mLineitems = new ArrayList<>();
-        mLineItem = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",NOTPICKED);
+        mLineItem = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",Status.NotPicked);
         mLineitems.add(mLineItem);
-        mPickList = new Picklist(1, 1,1, "Picklist1",1,1,1,1,"note1","show",1,"2017-01-10","2017-01-10",mLineitems,"false");
+        mPickList = new Picklist(1, 1,1, "Picklist1",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",mLineitems,"false");
 
     }
 
@@ -84,7 +84,7 @@ public class DetailPickListFragment1Test {
     public void test_ActivityAndFragment_Launched()
     {
         Assert.assertNotNull(detailPicklistActivity);
-        Assert.assertNotNull(detailPicklistFragment1);
+        Assert.assertNotNull(taskPickListFragment);
 
 
     }
@@ -92,7 +92,7 @@ public class DetailPickListFragment1Test {
     @Test
     public void test_UI_Control_Validation_Against_Model()
     {
-        RecyclerView recycleview = (RecyclerView)detailPicklistFragment1.getView().findViewById(R.id.detail_picklist_rv2);
+        RecyclerView recycleview = (RecyclerView)taskPickListFragment.getView().findViewById(R.id.detail_picklist_rv2);
         Assert.assertNotNull(recycleview);
         recycleview.measure(0,0);
         recycleview.layout(0,0,100,1000);
@@ -130,10 +130,10 @@ public class DetailPickListFragment1Test {
     @Test
     public void test_sort_button_click()
     {
-        TextView sortby = (TextView) detailPicklistFragment1.getView().findViewById(R.id.sortby);
+        TextView sortby = (TextView) taskPickListFragment.getView().findViewById(R.id.sortby);
         junit.framework.Assert.assertNotNull(sortby);
 
-        TextView mSortOrderSelection = (TextView)detailPicklistFragment1.getView().findViewById(R.id.sortbyselection);
+        TextView mSortOrderSelection = (TextView)taskPickListFragment.getView().findViewById(R.id.sortbyselection);
         mSortOrderSelection.performClick();
 
     }
@@ -178,11 +178,11 @@ public class DetailPickListFragment1Test {
     @Test
     public void test_updatelineitem()
     {
-       LineItem testlineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",NOTPICKED);
+       LineItem testlineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false", Status.NotPicked);
 
-        detailPicklistFragment1.updateLineItem(testlineitem);
+        taskPickListFragment.updateLineItem(testlineitem);
 
-        detailPicklistFragment1.updateViewAtPosition(0);
+        taskPickListFragment.updateViewAtPosition(0);
     }
 
     @Test
@@ -190,21 +190,21 @@ public class DetailPickListFragment1Test {
     {
 
         MenuItem menuItem = new RoboMenuItem(R.id.home);
-        detailPicklistFragment1.onOptionsItemSelected(menuItem);
-        Assert.assertEquals(detailPicklistFragment1.getFragmentManager().getBackStackEntryCount(),0);
+        taskPickListFragment.onOptionsItemSelected(menuItem);
+        Assert.assertEquals(taskPickListFragment.getFragmentManager().getBackStackEntryCount(),0);
 
     }
 
     @Test
     public void test_sort_selection()
     {
-        detailPicklistFragment1.onSortingOptionSelection(SortFilterOption.Items);
+        taskPickListFragment.onSortingOptionSelection(SortFilterOption.Items);
     }
 
     @Test
     public void test_scandata_rec()
     {
-        detailPicklistFragment1.scanDataReceived("yes");
+        taskPickListFragment.scanDataReceived("yes");
     }
 
 }
