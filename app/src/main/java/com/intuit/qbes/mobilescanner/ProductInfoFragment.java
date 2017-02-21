@@ -720,7 +720,6 @@ public boolean noDecimal(double val)
         openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         openDialog.setContentView(R.layout.quantitysno_mismatch_dialog);
         Button dialogCloseButton = (Button) openDialog.findViewById(R.id.MismatchbtnOk);
-        openDialog.setCancelable(false);
         dialogCloseButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
