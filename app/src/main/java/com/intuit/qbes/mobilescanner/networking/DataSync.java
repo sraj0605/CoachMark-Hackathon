@@ -1,13 +1,18 @@
 package com.intuit.qbes.mobilescanner.networking;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -16,6 +21,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.intuit.qbes.mobilescanner.DatabaseHandler;
 import com.intuit.qbes.mobilescanner.ListPicklistFragment;
+import com.intuit.qbes.mobilescanner.R;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 
@@ -24,6 +30,7 @@ import org.json.JSONException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ashah9 on 2/10/17.
@@ -34,7 +41,6 @@ public class DataSync {
     private static final String updateTAG = "Update";
     private String fetchTAG  = "Fetch";
     private List<Picklist> mPicklists = new ArrayList<>();
-    private ProgressDialog mProgressDialog;
     private DataSyncCallback mCallback;
 
 
@@ -44,27 +50,28 @@ public class DataSync {
     }
 
 
-    public void UpdatePicklist(Picklist mPicklist, Context context)
+    public void UpdatePicklist(Picklist mPicklist, final Context context)
     {
-      //  init_dialog(context);
 
         try {
-     //       showDialog();
             String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/98?merge=true";
-         //   String URL = "https://posttestserver.com/post.php";
             final String picklistJSONStr = Picklist.JSONStringFromPicklist(mPicklist);
 
             StringRequest stringRequest = new StringRequest(Request.Method.PUT, URL, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     Log.i("VOLLEY", response);
-      //              hideDialog();
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.e("VOLLEY", error.toString());
-      //              hideDialog();
+
+                    if (error instanceof NoConnectionError) {
+                        //No Internet Error
+                        NoInternetDialog(context);
+
+                    }
                 }
             }) {
                 @Override
@@ -80,16 +87,6 @@ public class DataSync {
                         VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", picklistJSONStr, "utf-8");
                         return null;
                     }
-                }
-
-                @Override
-                protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                    String responseString = "";
-                    if (response != null) {
-                        responseString = String.valueOf(response.statusCode);
-                        // can get more details such as response.headers
-                    }
-                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
                 }
             };
 
@@ -107,20 +104,16 @@ public class DataSync {
 
     public void FetchPicklists(final Context context, final DataSyncCallback callback)
     {
-     //   init_dialog(context);
 
         try {
-     //       showDialog();
             String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/98";
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            // Display the first 500 characters of the response string.
                             try {
                                 mPicklists.add(Picklist.picklistFromJSON(response));
-                              //  Picklist.StorePickList(mPicklists, context);
                                 mCallback = callback;
                                 mCallback.onFetchPicklist(mPicklists);
 
@@ -129,15 +122,16 @@ public class DataSync {
                                 Log.d("Error:", e.getMessage());
 
                             }
-         //                   hideDialog();
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     VolleyLog.d("Response", "Error: " + error.getMessage());
-                    Toast.makeText(context,
-                            error.getMessage(), Toast.LENGTH_SHORT).show();
-        //            hideDialog();
+                    if (error instanceof NoConnectionError) {
+                        //No Internet Error
+                        NoInternetDialog(context);
+
+                    }
                 }
             });
 
@@ -155,21 +149,25 @@ public class DataSync {
         }
     }
 
-  /*  private void init_dialog(Context context)
+    public void NoInternetDialog(Context context)
     {
-        mProgressDialog = new ProgressDialog(context);
-        mProgressDialog.setMessage("Updating Information...");
-        mProgressDialog.setCancelable(false);
-    }
+        final Dialog openDialog = new Dialog(context);
+        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        openDialog.setContentView(R.layout.connection_error_dialog);
+        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.NetowrkbtnOk);
+        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
 
-    private void showDialog() {
-        if (!mProgressDialog.isShowing())
-            mProgressDialog.show();
-    }
+            @Override
 
-    private void hideDialog() {
-        if (mProgressDialog.isShowing())
-            mProgressDialog.dismiss();
+            public void onClick(View v) {
+
+
+                openDialog.dismiss();
+
+            }
+
+        });
+
+        openDialog.show();
     }
-*/
 }
