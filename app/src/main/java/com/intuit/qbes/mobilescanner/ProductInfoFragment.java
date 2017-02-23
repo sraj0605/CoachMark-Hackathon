@@ -187,6 +187,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             if (mlineItem.getSerialLotNumbers().size() > 0 && mlineItem.getBarcodeEntered().isEmpty())
                 showUPCDialog();
         }
+
         mUPC_background = (View)view.findViewById(R.id.UPC_Error);
         mQty_picked.setFilters(new InputFilter[]{new DecimalDigitsInputFilter(11, 4)});
 
@@ -624,6 +625,7 @@ public boolean noDecimal(double val)
                 @Override
                 public void run() {
                     mUPC_Value.setText(sUPCData);
+                    mlineItem.setBarcodeEntered(sUPCData);
                     onClick(mIncrement);
 
                 }

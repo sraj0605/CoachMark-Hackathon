@@ -124,6 +124,7 @@ private EditText mUPC_entered;
             @Override
             public void run() {
                 mUPC_entered.setText(sBarcode);
+                mLineItem.setBarcodeEntered(sBarcode);
                 onClick(mUpc_confirm);
             }
         });
