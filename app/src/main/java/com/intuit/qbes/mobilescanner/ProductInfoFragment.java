@@ -92,6 +92,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
         mlineItem = (LineItem) getArguments().getParcelable(EXTRA_LINEITEM);
         mbarcodePassed = getArguments().getString(BARCODE_ENTERED);
+        mlineItem.setBarcodeEntered(mbarcodePassed);
         if (mlineItem == null && savedInstanceState != null)
         {
             mlineItem = (LineItem) savedInstanceState.getParcelable(EXTRA_LINEITEM);
