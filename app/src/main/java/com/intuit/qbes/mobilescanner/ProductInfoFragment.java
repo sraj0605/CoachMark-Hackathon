@@ -235,9 +235,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             onClick(mIncrement);
         }
         setControllers(mlineItem, view);
-        mDeviceManager = DeviceManager.getDevice(getContext());
-        mDeviceManager.unRegisterDeviceFromCallback(this);
-        mDeviceManager.registerForCallback(this);
+        init_barcode();
     }
 
     public void setControllers(LineItem lineitem, View view)
@@ -684,6 +682,13 @@ public boolean noDecimal(double val)
         UPCFragment UPCFragment = new UPCFragment().newInstance(mlineItem);
         UPCFragment.setTargetFragment(ProductInfoFragment.this,300);
         UPCFragment.show(fm, "fragment_edit_name");
+
+        UPCFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                init_barcode();
+            }
+        });
     }
 
     @Override
@@ -737,6 +742,13 @@ public boolean noDecimal(double val)
         });
 
         openDialog.show();
+    }
+
+    public void init_barcode()
+    {
+        mDeviceManager = DeviceManager.getDevice(getContext());
+        mDeviceManager.unRegisterDeviceFromCallback(this);
+        mDeviceManager.registerForCallback(this);
     }
 }
 

@@ -479,7 +479,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         public void onClick(View v) {
             if (mCallbacks != null)
             {
-                mCallbacks.onLineItemSelected(mItem,"");
+                mCallbacks.onLineItemSelected(mItem,mItem.getBarcodeEntered());
             }
         }
         //To check its integer or not

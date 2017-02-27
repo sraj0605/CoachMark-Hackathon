@@ -77,11 +77,16 @@ public class DetailPicklistActivity extends SingleFrameActivity implements TaskP
                     try
                     {
                         LineItem obj = (LineItem) data.getParcelableExtra(ProductInfoFragment.EXTRA_LINEITEM);
-                        fragment.updateLineItemAndItsView((LineItem) data.getParcelableExtra(ProductInfoFragment.EXTRA_LINEITEM));
                         //To Do- second condition is hack will be done in product info fragment
                         if(obj.getBarcodeEntered() != null && obj.getBarcode() != null) {
-                            if ((obj.getBarcodeEntered().compareTo("") != 0) && (obj.getBarcode().compareTo(obj.getBarcodeEntered()) != 0))
+                            if ((obj.getBarcodeEntered().compareTo("") != 0) && (obj.getBarcode().compareTo(obj.getBarcodeEntered()) != 0)) {
                                 fragment.scanDataReceived(obj.getBarcodeEntered());
+                            }
+                            else
+                            {
+                                fragment.updateLineItemAndItsView((LineItem) data.getParcelableExtra(ProductInfoFragment.EXTRA_LINEITEM));
+                            }
+
                         }
 
                     }

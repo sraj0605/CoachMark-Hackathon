@@ -265,7 +265,7 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
         if (lineitems == null)
             lineitems = new ArrayList<LineItem>();
         //cahdan -start - only for testing
-        LineItem obj1 = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        LineItem obj1 = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901057510028","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
         LineItem obj2 = new LineItem(2,2,2,"Iphone","hardware it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901057310062","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
         LineItem obj3 = new LineItem(3,3,3,"Motorola","awesome phone",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
         LineItem obj4 = new LineItem(4,4,4,"Zebra","hardware it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);

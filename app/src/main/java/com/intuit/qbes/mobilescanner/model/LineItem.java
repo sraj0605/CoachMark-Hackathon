@@ -86,7 +86,7 @@ public class LineItem implements Parcelable {
     @SerializedName("status")
     private Status mItemStatus;
     @Expose(serialize = false)
-    private transient String barcodeEntered;
+    private transient String barcodeEntered = "";
 
     public long getTaskId() {
         return taskId;

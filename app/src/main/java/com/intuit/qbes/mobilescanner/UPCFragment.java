@@ -1,6 +1,7 @@
 
 package com.intuit.qbes.mobilescanner;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -36,6 +37,8 @@ private EditText mUPC_entered;
     private Button mUpc_confirm;
     private TextView mUpc_error_text;
     private DeviceManager mDeviceManager = null;
+    private DialogInterface.OnDismissListener onDismissListener;
+
 
 
     public UPCFragment() {
@@ -189,5 +192,18 @@ private EditText mUPC_entered;
        this.dismiss();
 
    }
+
+    public void setOnDismissListener(DialogInterface.OnDismissListener onDismissListener) {
+        this.onDismissListener = onDismissListener;
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (onDismissListener != null) {
+            onDismissListener.onDismiss(dialog);
+        }
+    }
+
 
 }
