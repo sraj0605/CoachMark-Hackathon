@@ -56,8 +56,10 @@
 
         </activity>
         <provider
-            android:authorities="ourContentProviderAuthorities"
-            android:name="ApplicationContentProvider"></provider>
+            android:authorities="com.intuit.qbes.mobilescanner.provider"
+            android:name=".ApplicationContentProvider"
+            android:syncable="true"
+            android:exported="false"></provider>
 
 
         <activity
