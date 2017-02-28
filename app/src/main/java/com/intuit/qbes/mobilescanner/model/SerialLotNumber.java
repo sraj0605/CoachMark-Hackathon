@@ -3,15 +3,21 @@ package com.intuit.qbes.mobilescanner.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Created by ckumar5 on 14/02/17.
  */
 
 public class SerialLotNumber implements Parcelable {
 
+    @Expose(serialize = false)
     private long id;
+    @Expose(serialize = true)
     private long lineitemId;
+    @Expose(serialize = true)
     private int type;
+    @Expose(serialize = true)
     private String value;
 
     public long getLineitemId() {

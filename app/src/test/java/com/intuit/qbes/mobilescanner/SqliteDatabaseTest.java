@@ -53,7 +53,7 @@ public class SqliteDatabaseTest {
         db = new DatabaseHandler(activity);
         lineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false", Status.NotPicked);
         LineItems.add(0,lineitem);
-        picklist = new Picklist(1, 1,1, "Picklist1",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",LineItems,"false");
+        picklist = new Picklist(1, 1,1, "Picklist1",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",LineItems,"false");
 
     }
 
@@ -76,7 +76,7 @@ public class SqliteDatabaseTest {
     public void test_updatepicklist () throws Exception
     {
 
-        Picklist testpicklist = new Picklist(1, 1,1, "PicklistTest",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",LineItems,"false");
+        Picklist testpicklist = new Picklist(1, 1,1, "PicklistTest",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",LineItems,"false");
         db.addPickList(picklist);
         db.updatePickList(testpicklist,1);
         picklists =  db.allPickLists();
@@ -88,7 +88,7 @@ public class SqliteDatabaseTest {
     {
 
         db.addPickList(picklist);
-        db.deleteOnePicklist(picklist);
+        db.deleteOnePicklist(picklist.getId());
         picklists =  db.allPickLists();
 
         Assert.assertEquals(picklists.size(),0);

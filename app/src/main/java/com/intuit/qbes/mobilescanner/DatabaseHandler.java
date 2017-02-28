@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
@@ -85,7 +86,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         db.execSQL("create table PickListInfo " +
-                "(id long, companyId long,taskType long,name text,assigneeId long,createdById long,Status int,siteId long,notes text,showNotes text,syncToken long,createdTimestamp text, modifiedTimestamp text)");
+                "(id long, companyId long,taskType long,name text,assigneeId long,createdById long,Status int,siteId long,notes text,showNotes text,syncToken long, modifiedTimestamp text)");
 
         //need to change
         db.execSQL("create table LineItemInfo " +
@@ -102,13 +103,42 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-    public void deleteOnePicklist(Picklist mPickList) {
+    public void deleteOnePicklist(long id) {
 
         //String selection = "recnum = \" " + String.valueOf(mPickList.getRecnum()) + "\"";
         String selection = "id = ?";
-        String [] selectionArgs = new String[] {String.valueOf(mPickList.getId())};
+        String [] selectionArgs = new String[] {String.valueOf(id)};
         myCR.delete(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE,selection,selectionArgs);
 
+    }
+
+    public void deletePicklistWithDetails(long id)
+    {
+        try {
+            deleteOnePicklist(id);
+            List<LineItem> lineItems = allLineItems(id);
+            if(lineItems != null) {
+                deleteLineItems(id);
+                for (int i = 0; i < lineItems.size(); i++) {
+                    LineItem lineItem = lineItems.get(i);
+                    List<SerialLotNumber> serialLotNumbers = lineItem.getSerialLotNumbers();
+                    if(serialLotNumbers != null)
+                    {
+                        for(int j= 0; j <serialLotNumbers.size();j++ )
+                        {
+                            SerialLotNumber serialLotNumber = lineItem.getSerialLotNumbers().get(j);
+                            deleteSerialNumber(serialLotNumber.getId(), serialLotNumber.getValue());
+                            serialLotNumber = null;
+                        }
+                    }
+
+                }
+            }
+        }
+        catch (Exception exp)
+        {
+
+        }
     }
 
     public List<Picklist> allPickLists() {
@@ -135,8 +165,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     mPickList.setNotes((cursor.getString(8)));
                     mPickList.setShowNotes(Boolean.valueOf(cursor.getString(9)));
                     mPickList.setSyncToken((cursor.getLong(10)));
-                    mPickList.setCreatedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(11))));
-                    mPickList.setModifiedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(12))));
+                    //mPickList.setCreatedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(11))));
+                    mPickList.setModifiedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(11))));
                     mPickLists.add(mPickList);
                 } while (cursor.moveToNext());
             }
@@ -171,10 +201,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     mPickList.setNotes((cursor.getString(8)));
                     mPickList.setShowNotes(Boolean.valueOf(cursor.getString(9)));
                     mPickList.setSyncToken((cursor.getLong(10)));
-                    mPickList.setCreatedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(11))));
-                    mPickList.setModifiedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(12))));
+                    //mPickList.setCreatedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(11))));
+                    mPickList.setModifiedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(11))));
                 } while (cursor.moveToNext());
             }
+
         }
         catch (ParseException exp)
         {
@@ -197,9 +228,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(KEY_NOTES, mPickList.getNotes());
             values.put(KEY_SHOWNOTES, String.valueOf(mPickList.isShowNotes()));
             values.put(KEY_SYNCTOKEN, mPickList.getSyncToken());
-            values.put(KEY_CREATEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getCreatedTimestamp()));
+           // values.put(KEY_CREATEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getCreatedTimestamp()));
             values.put(KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getModifiedTimestamp()));
             myCR.insert(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE, values);
+        }
+        catch (IllegalArgumentException exp)
+        {
+            exp.printStackTrace();
+        }
+    }
+
+    public void addPickListWithDetail(Picklist mPickList) {
+        try
+        {
+            addPickList(mPickList);
+            for(int i = 0;i < mPickList.getLineitems().size();i++)
+            {
+                LineItem lineItem = mPickList.getLineitems().get(i);
+                addLineItem(lineItem,lineItem.getId());
+                for(int j = 0;j< lineItem.getSerialLotNumbers().size();j++)
+                {
+                    SerialLotNumber serialLotNumber = lineItem.getSerialLotNumbers().get(j);
+                    addSerialLotNumber(serialLotNumber);
+                }
+            }
         }
         catch (IllegalArgumentException exp)
         {
@@ -221,7 +273,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(KEY_NOTES, mPickList.getNotes());
             values.put(KEY_SHOWNOTES, String.valueOf(mPickList.isShowNotes()));
             values.put(KEY_SYNCTOKEN, mPickList.getSyncToken());
-            values.put(KEY_CREATEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getCreatedTimestamp()));
+            //values.put(KEY_CREATEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getCreatedTimestamp()));
             values.put(KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getModifiedTimestamp()));
 
             String whereClause = "id = " + String.valueOf(mPickList.getId());

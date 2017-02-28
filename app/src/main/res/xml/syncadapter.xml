@@ -16,7 +16,7 @@ limitations under the License.
 -->
 
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
-              android:contentAuthority="ourContentProviderAuthorities"
+              android:contentAuthority="com.intuit.qbes.mobilescanner.provider"
               android:accountType="com.intuit.qbes.mobilescanner.Account"
               android:userVisible="true"
               android:supportsUploading="true"

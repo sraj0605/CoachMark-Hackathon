@@ -69,9 +69,7 @@ public class Picklist implements Parcelable {
     @Expose(serialize = false)
     private long syncToken;
     @Expose(serialize = false)
-    private Date createdTimestamp;
-    @Expose(serialize = false)
-    private Date modifiedTimestamp;
+    private Date lastModified;
     @Expose(serialize = true)
     private List<LineItem> lineitems = null;
     @Expose(serialize = false)
@@ -96,8 +94,7 @@ public class Picklist implements Parcelable {
                     String notes,
                     String showNotes,
                     long syncToken,
-                    String createdTimeStamp,
-                    String modifiedTimeStamp,
+                    String lastModified,
                     List<LineItem> lines,
                     String deleted)
     {
@@ -114,8 +111,7 @@ public class Picklist implements Parcelable {
             this.notes           = notes;
             this.showNotes      = Boolean.valueOf(showNotes);
             this.syncToken           = syncToken;
-            this.createdTimestamp = MSUtils.yyyyMMddFormat.parse(createdTimeStamp);;
-            this.modifiedTimestamp = MSUtils.yyyyMMddFormat.parse(modifiedTimeStamp);;
+            this.lastModified = MSUtils.yyyyMMddFormat.parse(lastModified);
             this.lineitems = lines;
             this.deleted = Boolean.valueOf(deleted);
         }
@@ -143,8 +139,7 @@ public class Picklist implements Parcelable {
             notes = in.readString();
             showNotes = Boolean.valueOf(in.readString());
             syncToken = in.readLong();
-            createdTimestamp = (java.util.Date) in.readSerializable();
-            modifiedTimestamp = (java.util.Date) in.readSerializable();
+            lastModified = (java.util.Date) in.readSerializable();
             lineitems = new ArrayList<LineItem>(Arrays.asList(in.createTypedArray(LineItem.CREATOR)));
             deleted   = Boolean.valueOf(in.readString());
         }
@@ -241,20 +236,12 @@ public class Picklist implements Parcelable {
         this.syncToken = syncToken;
     }
 
-    public Date getCreatedTimestamp() {
-        return createdTimestamp;
-    }
-
-    public void setCreatedTimestamp(Date createdTimestamp) {
-        this.createdTimestamp = createdTimestamp;
-    }
-
     public Date getModifiedTimestamp() {
-        return modifiedTimestamp;
+        return lastModified;
     }
 
     public void setModifiedTimestamp(Date modifiedTimestamp) {
-        this.modifiedTimestamp = modifiedTimestamp;
+        this.lastModified = modifiedTimestamp;
     }
 
     public List<LineItem> getLineitems() {
@@ -384,7 +371,6 @@ public class Picklist implements Parcelable {
             dest.writeString(getNotes());
             dest.writeString(String.valueOf(isShowNotes()));
             dest.writeLong(getSyncToken());
-            dest.writeSerializable(getCreatedTimestamp());
             dest.writeSerializable(getModifiedTimestamp());
             dest.writeTypedArray(getLineitems().toArray(new LineItem[getLineitems().size()]), 0);
             dest.writeString(String.valueOf(isDeleted()));
@@ -475,7 +461,7 @@ public class Picklist implements Parcelable {
         for(int i=0; i<picklists.size();i++)
         {
             DeleteLineItems(picklists.get(i).getId(),context);
-            db.deleteOnePicklist(picklists.get(i));
+            db.deleteOnePicklist(picklists.get(i).getId());
         }
     }
 

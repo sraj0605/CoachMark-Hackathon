@@ -21,7 +21,7 @@ import com.intuit.qbes.mobilescanner.Account.GenericAccountService;
  * Static helper methods for working with the sync framework.
  */
 public class SyncUtils {
-    private static final long SYNC_FREQUENCY = 60 * 60;  // 1 hour (in seconds)
+    private static final long SYNC_FREQUENCY = 90*60;  // 1 hour (in seconds)
     private static final String CONTENT_AUTHORITY = ApplicationContentProvider.AUTHORITY;
     private static final String PREF_SETUP_COMPLETE = "setup_complete";
     // Value below must match the account type specified in res/xml/syncadapter.xml
@@ -44,19 +44,16 @@ public class SyncUtils {
                 (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
         if (accountManager.addAccountExplicitly(account, null, null)) {
             // Inform the system that this account supports sync
-            ContentResolver.setIsSyncable(account, CONTENT_AUTHORITY, 1);
+            context.getContentResolver().setIsSyncable(account, CONTENT_AUTHORITY, 1);
             // Inform the system that this account is eligible for auto sync when the network is up
-            ContentResolver.setSyncAutomatically(account, CONTENT_AUTHORITY, true);
+            context.getContentResolver().setSyncAutomatically(account, CONTENT_AUTHORITY, true);
             // Recommend a schedule for automatic synchronization. The system may modify this based
             // on other scheduled syncs and network utilization.
-            ContentResolver.addPeriodicSync(
-                    account, CONTENT_AUTHORITY, new Bundle(),SYNC_FREQUENCY);
+            context.getContentResolver().addPeriodicSync(
+                    account, ApplicationContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_FREQUENCY);
             newAccount = true;
         }
 
-        // Schedule an initial sync if we detect problems with either our account or our local
-        // data has been deleted. (Note that it's possible to clear app data WITHOUT affecting
-        // the account list, so wee need to check both.)
         if (newAccount || !setupComplete) {
             //TriggerRefresh();
             PreferenceManager.getDefaultSharedPreferences(context).edit()
@@ -80,7 +77,7 @@ public class SyncUtils {
         // Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
         b.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         b.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-
+        b.putBoolean("MANUAL_SYNC",true);
         ContentResolver.requestSync(
                 GenericAccountService.GetAccount(ACCOUNT_TYPE), // Sync account
                 ApplicationContentProvider.AUTHORITY,                 // Content authority

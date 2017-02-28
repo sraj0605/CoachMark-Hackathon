@@ -102,14 +102,43 @@ public class DataBaseUtility extends SQLiteOpenHelper {
         // you can implement here migration process
     }
 
-    public void deleteTask(Task task)
+    public void deleteTask(long id)
     {
         String selection = "id = ?";
-        String [] selectionArgs = new String[] {String.valueOf(task.getId())};
+        String [] selectionArgs = new String[] {String.valueOf(id)};
         myCR.delete(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE,selection,selectionArgs);
     }
 
-    public List<Task> getTasks(long taskType) {
+
+    public void deleteTaskWithDetail(long id)
+    {
+        try {
+            deleteTask(id);
+            List<LineItem> lineItems = allLineItems(id);
+            if(lineItems != null) {
+                deleteLineItems(id);
+                for (int i = 0; i < lineItems.size(); i++) {
+                    LineItem lineItem = lineItems.get(i);
+                    List<SerialLotNumber> serialLotNumbers = lineItem.getSerialLotNumbers();
+                    if(serialLotNumbers != null)
+                    {
+                        for(int j= 0; j <serialLotNumbers.size();j++ )
+                        {
+                            SerialLotNumber serialLotNumber = lineItem.getSerialLotNumbers().get(j);
+                            deleteSerialNumber(serialLotNumber.getId(), serialLotNumber.getValue());
+                            serialLotNumber = null;
+                        }
+                    }
+
+                }
+            }
+        }
+        catch (Exception exp)
+        {
+
+        }
+    }
+    public List<Task> getAllTasks(long taskType) {
 
         List<Task> tasks = new LinkedList<Task>();
 
@@ -146,7 +175,89 @@ public class DataBaseUtility extends SQLiteOpenHelper {
         return tasks;
     }
 
-    public void addTask(Task task) {
+    public List<Task> getAllTasksWithDetail(long taskType) {
+        List<Task> tasks = new LinkedList<Task>();
+        try
+        {
+            tasks = getAllTasks(taskType);
+            for(int i = 0; i < tasks.size();i++)
+            {
+                Task task = tasks.get(i);
+                List<LineItem> lineItems = allLineItems(task.getId());
+                for (int j = 0;j < lineItems.size();j++)
+                {
+                    LineItem lineItem = lineItems.get(j);
+                    List<SerialLotNumber> serialLotNumbers = allSerialLotNumbers(lineItem.getId());
+                    lineItem.setSerialLotNumbers(serialLotNumbers);
+                }
+                task.setLineitems(lineItems);
+
+            }
+
+        }
+        catch (IllegalArgumentException exp)
+        {
+
+        }
+
+        return  tasks;
+
+    }
+
+    public Task getSingleTask(long taskType,long id)
+    {
+        Task task =null;
+        try
+        {
+            String selection = "taskType = ? and id=?";
+            String [] selectionArgs = new String[] {String.valueOf(taskType),String.valueOf(id)};
+            Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE,null,selection,selectionArgs,null,null);
+            if (cursor.moveToFirst()) {
+                do {
+                    task = new Task();
+                    task.setId((cursor.getLong(0)));
+                    task.setCompanyId((cursor.getLong(1)));
+                    task.setTaskType((cursor.getLong(2)));
+                    task.setName((cursor.getString(3)));
+                    task.setAssigneeId((cursor.getLong(4)));
+                    task.setCreatedById((cursor.getLong(5)));
+                    task.setStatus(Status.valueOf(cursor.getString(6)));
+                    task.setSiteId((cursor.getLong(7)));
+                    task.setNotes((cursor.getString(8)));
+                    task.setShowNotes(Boolean.valueOf(cursor.getString(9)));
+                    task.setSyncToken((cursor.getLong(10)));
+                    //task.setCreatedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(11))));
+                    task.setModifiedTimestamp(MSUtils.yyyyMMddFormat.parse((cursor.getString(11))));
+                } while (cursor.moveToNext());
+            }
+        }
+        catch (ParseException exp)
+        {
+
+        }
+        return task;
+    }
+
+    public Task getSingleTaskWithDetail(long taskType,long id)
+    {
+        Task task = getSingleTask(taskType,id);
+        List<LineItem> lineItems = allLineItems(task.getId());
+        if(lineItems != null) {
+            for(int i = 0;i < lineItems.size();i++)
+            {
+                LineItem lineItem = lineItems.get(i);
+                List<SerialLotNumber> serialLotNumbers = allSerialLotNumbers(lineItem.getId());
+                lineItem.setSerialLotNumbers(serialLotNumbers);
+
+            }
+            task.setLineitems(lineItems);
+        }
+
+        return task;
+
+    }
+
+    public void addTaskWithDetail(Task task) {
         try {
             ContentValues values = new ContentValues();
             values.put(KEY_ID, task.getId());

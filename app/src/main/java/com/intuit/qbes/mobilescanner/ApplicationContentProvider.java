@@ -20,12 +20,14 @@ import com.intuit.qbes.mobilescanner.model.Picklist;
 
 public class ApplicationContentProvider extends ContentProvider{
 
-    public static final String AUTHORITY = "ourContentProviderAuthorities";//specific for our our app, will be specified in maninfed
+    public static final String AUTHORITY = "com.intuit.qbes.mobilescanner.provider";//specific for our our app, will be specified in maninfed
 
     //Content URI
     public static final Uri CONTENT_URI_PICKLIST_TABLE = Uri.parse("content://" + AUTHORITY + "/PickListInfo");
     public static final Uri CONTENT_URI_LINEITEM_TABLE = Uri.parse("content://" + AUTHORITY + "/LineItemInfo");
     public static final Uri CONTENT_URI_SERIALLOTNUMBER_TABLE = Uri.parse("content://" + AUTHORITY + "/SerialNumberInfo");
+    public static final Uri CONTENT_URI_TASK_TABLE = Uri.parse("content://" + AUTHORITY + "/TaskInfo");
+
 
     //Table Name
     private static final String PICKLIST_TABLE = "PickListInfo";

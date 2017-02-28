@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity
         mDevice = DeviceManager.getDevice(getApplicationContext());
         Foreground obj = Foreground.init(getApplication());
         obj.addListener(this);
+        SyncUtils.CreateSyncAccount(getApplicationContext());
 
     }
 

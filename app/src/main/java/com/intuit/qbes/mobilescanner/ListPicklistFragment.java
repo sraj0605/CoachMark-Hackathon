@@ -1,13 +1,16 @@
 package com.intuit.qbes.mobilescanner;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +28,7 @@ import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.provider.ContactsContract.Intents.Insert.ACTION;
 
 
 /**
@@ -93,7 +97,7 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
         dummyPicklists = createList(5);
         db = new DatabaseHandler(getActivity().getApplicationContext());
         mPicklists =  db.allPickLists();
-        //fetchPicklists();
+        registerReceiverWithSyncAdapter();
         setHasOptionsMenu(true);
     }
 
@@ -112,7 +116,12 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
         return view;
     }
 
-   /*private void fetchPicklists()
+    @Override
+    public void onStart() {
+        super.onStart();
+        SyncUtils.TriggerRefresh();
+    }
+    /*private void fetchPicklists()
     {
         mProgressDialog = ProgressDialog.show(getActivity(),
                 "Fetching Picklists", "Working real hard on it", true);
@@ -265,7 +274,7 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
         if (lineitems == null)
             lineitems = new ArrayList<LineItem>();
         //cahdan -start - only for testing
-        LineItem obj1 = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901057510028","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        LineItem obj1 = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
         LineItem obj2 = new LineItem(2,2,2,"Iphone","hardware it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901057310062","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
         LineItem obj3 = new LineItem(3,3,3,"Motorola","awesome phone",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
         LineItem obj4 = new LineItem(4,4,4,"Zebra","hardware it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
@@ -276,11 +285,11 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
         lineitems.add(obj4);
         lineitems.add(obj5);
 
-        Picklist p1 = new Picklist(1, 1,1, "Picklist1",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
-        Picklist p2 = new Picklist(1, 1,1, "Picklist2",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
-        Picklist p3 = new Picklist(1, 1,1, "Picklist3",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
-        Picklist p4 = new Picklist(1, 1,1, "Picklist4",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
-        Picklist p5 = new Picklist(1, 1,1, "Picklist4",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
+        Picklist p1 = new Picklist(1, 1,1, "Picklist1",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems,"false");
+        Picklist p2 = new Picklist(1, 1,1, "Picklist2",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems,"false");
+        Picklist p3 = new Picklist(1, 1,1, "Picklist3",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems,"false");
+        Picklist p4 = new Picklist(1, 1,1, "Picklist4",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems,"false");
+        Picklist p5 = new Picklist(1, 1,1, "Picklist4",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems,"false");
 
         p1.setTotalitems(10);
         result.add(p1);
@@ -363,4 +372,19 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
         }
 
     }*/
+    //Listen for syncadapter
+    public class SyncReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            getContext().unregisterReceiver(this);
+        }
+    }
+
+    private void registerReceiverWithSyncAdapter()
+    {
+        SyncReceiver myReceiver = new SyncReceiver();
+        IntentFilter i = new IntentFilter(SyncAdapter.SYNC_STATUS);
+        getContext().registerReceiver(myReceiver,i);
+    }
 }

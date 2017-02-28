@@ -659,7 +659,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
                 .setPositiveButton(R.string.Yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         //Check if any item is not completely picked and complete or show discrepency screen accordingly.
-                        db.deleteOnePicklist(mPicklist);
+                        db.deleteOnePicklist(mPicklist.getId());
                         mCallbacks.onPicklistComplete();
                     }
                 })

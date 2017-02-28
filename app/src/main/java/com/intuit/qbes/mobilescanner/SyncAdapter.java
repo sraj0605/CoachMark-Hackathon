@@ -7,15 +7,18 @@ package com.intuit.qbes.mobilescanner;
 import com.intuit.qbes.mobilescanner.Account.GenericAccountService;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
 import com.intuit.qbes.mobilescanner.networking.DataSync;
 
 import android.accounts.Account;
 import android.annotation.TargetApi;
 import android.content.AbstractThreadedSyncAdapter;
+import android.content.BroadcastReceiver;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.SyncResult;
 import android.database.Cursor;
@@ -39,6 +42,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.provider.ContactsContract.Intents.Insert.ACTION;
+
 /**
  * Define a sync adapter for the app.
  *
@@ -50,8 +55,11 @@ import java.util.List;
  */
 class SyncAdapter extends AbstractThreadedSyncAdapter implements DataSync.DataSyncCallback{
     public static final String TAG = "SyncAdapter";
+    public static final String SYNC_STATUS = "SyncStatus";
     private final ContentResolver mContentResolver;
     private final Context mContext;
+    private boolean bDevicePairing = false;
+    public Intent intent;
     /**
      * Constructor. Obtains handle to content resolver for later use.
      */
@@ -91,12 +99,14 @@ class SyncAdapter extends AbstractThreadedSyncAdapter implements DataSync.DataSy
                               ContentProviderClient provider, SyncResult syncResult) {
         Log.i(TAG, "Beginning network synchronization");
 
-        StartDataSync();
+        if (extras.getBoolean("MANUAL_SYNC") == true)//device pairing sync
+            bDevicePairing = true;
+        FetchAllPickList();
 
     }
 
 
-    public void StartDataSync()
+    public void FetchAllPickList()
     {
         DataSync dataSync = new DataSync();
         dataSync.FetchPicklists(mContext,this);
@@ -104,39 +114,30 @@ class SyncAdapter extends AbstractThreadedSyncAdapter implements DataSync.DataSy
 
     @Override
     public void onFetchPicklist(List<Picklist> picklistsFromServer) {
-        updateContentProvider(picklistsFromServer);
+            updateDevice(picklistsFromServer);
 
     }
 
-    public void updateContentProvider(List<Picklist> picklistsFromServer)
+    public void updateDevice(List<Picklist>picklistsFromServer)
     {
         DatabaseHandler db = new DatabaseHandler(mContext);
-        List<Picklist> picklistsOnDevice = db.allPickLists();
-        for(int i = 0;i< picklistsFromServer.size();i++)
+        for(int i =0;i < picklistsFromServer.size();i++)
         {
-            Picklist picklistServer = picklistsFromServer.get(i);
-            if(!db.PickListExists(picklistServer.getId())) //server has new Picklist,Put it on device
+           Picklist picklistOnServer = picklistsFromServer.get(i);
+            if(db.PickListExists(picklistOnServer.getId()))//Server Picklist already exist in device,delete it and add gain
             {
-                db.addPickList(picklistServer);
-
-                for(int j = 0; j < picklistServer.getLineitems().size(); j++)
-                {
-                    LineItem lineItem = new LineItem();
-                    lineItem = picklistServer.getLineitems().get(j);
-                    db.addLineItem(lineItem,lineItem.getId());
-                    lineItem = null;
-                }
-
+                db.deletePicklistWithDetails(picklistOnServer.getId());
             }
-            else //Picklist is on device - update server
-            {
-                Picklist picklistOnDevice = db.getPickList(picklistServer.getId());
-                List<LineItem> lineItemList = new ArrayList<>();
-                lineItemList = db.allLineItems(picklistOnDevice.getId());
-                picklistOnDevice.setLineitems(lineItemList);
-                DataSync dataSync = new DataSync();
-                dataSync.UpdatePicklist(picklistOnDevice,mContext);
-            }
+            db.addPickListWithDetail(picklistOnServer);
+        }
+
+        db = null;
+        /* If it is a manual sync,there will be a listener,broadcast them*/
+        if(bDevicePairing) {
+            Intent i = new Intent(SYNC_STATUS);
+            mContext.sendBroadcast(i);
+            bDevicePairing = false;
         }
     }
 }
+

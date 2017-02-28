@@ -44,7 +44,7 @@ public class ParcelTest {
     public void setUp() {
         LineItem obj1 = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",Status.NotPicked);
         lineitems.add(obj1);
-        picklist = new Picklist(1, 1,1, "Picklist1",1,1, Status.NotPicked,1,"note1","show",1,"2017-01-10","2017-01-10",lineitems,"false");
+        picklist = new Picklist(1, 1,1, "Picklist1",1,1, Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems,"false");
         picklist.setNotes("TestNote");
         picklist.setTotalitems(100);
         lineItem = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",Status.NotPicked);
