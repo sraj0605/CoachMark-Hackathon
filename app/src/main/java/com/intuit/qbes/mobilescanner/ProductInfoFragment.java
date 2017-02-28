@@ -687,23 +687,14 @@ public boolean noDecimal(double val)
             @Override
             public void onDismiss(DialogInterface dialog) {
                 init_barcode();
+                if(!mlineItem.getBarcodeEntered().isEmpty())
+                    mUPC_Value.setText(mlineItem.getBarcodeEntered());
+                UPC_ErrorCheck();
             }
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case 300:
-                if (resultCode == Activity.RESULT_OK) {
-                    mlineItem = data.getParcelableExtra("lineitem");
-                    if(!mlineItem.getBarcodeEntered().isEmpty())
-                        mUPC_Value.setText(mlineItem.getBarcodeEntered());
-                         UPC_ErrorCheck();
-                }
-                break;
-        }
-    }
+
 
     public void UPC_ErrorCheck()
     {

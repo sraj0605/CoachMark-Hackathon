@@ -153,17 +153,6 @@ private EditText mUPC_entered;
                 mUPC_entered.setError("", mTickmark);
                 mLineItem.setBarcodeEntered(mUPC_entered.getText().toString());
 
-                Intent i = new Intent().putExtra("lineitem", mLineItem);
-
-                try {
-                    getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
-                }
-                catch(Exception e)
-                {
-
-                }
-
-                //this.dismiss();
 
                 final Handler handler = new Handler();
                 final Runnable runnable = new Runnable() {
