@@ -54,10 +54,10 @@ public class DataSync {
     {
 
         try {
-            String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/98?merge=true";
+            String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/98";
             final String picklistJSONStr = Picklist.JSONStringFromPicklist(mPicklist);
 
-            StringRequest stringRequest = new StringRequest(Request.Method.PUT, URL, new Response.Listener<String>() {
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     Log.i("VOLLEY", response);
@@ -70,6 +70,11 @@ public class DataSync {
                     if (error instanceof NoConnectionError) {
                         //No Internet Error
                         NoInternetDialog(context);
+
+                    }
+                    if  (error.networkResponse.statusCode == 409)
+                    {
+                        StaleDataDialog(context);
 
                     }
                 }
@@ -155,6 +160,28 @@ public class DataSync {
         openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         openDialog.setContentView(R.layout.connection_error_dialog);
         Button dialogCloseButton = (Button) openDialog.findViewById(R.id.NetowrkbtnOk);
+        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+
+            public void onClick(View v) {
+
+
+                openDialog.dismiss();
+
+            }
+
+        });
+
+        openDialog.show();
+    }
+
+    public void StaleDataDialog(Context context)
+    {
+        final Dialog openDialog = new Dialog(context);
+        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        openDialog.setContentView(R.layout.staledata_dialog);
+        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.StalebtnOk);
         dialogCloseButton.setOnClickListener(new View.OnClickListener() {
 
             @Override

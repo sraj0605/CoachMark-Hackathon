@@ -66,7 +66,7 @@ public class Picklist implements Parcelable {
     private String notes;
     @Expose(serialize = false)
     private boolean showNotes;
-    @Expose(serialize = false)
+    @Expose(serialize = true)
     private long syncToken;
     @Expose(serialize = false)
     private Date lastModified;
