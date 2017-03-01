@@ -84,14 +84,14 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
     private Button mSync;
     private Button mComplete;
     private TextView mSortOrderSelection;
-
+    private boolean mMessageThrown = false;
 
     private DatabaseHandler db = null;
     private List<LineItem> lineitems = null;
 
 
     public interface Callbacks {
-        void onLineItemSelected(LineItem selectedLineItem,String barcodeEntered);
+        void onLineItemSelected(LineItem selectedLineItem,boolean scannedData);
         void onPicklistSaved(Integer responseCode, Picklist picklist);
         void onBarcodeReady();
         void onPicklistComplete();
@@ -262,43 +262,46 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         if(lineitems.contains(lineItem))
         {
             lineItem = lineitems.get(lineitems.indexOf(lineItem));
+            lineItem.setBarcodeEntered(sData);
             if(mCallbacks != null)
-                mCallbacks.onLineItemSelected(lineItem,sData);
+                mCallbacks.onLineItemSelected(lineItem,true);
         }
         else
         {
             //chandan- scanned barcode is not available in list
             //sunder - Added Code for - QBWG-41184
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
+            if(!mMessageThrown) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
 
-                    final Dialog openDialog = new Dialog(getContext());
-                    openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    openDialog.setContentView(R.layout.custom_dialog);
-                    ImageView dialogImage = (ImageView) openDialog.findViewById(R.id.alert);
-                    TextView dialogTextContent = (TextView) openDialog.findViewById(R.id.select_right_item);
-                    TextView dialogTextContent2 = (TextView) openDialog.findViewById(R.id.item_not_in_picklist);
-                    Button dialogCloseButton = (Button) openDialog.findViewById(R.id.dismiss_dialog);
-                    dialogCloseButton.setOnClickListener(new View.OnClickListener() {
+                        final Dialog openDialog = new Dialog(getContext());
+                        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                        openDialog.setContentView(R.layout.custom_dialog);
+                        ImageView dialogImage = (ImageView) openDialog.findViewById(R.id.alert);
+                        TextView dialogTextContent = (TextView) openDialog.findViewById(R.id.select_right_item);
+                        TextView dialogTextContent2 = (TextView) openDialog.findViewById(R.id.item_not_in_picklist);
+                        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.dismiss_dialog);
+                        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
 
-                        @Override
+                            @Override
 
-                        public void onClick(View v) {
+                            public void onClick(View v) {
+
+                                mMessageThrown = false;
+                                openDialog.dismiss();
+
+                            }
+
+                        });
+                        mMessageThrown = true;
+                        openDialog.show();
+
+                    }
 
 
-                            openDialog.dismiss();
-
-                        }
-
-                    });
-
-                    openDialog.show();
-
-                }
-
-
-            });
+                });
+            }
 
         }
 
@@ -479,7 +482,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         public void onClick(View v) {
             if (mCallbacks != null)
             {
-                mCallbacks.onLineItemSelected(mItem,mItem.getBarcodeEntered());
+                mCallbacks.onLineItemSelected(mItem,false);
             }
         }
         //To check its integer or not

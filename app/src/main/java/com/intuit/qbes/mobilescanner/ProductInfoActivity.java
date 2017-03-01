@@ -24,8 +24,6 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
     private Fragment fragment = null;
     private ProductInfoFragment ProductFragment = null;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +34,13 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         LineItem lineitem = (LineItem) getIntent().getParcelableExtra(ProductInfoFragment.EXTRA_LINEITEM);
-        String barcodePassed = getIntent().getStringExtra(ProductInfoFragment.BARCODE_ENTERED);
+        //String barcodePassed = getIntent().getStringExtra(ProductInfoFragment.BARCODE_ENTERED);
+        boolean isScanned = getIntent().getBooleanExtra(ProductInfoFragment.BARCODE_ENTERED,false);
+        if(isScanned)
+        {
+            String val = Utilities.IncrementQuantity(String.valueOf(lineitem.getQtyPicked()));//Utilities.checkAndIncrementQuantity(String.valueOf(lineitem.getQtyToPick()),String.valueOf(lineitem.getQtyPicked()));
+            lineitem.setQtyPicked(Double.parseDouble(String.valueOf(val)));
+        }
      	ProductFragment = new ProductInfoFragment();
         fragmentClass = ProductInfoFragment.class;
         String tag = fragmentClass.getCanonicalName();
@@ -45,7 +49,7 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
         try {
             if (fragment == null) {
                 //fragment = (Fragment) fragmentClass.newInstance();
-                fragment = ProductInfoFragment.newInstance(lineitem,barcodePassed);
+                fragment = ProductInfoFragment.newInstance(lineitem,lineitem.getBarcodeEntered());
 
             }
         } catch (Exception e) {

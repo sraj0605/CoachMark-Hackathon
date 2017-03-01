@@ -78,7 +78,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     private Callbacks mCallbacks = null;
     private String mbarcodePassed;
     private static DeviceManager mDeviceManager = null;
-
+    private boolean mQuantityMismatchDialogThrown = false;
 
     public interface Callbacks {
         void onSerialNumberClicked(LineItem lineitem);
@@ -89,19 +89,14 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mlineItem = (LineItem) getArguments().getParcelable(EXTRA_LINEITEM);
         mbarcodePassed = getArguments().getString(BARCODE_ENTERED);
-        mlineItem.setBarcodeEntered(mbarcodePassed);
         if (mlineItem == null && savedInstanceState != null)
         {
             mlineItem = (LineItem) savedInstanceState.getParcelable(EXTRA_LINEITEM);
-            mbarcodePassed = savedInstanceState.getString(BARCODE_ENTERED);
+            mbarcodePassed = savedInstanceState.getString(BARCODE_ENTERED,"");
         }
-        
         setHasOptionsMenu(true);
-
-
     }
 
     public ProductInfoFragment()
@@ -125,57 +120,36 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        
+
         view = inflater.inflate(R.layout.fragment_product_info, container, false);
-
         mIncrement = (ImageView)view.findViewById(R.id.increase);
-
         mDecrement = (ImageView)view.findViewById(R.id.decrease);
-
         mUPC_Value =   (TextView)view.findViewById(R.id.item_upc) ;
-
         mUPC_Header = (TextView)view.findViewById(R.id.UPC_code);
-
         mSNO_Header = (TextView)view.findViewById(R.id.SNO);
-
         mLocationHeader = (TextView)view.findViewById(R.id.location);
-
         mBin = (ImageView)view.findViewById(R.id.bin);
-
         mUPC_ErrorText = (TextView)view.findViewById(R.id.UPC_Errortext);
-
         mConfirm = (Button)view.findViewById(R.id.button_confirm);
-
         mSerialNo = (TextView) view.findViewById(R.id.item_SNO);
-
         mSerialView = (TextView)view.findViewById(R.id.item_ViewSNO);
-
         mVDivider = (View)view.findViewById(R.id.vdivider);
-
         mHDivider = (View)view.findViewById(R.id.divider3);
-
         error = (View)view.findViewById(R.id.errordivider);
-
         mQty_picked_error = (TextView)view.findViewById(R.id.qty_picked_error);
         mQty_picked_label = (TextView)view.findViewById(R.id.qty_picked);
-
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-
         mQty_picked = (EditText)view.findViewById(R.id.qty_picked_value);
-
-
         mIncrement.setOnClickListener(this);
         mDecrement.setOnClickListener(this);
         mSerialNo.setOnClickListener(this);
         mSerialView.setOnClickListener(this);
         mConfirm.setOnClickListener(this);
-
         mQty_picked.addTextChangedListener(this);
 
        // mUPC_Value.addTextChangedListener(this);
 
         mUPC_Value.setOnClickListener(this);
-
         return view;
 
 
@@ -183,9 +157,8 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStart() {
         super.onStart();
-        //chandan - There can be case when serial number aarray will be null hence putting null check
-        if(mlineItem.getSerialLotNumbers() != null && mlineItem.getBarcodeEntered()!= null) {
-            if (mlineItem.getSerialLotNumbers().size() > 0 && mlineItem.getBarcodeEntered().isEmpty())
+        if(mlineItem.getSerialLotNumbers() != null) {
+            if (mlineItem.getSerialLotNumbers().size() > 0 && (mbarcodePassed.compareTo("") == 0))
                 showUPCDialog();
         }
 
@@ -214,26 +187,6 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         if(mlineItem.isShowSerialNo() == false && (mlineItem.getBarcode().isEmpty())) {
             mHDivider.setVisibility(view.GONE);
         }
-        if(mbarcodePassed.compareTo("") != 0)
-        {
-            mUPC_Value.setText(mbarcodePassed);
-            if(mlineItem.isShowSerialNo() == true) {
-
-                mQty_picked.setText(String.valueOf(mlineItem.getSerialLotNumbers().size()));
-            }
-
-            else {
-                if (noDecimal(mlineItem.getQtyPicked())) {
-
-                    mQty_picked.setText(String.valueOf((int) mlineItem.getQtyPicked()));
-                }
-                else
-                {
-                    mQty_picked.setText(String.valueOf(mlineItem.getQtyPicked()));
-                }
-            }
-            onClick(mIncrement);
-        }
         setControllers(mlineItem, view);
         init_barcode();
     }
@@ -251,8 +204,9 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         mItemName.setText(lineitem.getItemName().toString());
         mItemDescription.setText(lineitem.getItemDesc().toString());
         mLocation.setText(lineitem.getBinLocation().toString());
-        if(lineitem.getBarcode().equals(lineitem.getBarcodeEntered()))
-          mUPC_Value.setText(lineitem.getBarcode());
+        //if(lineitem.getBarcode().equals(lineitem.getBarcodeEntered()))
+        if(mbarcodePassed != "")
+            mUPC_Value.setText(mbarcodePassed);
 
         //  mSalesOrder.setText(lineitem.getBin().toString());   Dummy for now
 
@@ -264,14 +218,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         {
             mQtyToPick.setText(String.valueOf(lineitem.getQtyToPick()));
         }
-
-        if(lineitem.isShowSerialNo() == true) {
-
-            mQty_picked.setText(String.valueOf(lineitem.getSerialLotNumbers().size()));
-        }
-
-        else {
-            if (noDecimal(lineitem.getQtyPicked())) {
+        if (noDecimal(lineitem.getQtyPicked())) {
 
             mQty_picked.setText(String.valueOf((int) lineitem.getQtyPicked()));
 
@@ -279,7 +226,6 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         else {
             mQty_picked.setText(String.valueOf(lineitem.getQtyPicked()));
 
-            }
         }
 
         getActivity().setTitle(mItemName.getText().toString());
@@ -357,85 +303,19 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             case R.id.increase:
                 mQty_picked = (EditText)view.findViewById(R.id.qty_picked_value);
                 mQtyToPick = (TextView)view.findViewById(R.id.item_qty);
-                isInt  = isInteger(mQty_picked.getText().toString());
-                if(isInt)
-                {
-                    int val;
-                    val = Integer.parseInt(mQty_picked.getText().toString());
-                    val = val + 1;
-                    BigDecimal tempval = BigDecimal.valueOf(val);
-                    if(isInteger(mQtyToPick.getText().toString()))
-                    {
-                        if(val <= Integer.parseInt(mQtyToPick.getText().toString())) {
-                            mQty_picked.setText(String.valueOf(val));
-                            mlineItem.setQtyPicked(Double.parseDouble(String.valueOf(val)));
-                        }
-
-                    }
-                    else {
-                        int comparison = tempval.compareTo(BigDecimal.valueOf(Double.parseDouble(mQtyToPick.getText().toString())));
-                        if (comparison == -1 || comparison == 0) {
-                            mQty_picked.setText(String.valueOf(val));
-                            mlineItem.setQtyPicked(Double.parseDouble(String.valueOf(val)));
-                        }
-                    }
-                }
-                else
-                {
-                    BigDecimal val;
-                    val = BigDecimal.valueOf(Double.parseDouble(mQty_picked.getText().toString()));
-                    val = val.add(BigDecimal.valueOf(1));
-
-                    int comparison;
-                    if(isInteger(mQtyToPick.getText().toString()))
-                    {
-                        comparison = val.compareTo(BigDecimal.valueOf(Integer.parseInt(mQtyToPick.getText().toString())));
-                        if( comparison == -1 || comparison == 0) {
-                            mQty_picked.setText(String.valueOf(val));
-                            mlineItem.setQtyPicked(Double.parseDouble(String.valueOf(val)));
-                        }
-
-
-                    }
-                    else {
-                        comparison = val.compareTo(BigDecimal.valueOf(Double.parseDouble(mQtyToPick.getText().toString())));
-                        if (comparison == -1 || comparison == 0) {
-                            mQty_picked.setText(String.valueOf(val));
-                            mlineItem.setQtyPicked(Double.parseDouble(String.valueOf(val)));
-                        }
-                    }
-                }
-
+                //String quantityPicked = Utilities.checkAndIncrementQuantity(mQtyToPick.getText().toString(),mQty_picked.getText().toString());
+                String quantityPicked = Utilities.IncrementQuantity(mQty_picked.getText().toString());
+                validateQuantityPickedAgainstQuantityToPick(quantityPicked);
+                mQty_picked.setText(String.valueOf(quantityPicked));
+                mlineItem.setQtyPicked(Double.parseDouble(String.valueOf(quantityPicked)));
                 break;
 
             case R.id.decrease:
                 mQty_picked = (EditText)view.findViewById(R.id.qty_picked_value);
-                isInt  = isInteger(mQty_picked.getText().toString());
-                if(isInt)
-                {
-                    int val;
-                    val = Integer.parseInt(mQty_picked.getText().toString());
-                    val = val - 1;
-                    if(val >= 0 )
-                    {
-                        mQty_picked.setText(String.valueOf(val));
-                        mlineItem.setQtyPicked(Double.parseDouble(String.valueOf(val)));
-                    }
-                }
-                else
-                {
-                    BigDecimal val;
-                    val = BigDecimal.valueOf(Double.parseDouble(mQty_picked.getText().toString()));
-                    val = val.subtract(BigDecimal.valueOf(1));
-                    int comparison = val.compareTo(BigDecimal.valueOf(0));
-                    if( comparison == 1 || comparison == 0)
-                    {
-                        mQty_picked.setText(String.valueOf(val));
-                        mlineItem.setQtyPicked(Double.parseDouble(String.valueOf(val)));
-
-                    }
-                }
-
+                String val = Utilities.DecrementQuantity(mQty_picked.getText().toString());
+                validateQuantityPickedAgainstQuantityToPick(val);
+                mQty_picked.setText(String.valueOf(val));
+                mlineItem.setQtyPicked(Double.parseDouble(String.valueOf(val)));
                 break;
 
             case R.id.item_SNO :
@@ -449,9 +329,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
                 GotoDetailPicklist();
                 break;
             case R.id.item_upc :
-
                 showUPCDialog();
-
                 break;
 
         }
@@ -501,8 +379,6 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-
-
             case android.R.id.home:
                 updateItemStatus();
 
@@ -715,24 +591,54 @@ public boolean noDecimal(double val)
 
     public void QntyMismatchDialog()
     {
-        final Dialog openDialog = new Dialog(getContext());
-        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        openDialog.setContentView(R.layout.quantitysno_mismatch_dialog);
-        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.MismatchbtnOk);
-        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
+        if(!mQuantityMismatchDialogThrown) {
+            final Dialog openDialog = new Dialog(getContext());
+            openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            openDialog.setContentView(R.layout.quantitysno_mismatch_dialog);
+            Button dialogCloseButton = (Button) openDialog.findViewById(R.id.MismatchbtnOk);
+            dialogCloseButton.setOnClickListener(new View.OnClickListener() {
 
-            @Override
+                @Override
 
-            public void onClick(View v) {
+                public void onClick(View v) {
+
+                    mQuantityMismatchDialogThrown = false;
+                    mlineItem.setBarcodeEntered("");
+                    openDialog.dismiss();
+
+                }
+
+            });
+            mQuantityMismatchDialogThrown = true;
+            openDialog.show();
+        }
+    }
+
+    public void validateQuantityPickedAgainstQuantityToPick(String qtyPicked)
+    {
+        if (Double.parseDouble(qtyPicked) > mlineItem.getQtyToPick()) {
+
+            showQuantityPickedWarning();
 
 
-                openDialog.dismiss();
+        } else {
+            hideQuantityPickedWarning();
 
-            }
+        }
+    }
 
-        });
+    public void showQuantityPickedWarning()
+    {
+        error.setVisibility(view.VISIBLE);
+        mQty_picked_error.setVisibility(view.VISIBLE);
+        mQty_picked_label.setVisibility(View.GONE);
+    }
 
-        openDialog.show();
+    public void hideQuantityPickedWarning()
+    {
+        mQty_picked_error.setVisibility(view.GONE);
+        error.setVisibility(view.GONE);
+        mQty_picked_label.setVisibility(View.VISIBLE);
     }
 
     public void init_barcode()

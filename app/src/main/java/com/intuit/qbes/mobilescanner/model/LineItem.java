@@ -508,7 +508,7 @@ public class LineItem implements Parcelable {
                 test = (rhs.getBarcode().toLowerCase().compareTo(this.getBarcode().toLowerCase()));
                 if (test == 0)
                 {
-                    ret = rhs.getmItemStatus() != Status.Picked;
+                    ret = true;
                 }
             }
             else

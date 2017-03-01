@@ -142,7 +142,7 @@ public class TaskPickListFragmentTest {
     public void test_onitemselect()
     {
         String barcode ="8901238910005";
-       detailPicklistActivity.onLineItemSelected(mLineItem,barcode);
+       detailPicklistActivity.onLineItemSelected(mLineItem,true);
     }
 
 

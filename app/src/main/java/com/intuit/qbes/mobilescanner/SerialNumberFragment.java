@@ -188,6 +188,8 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
     public void toProductInfo() {
         if (getFragmentManager().getBackStackEntryCount() > 0) {
             lineitem.setSerialLotNumbers(mySerialNumberAdapter.getSerialnoList());
+            //chandan
+            lineitem.setQtyPicked(mySerialNumberAdapter.getSerialnoList().size());
             getFragmentManager().popBackStack();
 
         }
