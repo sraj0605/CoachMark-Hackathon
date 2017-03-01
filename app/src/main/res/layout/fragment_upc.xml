@@ -24,6 +24,7 @@
         app:layout_widthPercent="85%"
         android:layout_height="wrap_content"
         android:inputType="text"
+        android:maxLength="4096"
         android:ems="10"
         android:layout_marginLeft="20dp"
         android:layout_below="@+id/upc_scan_header"
