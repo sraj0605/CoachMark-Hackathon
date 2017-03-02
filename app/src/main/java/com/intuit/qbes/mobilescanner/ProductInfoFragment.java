@@ -610,6 +610,14 @@ public boolean noDecimal(double val)
                 }
 
             });
+
+            openDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    mQuantityMismatchDialogThrown = false;
+                }
+            });
+
             mQuantityMismatchDialogThrown = true;
             openDialog.show();
         }
