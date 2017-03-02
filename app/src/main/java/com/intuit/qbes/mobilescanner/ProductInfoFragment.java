@@ -565,6 +565,7 @@ public boolean noDecimal(double val)
                 init_barcode();
                 if(!mlineItem.getBarcodeEntered().isEmpty())
                     mUPC_Value.setText(mlineItem.getBarcodeEntered());
+                    mbarcodePassed = mlineItem.getBarcodeEntered();
                 UPC_ErrorCheck();
             }
         });
