@@ -64,9 +64,9 @@ public class ListPicklistFragmentTest {
         Assert.assertNotNull(picklistnote);
         Assert.assertNotNull(picklistitems);
 
-       Assert.assertEquals(picklistname.getText().toString(),"Picklist1");
+       Assert.assertEquals(picklistname.getText().toString(),"Order number: 8804");
         Assert.assertEquals(picklistnote.getText().toString(),"note1");
-        Assert.assertEquals(picklistitems.getText().toString(),"10 items");
+        Assert.assertEquals(picklistitems.getText().toString(),"7 item(s)");
 
 
     }
@@ -78,14 +78,14 @@ public class ListPicklistFragmentTest {
 
         int count = recycleview.getAdapter().getItemCount();
 
-        Assert.assertEquals(count,5);
+        Assert.assertEquals(count,3);
     }
 
     @Test
     public void test_createlist_dummy()
     {
         List<Picklist> result;
-        result = listpicklistFragment.createList(5);
-        Assert.assertEquals(result.size(), 5);
+        result = listpicklistFragment.createList(3);
+        Assert.assertEquals(result.size(), 3);
     }
 }
