@@ -79,18 +79,18 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/serialnumber_rv"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        app:layout_heightPercent="45%"
         android:layout_below="@id/AddSno"
-        android:layout_above="@+id/serialno_confirm"
         android:layout_marginTop="15dp"/>
+
 
     <Button
         android:text="CONFIRM"
         app:layout_widthPercent="95%"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/serialnumber_rv"
+        android:layout_marginTop="3dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="5dp"
         android:id="@+id/serialno_confirm" />
 
 </android.support.percent.PercentRelativeLayout>
