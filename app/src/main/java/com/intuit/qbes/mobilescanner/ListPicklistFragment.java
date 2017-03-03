@@ -51,7 +51,10 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     private ProgressDialog mProgressDialog;
     private DatabaseHandler db;
     private DataSync dataSync = null;
-    private List<LineItem> lineitems = null;
+    private List<LineItem> lineitems1 = null;
+    private List<LineItem> lineitems2 = null;
+    private List<LineItem> lineitems3 = null;
+
     private static final String fetchTAG = "Fetch";
     /*private ArrayList<String> serialnos1 = new ArrayList<String>();
     private ArrayList<String> serialnos2 = new ArrayList<String>();
@@ -271,36 +274,58 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
             pi.setNote("Note:" +" " + i);
             result.add(pi);
             }*/
-        if (lineitems == null)
-            lineitems = new ArrayList<LineItem>();
+        if (lineitems1 == null || lineitems2 == null || lineitems3 == null) {
+            lineitems1 = new ArrayList<LineItem>();
+            lineitems2 = new ArrayList<LineItem>();
+            lineitems3 = new ArrayList<LineItem>();
+
+        }
         //cahdan -start - only for testing
-        LineItem obj1 = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901361301749","Rack 1",12,"custom",serialnos1,"false","false","false", Status.NotPicked);
-        LineItem obj2 = new LineItem(2,2,2,"Iphone","hardware it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901057310062","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
-        LineItem obj3 = new LineItem(3,3,3,"Motorola","awesome phone",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
-        LineItem obj4 = new LineItem(4,4,4,"Zebra","hardware it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
-        LineItem obj5 = new LineItem(5,5,5,"1 plus 3","struggling phone it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
-        lineitems.add(obj1);
-        lineitems.add(obj2);
-        lineitems.add(obj3);
-        lineitems.add(obj4);
-        lineitems.add(obj5);
+        LineItem P1obj1 = new LineItem(1,1,1,"Anchor - 12x1","Anchor, 12x1 RedCap",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",35,0,"QB:0103358660106","Rack 1",12,"custom",serialnos1,"false","false","false", Status.NotPicked);
+        LineItem P1obj2 = new LineItem(2,2,2,"Base - BL","Anchor Base, Black",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",3,0,"QB:0103358660140","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
+        LineItem P1obj3 = new LineItem(3,3,3,"Connectors","UR - Connectors",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",4,0,"QB:010335866092","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
+        LineItem P1obj4 = new LineItem(4,4,4,"Drum - AL","Drum, 4, Aluminum",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",2,0,"QB:010335866099","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
+        LineItem P1obj5 = new LineItem(5,5,5,"Edge - CL","Leading Edge,Clear",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",12,0,"QB:0103358660132","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
+        LineItem P1obj6 = new LineItem(5,5,5,"Grommet 4","Grommet, #4 Brass",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",50,0,"QB:010335866078","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
+        LineItem P1obj7 = new LineItem(5,5,5,"Hook","Retainer Hook, Manual Strap",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",2,0,"QB:0103358660142","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
 
-        Picklist p1 = new Picklist(1, 1,1, "Picklist1",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems,"false");
-        Picklist p2 = new Picklist(1, 1,1, "Picklist2",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems,"false");
-        Picklist p3 = new Picklist(1, 1,1, "Picklist3",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems,"false");
-        Picklist p4 = new Picklist(1, 1,1, "Picklist4",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems,"false");
-        Picklist p5 = new Picklist(1, 1,1, "Picklist4",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems,"false");
 
-        p1.setTotalitems(10);
+        LineItem P2obj1 = new LineItem(1,1,1,"1500 - PM","POWER MANUAL 1500",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",3,0,"QB:0103358660135","Rack 1",12,"custom",serialnos1,"false","false","false", Status.NotPicked);
+        LineItem P2obj2 = new LineItem(2,2,2,"Cord - 12G","Electrical Cord, 12 Gauge",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",3,0,"QB:010335866082","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
+        LineItem P2obj3 = new LineItem(3,3,3,"Pool Covers:Cover - AQ","Pool Cover, Aqua",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",2,0,"QB:0103358660122","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
+        LineItem P2obj4 = new LineItem(3,3,3,"Pool Covers:Cover - LB","Pool Cover, Light Blue",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",2,0,"QB:0103358660121","Rack 1",12,"custom",serialnos1,"true","true","false",Status.NotPicked);
+
+        LineItem P3obj1 = new LineItem(1,1,1,"Pumps:Pump 1800","Rule Pump 1800",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",1,0,"QB:0103358660128","Rack 1",12,"custom",serialnos1,"false","false","false", Status.NotPicked);
+
+
+        lineitems1.add(P1obj1);
+        lineitems1.add(P1obj2);
+        lineitems1.add(P1obj3);
+        lineitems1.add(P1obj4);
+        lineitems1.add(P1obj5);
+        lineitems1.add(P1obj6);
+        lineitems1.add(P1obj7);
+
+        lineitems2.add(P2obj1);
+        lineitems2.add(P2obj2);
+        lineitems2.add(P2obj3);
+        lineitems2.add(P2obj4);
+
+        lineitems3.add(P3obj1);
+
+
+        Picklist p1 = new Picklist(1, 1,1, "Order number: 8804",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems1,"false");
+        Picklist p2 = new Picklist(1, 1,1, "Order number: 8795",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems2,"false");
+        Picklist p3 = new Picklist(1, 1,1, "Order number: 8792",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems3,"false");
+
+
+        p1.setTotalitems(lineitems1.size());
         result.add(p1);
-        p2.setTotalitems(10);
+        p2.setTotalitems(lineitems2.size());
         result.add(p2);
-        p3.setTotalitems(10);
+        p3.setTotalitems(lineitems3.size());
         result.add(p3);
-        p4.setTotalitems(10);
-        result.add(p4);
-        p5.setTotalitems(10);
-        result.add(p5);
+
 
         return result;
     }
