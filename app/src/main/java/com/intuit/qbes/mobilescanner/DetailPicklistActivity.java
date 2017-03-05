@@ -28,10 +28,10 @@ public class DetailPicklistActivity extends SingleFrameActivity implements TaskP
     }
 
     @Override
-    public void onLineItemSelected(LineItem selectedLineItem,boolean scannedData) {
+    public void onLineItemSelected(LineItem selectedLineItem,boolean bScanned) {
         Intent intent = new Intent(this, ProductInfoActivity.class);
         intent.putExtra(ProductInfoFragment.EXTRA_LINEITEM, selectedLineItem);
-        intent.putExtra(ProductInfoFragment.BARCODE_ENTERED,scannedData);
+        intent.putExtra(ProductInfoFragment.IS_SCANNED, bScanned);
         startActivityForResult(intent, REQUEST_DETAIL_ITEM);
     }
 
@@ -77,15 +77,17 @@ public class DetailPicklistActivity extends SingleFrameActivity implements TaskP
                     try
                     {
                         LineItem obj = (LineItem) data.getParcelableExtra(ProductInfoFragment.EXTRA_LINEITEM);
+                        String barcodeEntered = data.getStringExtra(ProductInfoFragment.BARCODE_ENTERED);
                         fragment.updateLineItemAndItsView((LineItem) data.getParcelableExtra(ProductInfoFragment.EXTRA_LINEITEM));
-                        //To Do- second condition is hack will be done in product info fragment
-                        if(obj.getBarcodeEntered() != null && obj.getBarcode() != null) {
-                            if ((obj.getBarcodeEntered().compareTo("") != 0) && (obj.getBarcode().compareTo(obj.getBarcodeEntered()) != 0)) {
-                                fragment.scanDataReceived(obj.getBarcodeEntered());
+                        if(obj.getBarcode() != null)
+                        {
+                            if(barcodeEntered.compareTo("") != 0) {
+
+                                if (obj.getBarcode().compareTo(barcodeEntered) != 0) {
+                                    fragment.scanDataReceived(barcodeEntered);
+                                }
                             }
-
                         }
-
                     }
                     catch (IllegalArgumentException ex)
                     {

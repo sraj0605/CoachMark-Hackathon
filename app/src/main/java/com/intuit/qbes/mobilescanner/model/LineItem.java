@@ -87,6 +87,16 @@ public class LineItem implements Parcelable {
     private Status mItemStatus;
     @Expose(serialize = false)
     private transient String barcodeEntered = "";
+    @Expose(serialize = false)
+    private transient String barcodetoReturn = "";
+
+    public String getBarcodetoReturn() {
+        return barcodetoReturn;
+    }
+
+    public void setBarcodetoReturn(String barcodetoReturn) {
+        this.barcodetoReturn = barcodetoReturn;
+    }
 
     public long getTaskId() {
         return taskId;

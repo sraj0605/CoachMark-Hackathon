@@ -47,6 +47,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
     public static final String EXTRA_LINEITEM = "com.intuit.qbes.mobilescanner.lineitem";
     public static final String BARCODE_ENTERED = "BARCODE_ENTERED";
+    public static final String IS_SCANNED = "SCANNED_DATA";
     private static final String LOG_TAG = "ProductInfoFragment";
     private View view;
     private LineItem mlineItem;
@@ -76,9 +77,9 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     private Button mConfirm;
     private boolean isInt;
     private Callbacks mCallbacks = null;
-    private String mbarcodePassed;
     private static DeviceManager mDeviceManager = null;
     private boolean mQuantityMismatchDialogThrown = false;
+    private String mBarCodeScanned = "";
 
     public interface Callbacks {
         void onSerialNumberClicked(LineItem lineitem);
@@ -90,11 +91,9 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mlineItem = (LineItem) getArguments().getParcelable(EXTRA_LINEITEM);
-        mbarcodePassed = getArguments().getString(BARCODE_ENTERED);
         if (mlineItem == null && savedInstanceState != null)
         {
             mlineItem = (LineItem) savedInstanceState.getParcelable(EXTRA_LINEITEM);
-            mbarcodePassed = savedInstanceState.getString(BARCODE_ENTERED,"");
         }
         setHasOptionsMenu(true);
     }
@@ -120,7 +119,6 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         view = inflater.inflate(R.layout.fragment_product_info, container, false);
         mIncrement = (ImageView)view.findViewById(R.id.increase);
         mDecrement = (ImageView)view.findViewById(R.id.decrease);
@@ -140,43 +138,86 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         mQty_picked_label = (TextView)view.findViewById(R.id.qty_picked);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         mQty_picked = (EditText)view.findViewById(R.id.qty_picked_value);
-        mIncrement.setOnClickListener(this);
-        mDecrement.setOnClickListener(this);
-        mSerialNo.setOnClickListener(this);
-        mSerialView.setOnClickListener(this);
-        mConfirm.setOnClickListener(this);
-        mQty_picked.addTextChangedListener(this);
+        mUPC_background = (View)view.findViewById(R.id.UPC_Error);
+        mItemName = (TextView)view.findViewById(R.id.item_Name);
+        mItemDescription = (TextView)view.findViewById(R.id.item_description);
+        mLocation = (TextView)view.findViewById(R.id.item_location);
+        mSalesOrder = (TextView)view.findViewById(R.id.item_salesorder);
+        mQtyToPick = (TextView)view.findViewById(R.id.item_qty);
 
-       // mUPC_Value.addTextChangedListener(this);
-
-        mUPC_Value.setOnClickListener(this);
         return view;
 
 
     }
     @Override
     public void onStart() {
-        super.onStart();
-        if(mlineItem.getSerialLotNumbers() != null) {
-            if (mlineItem.getSerialLotNumbers().size() > 0 && (mbarcodePassed.compareTo("") == 0))
-                showUPCDialog();
-        }
 
-        mUPC_background = (View)view.findViewById(R.id.UPC_Error);
+        super.onStart();
+
+        setUpUI();
+
+        fillUIControls();
+
+        setListeners();
+
+        init_barcode();
+    }
+
+    public void setUpUI()
+    {
+
+        upcDialogSetup();
+
+        setupSerialNumberView();
+
         mQty_picked.setFilters(new InputFilter[]{new DecimalDigitsInputFilter(11, 4)});
 
-        if(mlineItem.getSerialLotNumbers() != null && mlineItem.getSerialLotNumbers().size() == 0) {
-            mSerialView.setVisibility(view.GONE);
+        if(mlineItem.isShowSerialNo() == false && (mlineItem.getBarcode().isEmpty())) {
+            mHDivider.setVisibility(view.GONE);
         }
-        else {
-            mSerialNo.setVisibility(view.GONE);
-            mSerialView.setPaintFlags(mSerialView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        }
+    }
+    public void fillUIControls()
+    {
+
+        mItemName.setText(mlineItem.getItemName().toString());
+        mItemDescription.setText(mlineItem.getItemDesc().toString());
+        mLocation.setText(mlineItem.getBinLocation().toString());
+
+        if(mlineItem.getBarcodeEntered().compareTo("") !=0)
+            mUPC_Value.setText(mlineItem.getBarcodeEntered());
+
+        fillQunatity();
+
+        getActivity().setTitle(mItemName.getText().toString());
+    }
+
+    public void setListeners()
+    {
+        mIncrement.setOnClickListener(this);
+        mDecrement.setOnClickListener(this);
+        mSerialNo.setOnClickListener(this);
+        mSerialView.setOnClickListener(this);
+        mConfirm.setOnClickListener(this);
+        mQty_picked.addTextChangedListener(this);
+        mUPC_Value.setOnClickListener(this);
+    }
+    public void upcDialogSetup()
+    {
         if(mlineItem.getBarcode() != null && mlineItem.getBarcode().isEmpty()) {
             mUPC_Header.setVisibility(view.GONE);
             mUPC_Value.setVisibility(view.GONE);
         }
+        else
+        {
+            if(mlineItem.getSerialLotNumbers() != null) {
+                if (mlineItem.getSerialLotNumbers().size() > 0 && (mlineItem.getBarcodeEntered().compareTo("") == 0))
+                    showUPCDialog();
+            }
+        }
+    }
 
+    public void setupSerialNumberView()
+    {
         if(mlineItem.isShowSerialNo() == false) {
             mSNO_Header.setVisibility(view.GONE);
             mSerialNo.setVisibility(view.GONE);
@@ -184,53 +225,38 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             mVDivider.setVisibility(view.GONE);
 
         }
-        if(mlineItem.isShowSerialNo() == false && (mlineItem.getBarcode().isEmpty())) {
-            mHDivider.setVisibility(view.GONE);
+        else
+        {
+            if(mlineItem.getSerialLotNumbers() != null && mlineItem.getSerialLotNumbers().size() == 0) {
+                mSerialView.setVisibility(view.GONE);
+            }
+            else {
+                mSerialNo.setVisibility(view.GONE);
+                mSerialView.setPaintFlags(mSerialView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            }
         }
-        setControllers(mlineItem, view);
-        init_barcode();
     }
-
-    public void setControllers(LineItem lineitem, View view)
+    public void fillQunatity()
     {
+        if(Utilities.noDecimal(mlineItem.getQtyToPick())){
 
-        mItemName = (TextView)view.findViewById(R.id.item_Name);
-        mItemDescription = (TextView)view.findViewById(R.id.item_description);
-        mLocation = (TextView)view.findViewById(R.id.item_location);
-        mSalesOrder = (TextView)view.findViewById(R.id.item_salesorder);
-        mQtyToPick = (TextView)view.findViewById(R.id.item_qty);
-
-
-        mItemName.setText(lineitem.getItemName().toString());
-        mItemDescription.setText(lineitem.getItemDesc().toString());
-        mLocation.setText(lineitem.getBinLocation().toString());
-        //if(lineitem.getBarcode().equals(lineitem.getBarcodeEntered()))
-        if(mbarcodePassed != "")
-            mUPC_Value.setText(mbarcodePassed);
-
-        //  mSalesOrder.setText(lineitem.getBin().toString());   Dummy for now
-
-        if(noDecimal(lineitem.getQtyToPick())){
-
-            mQtyToPick.setText((String.valueOf((int)lineitem.getQtyToPick())));
+            mQtyToPick.setText((String.valueOf((int)mlineItem.getQtyToPick())));
         }
         else
         {
-            mQtyToPick.setText(String.valueOf(lineitem.getQtyToPick()));
+            mQtyToPick.setText(String.valueOf(mlineItem.getQtyToPick()));
         }
-        if (noDecimal(lineitem.getQtyPicked())) {
+        if (Utilities.noDecimal(mlineItem.getQtyPicked())) {
 
-            mQty_picked.setText(String.valueOf((int) lineitem.getQtyPicked()));
+            mQty_picked.setText(String.valueOf((int) mlineItem.getQtyPicked()));
 
         }
         else {
-            mQty_picked.setText(String.valueOf(lineitem.getQtyPicked()));
+            mQty_picked.setText(String.valueOf(mlineItem.getQtyPicked()));
 
         }
-
-        getActivity().setTitle(mItemName.getText().toString());
+        validateQuantityPickedAgainstQuantityToPick(mQty_picked.getText().toString());
     }
-
     @Override
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -259,41 +285,21 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             {
 
             }
-            if (Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick()) {
+            validateQuantityPickedAgainstQuantityToPick(mQty_picked.getText().toString());
 
-                error.setVisibility(view.VISIBLE);
-                mQty_picked_error.setVisibility(view.VISIBLE);
-                mQty_picked_label.setVisibility(View.GONE);
-
-
-            } else {
-                mQty_picked_error.setVisibility(view.GONE);
-                error.setVisibility(view.GONE);
-                mQty_picked_label.setVisibility(View.VISIBLE);
-
-            }
-            if(!mlineItem.getBarcode().isEmpty()) {
-
-                if (mUPC_Value.getText().toString().isEmpty() && Double.parseDouble(mQty_picked.getText().toString()) == 0 && mlineItem.getSerialLotNumbers().size() == 0) {
-                    mUPC_background.setVisibility(view.GONE);
-                    mUPC_ErrorText.setVisibility(view.GONE);
-                } else if (mUPC_Value.getText().toString().isEmpty() && (Double.parseDouble(mQty_picked.getText().toString()) > 0 || (mlineItem.getSerialLotNumbers().size() > 0))) {
-                    mUPC_background.setVisibility(view.VISIBLE);
-                    mUPC_ErrorText.setVisibility(view.VISIBLE);
-
-                }
-            }
-           if(mlineItem.isShowSerialNo() == true) {
+            if(mlineItem.isShowSerialNo() == true) {
             mlineItem.setQtyPicked(mlineItem.getSerialLotNumbers().size());
            }
             else {
             mlineItem.setQtyPicked(Double.parseDouble(mQty_picked.getText().toString()));
             }
 
+            showHideBarcodeErrorHeader();
         }
 
 
     }
+
 
     @Override
     public void onClick(View v) {
@@ -400,20 +406,14 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             if(mlineItem.isShowSerialNo() == false) {
                 if (!(((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSerialLotNumbers().size() > 0)) && (mUPC_Value.getText().toString().isEmpty())) && !(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick())) {
 
-                    Intent data = new Intent();
-                    data.putExtra(EXTRA_LINEITEM, mlineItem);
-                    getActivity().setResult(Activity.RESULT_OK, data);
-                    getActivity().finish();
+                    finishActivity();
                 }
             }
             else
             {
                 if (!(((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSerialLotNumbers().size() > 0)) && (mUPC_Value.getText().toString().isEmpty())) && !(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick()) && !(Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSerialLotNumbers().size()) ) {
 
-                    Intent data = new Intent();
-                    data.putExtra(EXTRA_LINEITEM, mlineItem);
-                    getActivity().setResult(Activity.RESULT_OK, data);
-                    getActivity().finish();
+                    finishActivity();
                 }
                 else if((Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSerialLotNumbers().size()))
                 {
@@ -431,20 +431,14 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             if(mlineItem.isShowSerialNo() == false) {
                 if (!(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick())) {
 
-                    Intent data = new Intent();
-                    data.putExtra(EXTRA_LINEITEM, mlineItem);
-                    getActivity().setResult(Activity.RESULT_OK, data);
-                    getActivity().finish();
+                    finishActivity();
                 }
             }
             else
             {
                 if (!(Double.parseDouble(mQty_picked.getText().toString()) > mlineItem.getQtyToPick()) && !(Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSerialLotNumbers().size()) ) {
 
-                    Intent data = new Intent();
-                    data.putExtra(EXTRA_LINEITEM, mlineItem);
-                    getActivity().setResult(Activity.RESULT_OK, data);
-                    getActivity().finish();
+                    finishActivity();
                 }
                 else if((Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSerialLotNumbers().size()))
                 {
@@ -461,33 +455,24 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
     }
 
+    public void finishActivity()
+    {
+        Intent data = new Intent();
+        data.putExtra(EXTRA_LINEITEM, mlineItem);
+        data.putExtra(BARCODE_ENTERED,mlineItem.getBarcodetoReturn());
+        getActivity().setResult(Activity.RESULT_OK, data);
+        getActivity().finish();
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(EXTRA_LINEITEM, mlineItem);
         super.onSaveInstanceState(outState);
     }
 
-
-    public boolean isInteger(String str) {
-        try {
-            Integer.parseInt(str);
-            return true;
-        } catch (NumberFormatException nfe) {}
-        return false;
-    }
-
-public boolean noDecimal(double val)
-{
-    if(val%1 == 0)
-        return true;
-    else
-        return false;
-}
   public  void onBackPressed()
     {
-
         updateItemStatus();
-
         GotoDetailPicklist();
     }
 //scanner Integration
@@ -500,6 +485,8 @@ public boolean noDecimal(double val)
                 @Override
                 public void run() {
                     mUPC_Value.setText(sUPCData);
+                    showHideBarcodeErrorHeader();
+                    mlineItem.setBarcodetoReturn(sUPCData);
                     mlineItem.setBarcodeEntered(sUPCData);
                     onClick(mIncrement);
 
@@ -512,7 +499,7 @@ public boolean noDecimal(double val)
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    mlineItem.setBarcodeEntered(sUPCData);
+                    mlineItem.setBarcodetoReturn(sUPCData);
                     onClick(mConfirm);
                 }
             });
@@ -563,9 +550,11 @@ public boolean noDecimal(double val)
             @Override
             public void onDismiss(DialogInterface dialog) {
                 init_barcode();
-                if(!mlineItem.getBarcodeEntered().isEmpty())
-                    mUPC_Value.setText(mlineItem.getBarcodeEntered());
-                    mbarcodePassed = mlineItem.getBarcodeEntered();
+                String barcodeEntered = mlineItem.getBarcodeEntered().toString();
+                if(!barcodeEntered.isEmpty()) {
+                    mUPC_Value.setText(barcodeEntered);
+                    mlineItem.setBarcodetoReturn(barcodeEntered);
+                }
                 UPC_ErrorCheck();
             }
         });
@@ -604,7 +593,6 @@ public boolean noDecimal(double val)
                 public void onClick(View v) {
 
                     mQuantityMismatchDialogThrown = false;
-                    mlineItem.setBarcodeEntered("");
                     openDialog.dismiss();
 
                 }
@@ -634,8 +622,24 @@ public boolean noDecimal(double val)
             hideQuantityPickedWarning();
 
         }
-    }
 
+
+    }
+    public void showHideBarcodeErrorHeader()
+    {
+        if(!mlineItem.getBarcode().isEmpty()) {
+
+            if ((mUPC_Value.getText().toString().isEmpty() && Double.parseDouble(mQty_picked.getText().toString()) == 0 && mlineItem.getSerialLotNumbers().size() == 0) || !mUPC_Value.getText().toString().isEmpty() ) {
+                mUPC_background.setVisibility(view.GONE);
+                mUPC_ErrorText.setVisibility(view.GONE);
+            }
+            else if (mUPC_Value.getText().toString().isEmpty() && (Double.parseDouble(mQty_picked.getText().toString()) > 0 || (mlineItem.getSerialLotNumbers().size() > 0))) {
+                mUPC_background.setVisibility(view.VISIBLE);
+                mUPC_ErrorText.setVisibility(view.VISIBLE);
+
+            }
+        }
+    }
     public void showQuantityPickedWarning()
     {
         error.setVisibility(view.VISIBLE);

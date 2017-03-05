@@ -103,12 +103,20 @@ public class Utilities{
         return qty;
     }
 
-    private static boolean isInteger(String val)
+    public static boolean isInteger(String val)
     {
         try {
             Integer.parseInt(val);
             return true;
         } catch (NumberFormatException nfe) {}
         return false;
+    }
+
+    public static boolean noDecimal(double qty)
+    {
+        if(qty%1 == 0)
+            return true;
+        else
+            return false;
     }
 }

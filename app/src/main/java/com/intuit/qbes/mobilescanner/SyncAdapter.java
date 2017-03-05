@@ -9,6 +9,7 @@ import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
 import com.intuit.qbes.mobilescanner.networking.DataSync;
+import com.intuit.qbes.mobilescanner.networking.PicklistHttp;
 
 import android.accounts.Account;
 import android.annotation.TargetApi;
@@ -101,8 +102,26 @@ class SyncAdapter extends AbstractThreadedSyncAdapter implements DataSync.DataSy
 
         if (extras.getBoolean("MANUAL_SYNC") == true)//device pairing sync
             bDevicePairing = true;
-        FetchAllPickList();
+        try {
+                String urlStr = "http://172.16.100.28:9999/api/v1/company/666667/tasks/98";
 
+                String result = new PicklistHttp().
+                        getUrlString(urlStr);
+                List<Picklist> picklists = new ArrayList<>();
+                picklists.add(Picklist.picklistFromJSON(result));
+                updateDevice(picklists);
+                Log.i(TAG,result);
+
+
+        } catch (MalformedURLException e) {
+            Log.e(TAG, "Feed URL is malformed", e);
+            syncResult.stats.numParseExceptions++;
+
+        } catch (IOException e) {
+            Log.e(TAG, "Error reading from network: " + e.toString());
+            syncResult.stats.numIoExceptions++;
+        }
+        Log.i(TAG, "Finished network synchronization");
     }
 
 
@@ -120,7 +139,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter implements DataSync.DataSy
 
     public void updateDevice(List<Picklist>picklistsFromServer)
     {
-        DatabaseHandler db = new DatabaseHandler(mContext);
+        DatabaseHandler db =  new DatabaseHandler(mContext);
         for(int i =0;i < picklistsFromServer.size();i++)
         {
            Picklist picklistOnServer = picklistsFromServer.get(i);

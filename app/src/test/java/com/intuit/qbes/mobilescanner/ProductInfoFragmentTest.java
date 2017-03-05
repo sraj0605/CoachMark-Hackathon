@@ -89,7 +89,7 @@ public class ProductInfoFragmentTest{
         //ArrayList<String> arr = new ArrayList<>();
         //arr.add("1234");
         mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
-        mLineItem.setBarcodeEntered("");
+        mLineItem.setBarcodeEntered("dummy");
 
     }
 
@@ -169,6 +169,7 @@ public class ProductInfoFragmentTest{
     public void test_increment_button_functionality()
     {
         mIncrement.performClick();
+        assertTrue("quantity not incremented",String.valueOf(mLineItem.getQtyPicked()).equals("1.0"));
 
     }
 
@@ -176,6 +177,8 @@ public class ProductInfoFragmentTest{
     public void test_decrement_button_functionality()
     {
         mDecrement.performClick();
+        assertTrue("quantity not incremented",String.valueOf(mLineItem.getQtyPicked()).equals("0.0"));
+
 
     }
 
@@ -222,11 +225,11 @@ public class ProductInfoFragmentTest{
     public void integer_decimal_functionality_test()
     {
         double val = 10.2;
-       boolean result =  productInfoFragment.noDecimal(10.2);
+       boolean result =  Utilities.noDecimal(10.2);
         Assert.assertFalse(result);
 
         String qty = "10";
-        boolean isInt = productInfoFragment.isInteger(qty);
+        boolean isInt = Utilities.isInteger(qty);
         Assert.assertTrue(isInt);
     }
 
@@ -239,6 +242,7 @@ public class ProductInfoFragmentTest{
         data.putExtra("lineitem", mLineItem);
         productInfoFragment.onActivityResult(reqcode,rescode,data);
     }
+
 
 
 

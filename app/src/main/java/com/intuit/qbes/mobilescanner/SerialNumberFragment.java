@@ -61,8 +61,6 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
-
     }
 
     public static SerialNumberFragment newInstance(LineItem lineitem) {
@@ -105,7 +103,7 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         super.onStart();
 
         mItemName.setText(lineitem.getItemName());
-       if(noDecimal(lineitem.getQtyToPick())) {
+       if(Utilities.noDecimal(lineitem.getQtyToPick())) {
             Qty = String.valueOf((int)lineitem.getQtyToPick());
 
             if (lineitem.getSerialLotNumbers().size() == 0) {
@@ -158,7 +156,7 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
                         mAdded.setText("ADDED");// + " " + count + "/" + Qty);
                         mAddedValue.setText(count + "/" + Qty);
                         mSerialNumberAdded.getText().clear();
-
+                        lineitem.setQtyPicked(mySerialNumberAdapter.getSerialnoList().size());
                     }
                 }
                 else
@@ -188,7 +186,6 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
     public void toProductInfo() {
         if (getFragmentManager().getBackStackEntryCount() > 0) {
             lineitem.setSerialLotNumbers(mySerialNumberAdapter.getSerialnoList());
-            //chandan
             lineitem.setQtyPicked(mySerialNumberAdapter.getSerialnoList().size());
             getFragmentManager().popBackStack();
 
@@ -231,8 +228,6 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         List<SerialLotNumber> serialNOList = new ArrayList();
 
         public SerialNumberAdapter(LineItem lineItem){
-           // this.serialNOList = new ArrayList<String>();
-         //   this.serialNOList = serialnos;
             this.serialNOList = lineItem.getSerialLotNumbers();
 
         }
@@ -273,6 +268,8 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
                                             int count = getItemCount();
                                             serialNOList.remove(position);
                                             notifyItemRemoved(position);
+                                            //chandan
+                                            lineitem.setQtyPicked(mySerialNumberAdapter.getSerialnoList().size());
                                             if (count > 1) {
                                                 count--;
                                                 mAdded.setText("ADDED");// + " " + count + "/" + Qty);
@@ -351,14 +348,6 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         return true;
 
     }
-
-    public boolean noDecimal(double val)
-    {
-        if(val%1 == 0)
-            return true;
-        else
-            return false;
-    }
     //scanner integration
     @Override
     public void scanDataReceived(String sData) {
@@ -372,9 +361,6 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         });
 
     }
-
-
-
 }
 
 

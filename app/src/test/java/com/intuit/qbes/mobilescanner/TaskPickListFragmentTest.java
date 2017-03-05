@@ -5,6 +5,7 @@ package com.intuit.qbes.mobilescanner;
  */
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
@@ -15,14 +16,17 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.model.Status;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -45,6 +49,8 @@ import static com.intuit.qbes.mobilescanner.ProductInfoFragment.EXTRA_LINEITEM;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
+import static org.junit.Assert.assertThat;
+//import static org.robolectric.shadows.support.v4.ShadowLocalBroadcastManager.shadowOf;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
 @RunWith(RobolectricTestRunner.class)
@@ -54,11 +60,14 @@ public class TaskPickListFragmentTest {
     private TaskPickListFragment taskPickListFragment;
     private List<LineItem> mLineitems;
     private LineItem mLineItem;
+    private LineItem mLineItem1;
+
     private Picklist mPickList;
     @Before
     public void setUp() throws Exception {
         createDummyModel();
-        Intent intent = new Intent(RuntimeEnvironment.application, DetailPicklistActivity.class);
+        //Intent intent = new Intent(RuntimeEnvironment.application, DetailPicklistActivity.class);
+        Intent intent = new Intent(RuntimeEnvironment.application.getApplicationContext(),DetailPicklistActivity.class);
         intent.putExtra(TaskPickListFragment.EXTRA_PICKLIST, mPickList);
         detailPicklistActivity = Robolectric.buildActivity(DetailPicklistActivity.class)
                 .withIntent(intent)
@@ -66,7 +75,7 @@ public class TaskPickListFragmentTest {
                 .start()
                 .get();
         taskPickListFragment = TaskPickListFragment.newInstance(mPickList);
-        //SupportFragmentTestUtil.startFragment(detailPicklistFragment1);
+        taskPickListFragment.onAttach(RuntimeEnvironment.application.getApplicationContext());
         SupportFragmentTestUtil.startVisibleFragment(taskPickListFragment);
 
     }
@@ -75,7 +84,10 @@ public class TaskPickListFragmentTest {
     {
         mLineitems = new ArrayList<>();
         mLineItem = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",Status.NotPicked);
+        mLineItem1 = new LineItem(1,1,1,"Iphone","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 2",12,"custom",null,"true","true","false",Status.NotPicked);
+
         mLineitems.add(mLineItem);
+        mLineitems.add(mLineItem1);
         mPickList = new Picklist(1, 1,1, "Picklist1",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",mLineitems,"false");
 
     }
@@ -136,13 +148,17 @@ public class TaskPickListFragmentTest {
         TextView mSortOrderSelection = (TextView)taskPickListFragment.getView().findViewById(R.id.sortbyselection);
         mSortOrderSelection.performClick();
 
+        ImageView mSortReverseIcon = (ImageView) taskPickListFragment.getView().findViewById(R.id.sorticon);
+        mSortReverseIcon.performClick();
+
+
     }
 
 @Test
     public void test_onitemselect()
     {
         String barcode ="8901238910005";
-       detailPicklistActivity.onLineItemSelected(mLineItem,true);
+        detailPicklistActivity.onLineItemSelected(mLineItem,true);
     }
 
 
@@ -166,6 +182,7 @@ public class TaskPickListFragmentTest {
         int rescode = Activity.RESULT_OK;
         Intent data = new Intent();
         data.putExtra(EXTRA_LINEITEM, mLineItem);
+        data.putExtra(ProductInfoFragment.BARCODE_ENTERED,"500");
         detailPicklistActivity.onActivityResult(reqcode,rescode,data);
     }
 
@@ -178,10 +195,11 @@ public class TaskPickListFragmentTest {
     @Test
     public void test_updatelineitem()
     {
-       LineItem testlineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false", Status.NotPicked);
-
+        LineItem testlineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false", Status.Picked);
+        taskPickListFragment.updateLineItemAndItsView(testlineitem);
         taskPickListFragment.updateLineItem(testlineitem);
-
+        Status obj = Status.Picked;
+        assertTrue("Line Item Not Updated",mPickList.getLineitems().get(0).getmItemStatus().equals(obj));
         taskPickListFragment.updateViewAtPosition(0);
     }
 
@@ -199,12 +217,34 @@ public class TaskPickListFragmentTest {
     public void test_sort_selection()
     {
         taskPickListFragment.onSortingOptionSelection(SortFilterOption.Items);
+
+        RecyclerView recycleview = (RecyclerView)taskPickListFragment.getView().findViewById(R.id.detail_picklist_rv2);
+        Assert.assertNotNull(recycleview);
+        recycleview.measure(0,0);
+        recycleview.layout(0,0,100,1000);
+        View itemView = recycleview.findViewHolderForAdapterPosition(0).itemView;
+        Assert.assertNotNull(itemView);
+        TextView itemName = (TextView) itemView.findViewById(R.id.itemName);
+        assertTrue("Not sorted properly based on item name",
+                itemName.getText().toString().equals("Iphone"));
+
+        taskPickListFragment.onSortingOptionSelection(SortFilterOption.Location);
+        taskPickListFragment.onSortingOptionSelection(SortFilterOption.SalesOrder);
+        taskPickListFragment.onSortingOptionSelection(SortFilterOption.Status);
     }
 
     @Test
     public void test_scandata_rec()
     {
+
         taskPickListFragment.scanDataReceived("yes");
+        taskPickListFragment.onAttach(RuntimeEnvironment.application.getApplicationContext());
+        taskPickListFragment.scanDataReceived("8901238910005");
+
+
     }
+
+
+
 
 }

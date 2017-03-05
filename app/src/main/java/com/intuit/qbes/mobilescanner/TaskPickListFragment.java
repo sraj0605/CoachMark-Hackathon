@@ -91,7 +91,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
 
 
     public interface Callbacks {
-        void onLineItemSelected(LineItem selectedLineItem,boolean scannedData);
+        void onLineItemSelected(LineItem selectedLineItem,boolean bScanned);
         void onPicklistSaved(Integer responseCode, Picklist picklist);
         void onBarcodeReady();
         void onPicklistComplete();
@@ -205,9 +205,8 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
     @Override
     public void onStart() {
         super.onStart();
-
-        if(db == null)
-            db = new DatabaseHandler(getActivity().getApplicationContext());
+        if (db == null)
+            db =  new DatabaseHandler(getActivity().getApplicationContext());
         if(lineitems == null)
             lineitems = mPicklist.getLineitems();
         if(lineitems == null)

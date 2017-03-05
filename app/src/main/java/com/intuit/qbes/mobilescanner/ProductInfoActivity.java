@@ -32,11 +32,9 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         LineItem lineitem = (LineItem) getIntent().getParcelableExtra(ProductInfoFragment.EXTRA_LINEITEM);
-        //String barcodePassed = getIntent().getStringExtra(ProductInfoFragment.BARCODE_ENTERED);
-        boolean isScanned = getIntent().getBooleanExtra(ProductInfoFragment.BARCODE_ENTERED,false);
-        if(isScanned)
+        boolean bScanned = getIntent().getBooleanExtra(ProductInfoFragment.IS_SCANNED,false);
+        if(bScanned)
         {
             String val = Utilities.IncrementQuantity(String.valueOf(lineitem.getQtyPicked()));//Utilities.checkAndIncrementQuantity(String.valueOf(lineitem.getQtyToPick()),String.valueOf(lineitem.getQtyPicked()));
             lineitem.setQtyPicked(Double.parseDouble(String.valueOf(val)));
@@ -50,6 +48,8 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
             if (fragment == null) {
                 //fragment = (Fragment) fragmentClass.newInstance();
                 fragment = ProductInfoFragment.newInstance(lineitem,lineitem.getBarcodeEntered());
+
+
 
             }
         } catch (Exception e) {

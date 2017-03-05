@@ -45,6 +45,10 @@ public class PicklistHttp {
             out.close();
             return out.toByteArray();
         }
+        catch (IOException exp)
+        {
+            throw new IOException(connection.getResponseMessage() + ":with " + urlSpec);
+        }
         catch (Exception ex)
         {
             Log.e("PicklistHttp", "Failed to fetch URL: ", ex);
