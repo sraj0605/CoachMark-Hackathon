@@ -72,10 +72,12 @@ public class DataSync {
                         NoInternetDialog(context);
 
                     }
-                    if  (error.networkResponse.statusCode == 409)
+                    if(error.networkResponse != null)
                     {
-                        StaleDataDialog(context);
+                        if (error.networkResponse.statusCode == 409) {
+                            StaleDataDialog(context);
 
+                        }
                     }
                 }
             }) {
