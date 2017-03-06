@@ -218,7 +218,10 @@ public class DataSync {
 
         try {
             response = future.get(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            picklists = Picklist.picklistsFromJSON(response);
+            if(response != null) {
+                Log.e("SyncAdapter", response);
+                picklists = Picklist.picklistsFromJSON(response);
+            }
         } catch (InterruptedException e) {
             Log.e("Retrieve  interrupted.", e.getMessage());
         } catch (ExecutionException e) {

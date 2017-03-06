@@ -458,7 +458,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
             mItemDesc.setText(item.getItemDesc());
             mLocation.setText(String.format("Bin No : %s",item.getBinLocation()));
             mSalesOrder.setText(String.format("Sales Order: %s",item.getDocNum()));
-            if(isInteger(item.getQtyToPick()))
+            if(Utilities.isInteger(String.valueOf(item.getQtyToPick())))
             {
                 long qtyTopick = (long) item.getQtyToPick();
                 mQtyToPick.setText(String.format("Qty : %s", qtyTopick));
@@ -483,10 +483,6 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
             {
                 mCallbacks.onLineItemSelected(mItem,false);
             }
-        }
-        //To check its integer or not
-        public boolean isInteger(double number){
-            return Math.ceil(number) == Math.floor(number);
         }
     }
     //Recycle View Adpter

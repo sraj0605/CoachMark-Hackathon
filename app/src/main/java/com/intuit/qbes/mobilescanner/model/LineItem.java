@@ -385,7 +385,8 @@ public class LineItem implements Parcelable {
             binLocation = in.readString();
             binExtId = in.readLong();
             customFields = in.readString();
-            serialLotNumbers =  new ArrayList<SerialLotNumber>(Arrays.asList(in.createTypedArray(SerialLotNumber.CREATOR)));
+            if(getSerialLotNumbers() != null)
+               serialLotNumbers =  new ArrayList<SerialLotNumber>(Arrays.asList(in.createTypedArray(SerialLotNumber.CREATOR)));
             deleted = Boolean.valueOf(in.readString());
             showSerialNo = Boolean.valueOf(in.readString());
             showLotNo = Boolean.valueOf(in.readString());
@@ -478,7 +479,9 @@ public class LineItem implements Parcelable {
             dest.writeString(getBinLocation());
             dest.writeLong(getExtId());
             dest.writeString(getCustomFields());
-            dest.writeTypedArray(getSerialLotNumbers().toArray(new SerialLotNumber[getSerialLotNumbers().size()]), 0);
+            List<SerialLotNumber>serialLotNumbers = getSerialLotNumbers();
+            if(serialLotNumbers != null)
+                dest.writeTypedArray(getSerialLotNumbers().toArray(new SerialLotNumber[getSerialLotNumbers().size()]), 0);
             dest.writeString(String.valueOf(isDeleted()));
             dest.writeString(String.valueOf(isShowSerialNo()));
             dest.writeString(String.valueOf(isShowLotNo()));

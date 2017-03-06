@@ -106,7 +106,7 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
        if(Utilities.noDecimal(lineitem.getQtyToPick())) {
             Qty = String.valueOf((int)lineitem.getQtyToPick());
 
-            if (lineitem.getSerialLotNumbers().size() == 0) {
+            if (lineitem.getSerialLotNumbers() == null || (lineitem.getSerialLotNumbers() != null && lineitem.getSerialLotNumbers().size() == 0)) {
                 //mAdded.setText("To be added: " + Qty);
                 mAddedValue.setText(Qty);
             } else {
@@ -118,7 +118,7 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         {
             Qty = String.valueOf(lineitem.getQtyToPick());
 
-            if (lineitem.getSerialLotNumbers().size() == 0) {
+            if (lineitem.getSerialLotNumbers() == null || (lineitem.getSerialLotNumbers() != null && lineitem.getSerialLotNumbers().size() == 0)) {
                // mAdded.setText("To be added: " + Qty);
                 mAddedValue.setText(Qty);
             } else {
@@ -228,7 +228,8 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         List<SerialLotNumber> serialNOList = new ArrayList();
 
         public SerialNumberAdapter(LineItem lineItem){
-            this.serialNOList = lineItem.getSerialLotNumbers();
+            if(lineItem.getSerialLotNumbers() != null)
+                this.serialNOList = lineItem.getSerialLotNumbers();
 
         }
 

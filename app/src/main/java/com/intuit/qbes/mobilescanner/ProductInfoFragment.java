@@ -227,7 +227,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         }
         else
         {
-            if(mlineItem.getSerialLotNumbers() != null && mlineItem.getSerialLotNumbers().size() == 0) {
+            if(mlineItem.getSerialLotNumbers() == null || (mlineItem.getSerialLotNumbers() != null && mlineItem.getSerialLotNumbers().size() == 0)) {
                 mSerialView.setVisibility(view.GONE);
             }
             else {
