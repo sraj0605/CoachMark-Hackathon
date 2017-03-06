@@ -18,6 +18,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
 import com.intuit.qbes.mobilescanner.DatabaseHandler;
 import com.intuit.qbes.mobilescanner.ListPicklistFragment;
@@ -26,11 +28,18 @@ import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static com.android.volley.DefaultRetryPolicy.DEFAULT_TIMEOUT_MS;
 
 /**
  * Created by ashah9 on 2/10/17.
@@ -198,5 +207,27 @@ public class DataSync {
         });
 
         openDialog.show();
+    }
+
+    public List<Picklist> getTasksSynchronously(int method, String url) {
+        List<Picklist> picklists = null;
+        String response = null;
+        RequestFuture<String> future = RequestFuture.newFuture();
+        StringRequest request = new StringRequest(method, url,future,future);
+        AppController.getInstance().addToRequestQueue(request);
+
+        try {
+            response = future.get(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            picklists = Picklist.picklistsFromJSON(response);
+        } catch (InterruptedException e) {
+            Log.e("Retrieve  interrupted.", e.getMessage());
+        } catch (ExecutionException e) {
+            Log.e("Retrieve  failed.", e.getMessage());
+
+        } catch (TimeoutException e) {
+            Log.e("Retrieve  timed out.", e.getMessage());
+
+        }
+        return  picklists;
     }
 }

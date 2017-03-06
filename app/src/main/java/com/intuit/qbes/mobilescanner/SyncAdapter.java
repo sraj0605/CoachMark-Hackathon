@@ -4,6 +4,7 @@ package com.intuit.qbes.mobilescanner;
  * Created by ckumar5 on 09/02/17.
  */
 
+import com.android.volley.Request;
 import com.intuit.qbes.mobilescanner.Account.GenericAccountService;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
@@ -57,6 +58,7 @@ import static android.provider.ContactsContract.Intents.Insert.ACTION;
 class SyncAdapter extends AbstractThreadedSyncAdapter implements DataSync.DataSyncCallback{
     public static final String TAG = "SyncAdapter";
     public static final String SYNC_STATUS = "SyncStatus";
+    public static final String url = "http://172.16.100.28:9999/api/v1/company/666667/tasks/";
     private final ContentResolver mContentResolver;
     private final Context mContext;
     private boolean bDevicePairing = false;
@@ -100,27 +102,17 @@ class SyncAdapter extends AbstractThreadedSyncAdapter implements DataSync.DataSy
                               ContentProviderClient provider, SyncResult syncResult) {
         Log.i(TAG, "Beginning network synchronization");
 
+        List<Picklist> picklists = null;
+
         if (extras.getBoolean("MANUAL_SYNC") == true)//device pairing sync
             bDevicePairing = true;
-        try {
-                String urlStr = "http://172.16.100.28:9999/api/v1/company/666667/tasks/98";
+        DataSync obj = new DataSync();
 
-                String result = new PicklistHttp().
-                        getUrlString(urlStr);
-                List<Picklist> picklists = new ArrayList<>();
-                picklists.add(Picklist.picklistFromJSON(result));
-                updateDevice(picklists);
-                Log.i(TAG,result);
+        picklists = obj.getTasksSynchronously(Request.Method.GET,url);
 
+        if(picklists != null)
+            updateDevice(picklists);
 
-        } catch (MalformedURLException e) {
-            Log.e(TAG, "Feed URL is malformed", e);
-            syncResult.stats.numParseExceptions++;
-
-        } catch (IOException e) {
-            Log.e(TAG, "Error reading from network: " + e.toString());
-            syncResult.stats.numIoExceptions++;
-        }
         Log.i(TAG, "Finished network synchronization");
     }
 
