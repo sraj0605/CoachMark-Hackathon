@@ -72,6 +72,16 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
       //  List<Picklist> test = new ArrayList<>();
       //  test = mPicklists;
     }
+
+    @Override
+    public void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale) {
+
+    }
+
+
+
+
+
     public interface Callbacks {
         void onPickSelected(Picklist selectedPick);
     }
@@ -97,9 +107,10 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dummyPicklists = createList(5);
         db = new DatabaseHandler(getActivity().getApplicationContext());
-        mPicklists =  db.allPickLists();
+        dummyPicklists = createList(5);
+
+        // mPicklists =  db.allPickLists();
         //registerReceiverWithSyncAdapter();
         setHasOptionsMenu(true);
     }
@@ -315,8 +326,8 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
 
 
         Picklist p1 = new Picklist(1, 1,1, "Order number: 8804",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems1,"false");
-        Picklist p2 = new Picklist(1, 1,1, "Order number: 8795",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems2,"false");
-        Picklist p3 = new Picklist(1, 1,1, "Order number: 8792",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems3,"false");
+        Picklist p2 = new Picklist(2, 1,1, "Order number: 8795",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems2,"false");
+        Picklist p3 = new Picklist(3, 1,1, "Order number: 8792",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems3,"false");
 
 
         p1.setTotalitems(lineitems1.size());

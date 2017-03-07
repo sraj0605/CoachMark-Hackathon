@@ -91,10 +91,10 @@
         android:clickable="true"
         />
 
-<Button
+    <Button
         android:text="SYNC"
         app:layout_widthPercent="40%"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_above="@id/Button_Gap"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
@@ -103,14 +103,26 @@
         android:textColor="#000000"
         android:id="@+id/update_sync" />
 
+    <ImageButton
+        app:layout_widthPercent="40%"
+        android:layout_height="50dp"
+        android:layout_above="@id/Button_Gap"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/button_shape_sync"
+        android:textColor="#000000"
+        android:src="@drawable/sync"
+        android:visibility="gone"
+        android:id="@+id/img_update_sync" />
+
 
     <Button
         android:text="COMPLETE"
-        app:layout_widthPercent="55%"
-        android:layout_height="wrap_content"
+        app:layout_widthPercent="50%"
+        android:layout_height="50dp"
         android:layout_above="@id/Button_Gap"
-        android:layout_toRightOf="@+id/update_sync"
-        android:layout_marginRight="10dp"
+        app:layout_marginLeftPercent = "45%"
         android:background="@drawable/button_shape_complete"
         android:textColor="#ffffff"
         android:layout_marginBottom="10dp"

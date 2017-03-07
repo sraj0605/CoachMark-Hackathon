@@ -129,6 +129,12 @@ class SyncAdapter extends AbstractThreadedSyncAdapter implements DataSync.DataSy
 
     }
 
+    @Override
+    public void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale) {
+
+    }
+
+
     public void updateDevice(List<Picklist>picklistsFromServer)
     {
         DatabaseHandler db =  new DatabaseHandler(mContext);

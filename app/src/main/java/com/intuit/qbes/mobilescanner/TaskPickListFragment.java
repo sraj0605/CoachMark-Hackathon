@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,6 +39,7 @@ import com.intuit.qbes.mobilescanner.barcode.BarcodeScannerDevice;
 import com.intuit.qbes.mobilescanner.barcode.DeviceManager;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
+import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
 import com.intuit.qbes.mobilescanner.model.Status;
 import com.intuit.qbes.mobilescanner.networking.AppController;
 import com.intuit.qbes.mobilescanner.networking.DataSync;
@@ -58,7 +61,7 @@ import static java.lang.Math.E;
  * Created by ckumar5 on 08/01/17.
  */
 
-public class TaskPickListFragment extends Fragment implements View.OnClickListener,SortingDialog.SortingSelectionDialogListener,BarcodeScannerDevice.ScanDataReceiver{
+public class TaskPickListFragment extends Fragment implements View.OnClickListener,SortingDialog.SortingSelectionDialogListener,BarcodeScannerDevice.ScanDataReceiver,DataSync.DataSyncCallback{
 
 
     public static final String EXTRA_PICKLIST = "com.intuit.qbes.mobilescanner.picklist";
@@ -67,7 +70,9 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
     private RecyclerView mRecyclerView;
     private LineItemAdapter mAdapter = null;
     private static final String updateTAG = "Update";
+    private ProgressDialog mProgressDialog;
 
+    private  Picklist dummyP = new Picklist();
 
     private Picklist mPicklist = null;
     private TaskPickListFragment.Callbacks mCallbacks;
@@ -82,6 +87,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
     private RelativeLayout mLayoutForSort;
     private ImageView mReverseSortingOption;
     private Button mSync;
+    private ImageButton mSyncTick;
     private Button mComplete;
     private TextView mSortOrderSelection;
     private boolean mMessageThrown = false;
@@ -89,6 +95,46 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
     private DatabaseHandler db = null;
     private List<LineItem> lineitems = null;
 
+    @Override
+    public void onFetchPicklist(List<Picklist> mPicklists) {
+
+    }
+
+    @Override
+    public void onUpdatePicklist(Picklist Picklist, Boolean isSync, Boolean isStale) {
+
+        if(!isStale) {
+            if (isSync) {
+
+                dummyP = Picklist;
+
+                //   mPicklist = Picklist;
+                // db.updatePickList(mPicklist,mPicklist.getId());
+                updateSyncButton();
+
+            } else {
+                //db.deletePicklistWithDetails(Picklist.getId());
+
+                mCallbacks.onPicklistComplete();
+            }
+        }
+        dismissDialog();
+    }
+
+    public void updateSyncButton()
+    {
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+               mSyncTick.setVisibility(View.GONE);
+                mSync.setVisibility(View.VISIBLE);
+            }
+        }, 2000);
+
+        mSyncTick.setVisibility(View.VISIBLE);
+        mSync.setVisibility(View.GONE);
+    }
 
     public interface Callbacks {
         void onLineItemSelected(LineItem selectedLineItem,boolean bScanned);
@@ -121,6 +167,9 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         {
             mPicklist = (Picklist) savedInstanceState.getParcelable(EXTRA_PICKLIST);
         }
+
+        SetupDummy();
+
         setHasOptionsMenu(true);
     }
 
@@ -157,6 +206,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         mReverseSortingOption = (ImageView) view.findViewById(R.id.sorticon);
         mSortOrderSelection = (TextView)view.findViewById(R.id.sortbyselection);
         mSync = (Button)view.findViewById(R.id.update_sync);
+        mSyncTick = (ImageButton)view.findViewById(R.id.img_update_sync);
         mComplete = (Button)view.findViewById(R.id.update_complete);
         //mLayoutForFilter = (RelativeLayout)view.findViewById(R.id.filter);
         //chandan - is there any chances of above variables getting null,dont think so
@@ -364,7 +414,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
 
             case R.id.update_sync:
             {
-                savePicklist(mPicklist);
+                savePicklist(mPicklist, true);
                 break;
             }
             case R.id.update_complete:
@@ -423,10 +473,31 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         //mAdapter.sortDataSetByUserOption(SortFilterOption.Status,false);
     }
 
-    private void savePicklist(Picklist picklist)
+    private void savePicklist(Picklist picklist, Boolean isSync)
     {
+
         dataSync = new DataSync();
-        dataSync.UpdatePicklist(picklist,getContext());
+        dataSync.UpdatePicklist(dummyP,getContext(), this, isSync); // remove dummy later
+        showDialog();
+
+    }
+
+    private void SetupDummy()
+    {
+        dummyP.setStatus(Status.SentforPick);
+        dummyP.setSyncToken(18);
+        LineItem dummyl = new LineItem();
+        List<SerialLotNumber> dummyS = new ArrayList<>();
+        List<LineItem> dummyL = new ArrayList<>();
+        dummyl.setId(223);
+        dummyl.setNotes("Sync Notes 3");
+        dummyl.setmItemStatus(Status.SentforPick);
+        dummyl.setQtyPicked(25.0);
+        dummyl.setBinLocation("Sync Bin 3");
+        dummyl.setBinExtId(100212);
+        dummyl.setSerialLotNumbers(dummyS);
+        dummyL.add(dummyl);
+        dummyP.setLineitems(dummyL);
     }
 
     private class LineItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -657,8 +728,8 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
                 .setPositiveButton(R.string.Yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         //Check if any item is not completely picked and complete or show discrepency screen accordingly.
-                        db.deleteOnePicklist(mPicklist.getId());
-                        mCallbacks.onPicklistComplete();
+                        savePicklist(mPicklist, false);
+
                     }
                 })
                 .setNegativeButton(R.string.No, new DialogInterface.OnClickListener() {
@@ -668,5 +739,16 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
                 })
                 .show();
 
+    }
+
+    public void showDialog()
+    {
+        mProgressDialog = ProgressDialog.show(getActivity(),
+                "Syncing Data", "");
+    }
+
+    public void dismissDialog()
+    {
+        mProgressDialog.dismiss();
     }
 }

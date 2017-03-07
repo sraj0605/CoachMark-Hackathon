@@ -50,16 +50,20 @@ public class DataSync {
     private static final String updateTAG = "Update";
     private String fetchTAG  = "Fetch";
     private List<Picklist> mPicklists = new ArrayList<>();
+    private Picklist mUpdatedPicklist = new Picklist();
+
     private DataSyncCallback mCallback;
 
 
 
     public interface DataSyncCallback {
         void onFetchPicklist(List<Picklist> mPicklists);
+        void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale);
+
     }
 
 
-    public void UpdatePicklist(Picklist mPicklist, final Context context)
+    public void UpdatePicklist(Picklist mPicklist, final Context context, final DataSyncCallback callback, final Boolean isSync)
     {
 
         try {
@@ -69,6 +73,15 @@ public class DataSync {
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
+
+                    if(response != null ) {
+
+                        mUpdatedPicklist = Picklist.picklistFromJSON(response);
+
+                        mCallback = callback;
+                        mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, false);
+                    }
+
                     Log.i("VOLLEY", response);
                 }
             }, new Response.ErrorListener() {
@@ -83,8 +96,10 @@ public class DataSync {
                     }
                     if(error.networkResponse != null)
                     {
-                        if (error.networkResponse.statusCode == 409) {
+                        if (error.networkResponse.statusCode == 409 || error.networkResponse.statusCode == 400) {
                             StaleDataDialog(context);
+                            mCallback = callback;
+                            mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, true);
 
                         }
                     }
