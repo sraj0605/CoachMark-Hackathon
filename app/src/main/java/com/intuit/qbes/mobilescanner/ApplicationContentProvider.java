@@ -1,7 +1,10 @@
 package com.intuit.qbes.mobilescanner;
 
 import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -9,10 +12,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.intuit.qbes.mobilescanner.model.Picklist;
+
+import java.util.ArrayList;
 
 /**
  * Created by ckumar5 on 04/02/17.
@@ -98,7 +104,7 @@ public class ApplicationContentProvider extends ContentProvider{
 
     @Nullable
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public synchronized Uri insert(Uri uri, ContentValues values) {
         int uriType = Integer.parseInt(getType(uri));
         long id = 0;
         Uri  ret = null;
@@ -107,16 +113,18 @@ public class ApplicationContentProvider extends ContentProvider{
             switch (uriType) {
 
                 case PICKLISTS:
-                    id = sqlDB.insert(mDbHandler.TABLE_PICKLISTINFO_NAME, null, values);
+                    id = sqlDB.insertOrThrow(mDbHandler.TABLE_PICKLISTINFO_NAME, null, values);
                     ret = Uri.parse(PICKLIST_TABLE + "/" + id);
+                    Log.i("SyncAdapter","picklist inserted");
                     break;
 
                 case LINEITEMS:
                     id = sqlDB.insertOrThrow(mDbHandler.TABLE_LINEITEMINFO_NAME, null, values);
                     ret = Uri.parse(LINEITEM_TABLE + "/" + id);
+                    Log.i("SyncAdapter","lineitem inserted");
                     break;
                 case SERIALLOTNUMBERS:
-                    id = sqlDB.insert(mDbHandler.TABLE_SERIALNUBERINFO, null, values);
+                    id = sqlDB.insertOrThrow(mDbHandler.TABLE_SERIALNUBERINFO, null, values);
                     ret = Uri.parse(SERIALLOTNUMBER_TABLE + "/" + id);
                     break;
 
@@ -144,7 +152,7 @@ public class ApplicationContentProvider extends ContentProvider{
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public synchronized int delete(Uri uri, String selection, String[] selectionArgs) {
 
         int uriType = Integer.parseInt(getType(uri));
         int rowsDeleted = 0;
@@ -181,7 +189,7 @@ public class ApplicationContentProvider extends ContentProvider{
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public synchronized Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         //chandan - need to change
         Cursor cursor = null;
@@ -196,7 +204,7 @@ public class ApplicationContentProvider extends ContentProvider{
                     cursor = sqlDB.query(mDbHandler.TABLE_LINEITEMINFO_NAME,null,selection,selectionArgs,null,null,null);
                     break;
                 case SERIALLOTNUMBERS:
-                    cursor = sqlDB.query(mDbHandler.TABLE_LINEITEMINFO_NAME,null,selection,selectionArgs,null,null,null);
+                    cursor = sqlDB.query(mDbHandler.TABLE_SERIALNUBERINFO,null,selection,selectionArgs,null,null,null);
             }
             //cursor = sqlDB.rawQuery(selection, null);
             //cursor = sqlDB.query(mDbHandler.TABLE_PICKLISTINFO_NAME,null,selection,selectionArgs,null,null,null);
@@ -206,6 +214,29 @@ public class ApplicationContentProvider extends ContentProvider{
             Log.e("ContentProvider",exp.getMessage().toString());
         }
         return cursor;
+    }
+
+
+
+    @NonNull
+    @Override
+    public synchronized ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations) throws OperationApplicationException {
+        ContentProviderResult[] results = null;
+        SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
+        sqlDB.beginTransaction();
+        try
+        {
+            results = super.applyBatch(operations);
+            sqlDB.setTransactionSuccessful();//Commit the transaction
+        }
+        catch (SQLiteException exp){
+
+        }
+        finally {
+
+            sqlDB.endTransaction();
+        }
+        return results;
     }
 
 }

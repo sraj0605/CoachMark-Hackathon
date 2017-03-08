@@ -1,11 +1,15 @@
 package com.intuit.qbes.mobilescanner;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.RemoteException;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
@@ -90,7 +94,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         //need to change
         db.execSQL("create table LineItemInfo " +
-                "(id long, taskId long,extId long,itemName text,itemDesc text,lineitemPos long,docNum text,txnId long,txnDate text,shipDate text,notes text,status int, uom text,qtyToPick real, qtyPicked real,barcode text,binLocation text,binExtId long,customFields text,serialLotNumbers text, showSerialNo boolean, showLotNo boolean)");
+                "(id long, taskId long,extId long,itemName text,itemDesc text,lineitemPos long,docNum text,txnId long,notes text,status int, uom text,qtyToPick real, qtyPicked real,barcode text,binLocation text,binExtId long,customFields text,serialLotNumbers text, showSerialNo boolean, showLotNo boolean)");
 
         db.execSQL("create table SerialNumberInfo " +
                 "(id long,lineitemId long,type long,value text)");
@@ -117,7 +121,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         try {
             deleteOnePicklist(id);
             List<LineItem> lineItems = allLineItems(id);
-            if(lineItems != null) {
+            if(lineItems != null && lineItems.size() > 0) {
                 deleteLineItems(id);
                 for (int i = 0; i < lineItems.size(); i++) {
                     LineItem lineItem = lineItems.get(i);
@@ -328,21 +332,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         mLineItem.setLineitemPos(cursor.getLong(5));
                         mLineItem.setDocNum(cursor.getString(6));
                         mLineItem.setTxnId(cursor.getLong(7));
-                        mLineItem.setTxnDate(MSUtils.yyyyMMddFormat.parse((cursor.getString(8))));
-                        mLineItem.setTxnDate(MSUtils.yyyyMMddFormat.parse((cursor.getString(9))));
-                        mLineItem.setNotes(cursor.getString(10));
-                        mLineItem.setmItemStatus(Status.valueOf(cursor.getString(11)));
-                        mLineItem.setUom(cursor.getString(12));
-                        mLineItem.setQtyToPick(cursor.getDouble(13));
-                        mLineItem.setQtyPicked(cursor.getDouble(14));
-                        mLineItem.setBarcode(cursor.getString(15));
-                        mLineItem.setBinLocation(cursor.getString(16));
-                        mLineItem.setBinExtId(cursor.getLong(17));
-						mLineItem.setCustomFields(cursor.getString(18));
-                        mLineItem.setShowSerialNo(Boolean.parseBoolean(cursor.getString(20)));
-                        mLineItem.setShowLotNo(Boolean.parseBoolean(cursor.getString(21)));
+                        //mLineItem.setTxnDate(MSUtils.yyyyMMddFormat.parse((cursor.getString(8))));
+                        //mLineItem.setTxnDate(MSUtils.yyyyMMddFormat.parse((cursor.getString(9))));
+                        mLineItem.setNotes(cursor.getString(8));
+                        mLineItem.setmItemStatus(Status.valueOf(cursor.getString(9)));
+                        mLineItem.setUom(cursor.getString(10));
+                        mLineItem.setQtyToPick(cursor.getDouble(11));
+                        mLineItem.setQtyPicked(cursor.getDouble(12));
+                        mLineItem.setBarcode(cursor.getString(13));
+                        mLineItem.setBinLocation(cursor.getString(14));
+                        mLineItem.setBinExtId(cursor.getLong(15));
+						mLineItem.setCustomFields(cursor.getString(16));
+                        mLineItem.setShowSerialNo(Boolean.parseBoolean(cursor.getString(17)));
+                        mLineItem.setShowLotNo(Boolean.parseBoolean(cursor.getString(18)));
                         mLineItems.add(mLineItem);
-                    } catch (ParseException exp) {
+                    } catch (Exception exp) {
                         exp.printStackTrace();
                     }
                 } while (cursor.moveToNext());
@@ -364,8 +368,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(KEY_LINEITEMPOS, lineItem.getLineitemPos());
             values.put(KEY_DOCNUM, lineItem.getDocNum());
             values.put(KEY_TXNID, lineItem.getTxnId());
-            values.put(KEY_TXNDATE, MSUtils.yyyyMMddFormat.format(lineItem.getTxnDate()));
-            values.put(KEY_SHIPDATE, MSUtils.yyyyMMddFormat.format(lineItem.getShipDate()));
+            /*if(lineItem.getTxnDate() != null)
+             values.put(KEY_TXNDATE, MSUtils.yyyyMMddFormat.format(lineItem.getTxnDate()));
+            if(lineItem.getShipDate() != null)
+            values.put(KEY_SHIPDATE, MSUtils.yyyyMMddFormat.format(lineItem.getShipDate()));*/
             values.put(KEY_NOTES, lineItem.getNotes());
             values.put(KEY_STATUS, String.valueOf(lineItem.getmItemStatus()));
             values.put(KEY_UOM, lineItem.getUom());
@@ -398,8 +404,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(KEY_LINEITEMPOS, lineItem.getLineitemPos());
             values.put(KEY_DOCNUM, lineItem.getDocNum());
             values.put(KEY_TXNID, lineItem.getTxnId());
-            values.put(KEY_TXNDATE, MSUtils.yyyyMMddFormat.format(lineItem.getTxnDate()));
-            values.put(KEY_SHIPDATE, MSUtils.yyyyMMddFormat.format(lineItem.getShipDate()));
+            //values.put(KEY_TXNDATE, MSUtils.yyyyMMddFormat.format(lineItem.getTxnDate()));
+            //values.put(KEY_SHIPDATE, MSUtils.yyyyMMddFormat.format(lineItem.getShipDate()));
             values.put(KEY_NOTES, lineItem.getNotes());
             values.put(KEY_STATUS, String.valueOf(lineItem.getmItemStatus()));
             values.put(KEY_UOM, lineItem.getUom());
@@ -430,6 +436,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(KEY_LINEITEMID, serialLotNumber.getLineitemId());
             values.put(KEY_TYPE, serialLotNumber.getType());
             values.put(KEY_VALUE, serialLotNumber.getValue());
+
         }
         catch (IllegalArgumentException exp)
         {
@@ -469,4 +476,175 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         myCR.delete(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE,selection,selectionArgs);
 
     }
+
+    public void addPickListInBatch(Picklist mPickList,boolean badd)
+    {
+        //Picklist Table
+        ContentValues values = new ContentValues();
+        values.put(KEY_ID, mPickList.getId());
+        values.put(KEY_COMPANYID, mPickList.getCompanyId());
+        values.put(KEY_TASKTYPE, mPickList.getTaskType());
+        values.put(KEY_NAME, mPickList.getName());
+        values.put(KEY_ASSIGNEDID, mPickList.getAssigneeId());
+        values.put(KEY_CREATEDBYID, mPickList.getCreatedById());
+        values.put(KEY_STATUS, String.valueOf(mPickList.getStatus()));
+        values.put(KEY_SITEID, mPickList.getSiteId());
+        values.put(KEY_NOTES, mPickList.getNotes());
+        values.put(KEY_SHOWNOTES, String.valueOf(mPickList.isShowNotes()));
+        values.put(KEY_SYNCTOKEN, mPickList.getSyncToken());
+        values.put(KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getModifiedTimestamp()));
+
+        try {
+
+            ArrayList<ContentProviderOperation> ops =
+                    new ArrayList<ContentProviderOperation>();
+            if(badd)
+                   ops.add(
+                     ContentProviderOperation.newInsert(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE)
+                            .withValues(values)
+                            .build());
+            else
+                ops.add(
+                        ContentProviderOperation.newUpdate(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE)
+                                .withValues(values)
+                                .build());
+            if(mPickList.getLineitems() != null) {
+                for (int i = 0; i < mPickList.getLineitems().size();i++)
+                {
+                    //Lineitem table
+                    LineItem lineItem = mPickList.getLineitems().get(i);
+                    ContentValues values1 = new ContentValues();
+                    values1.put(KEY_ID, lineItem.getId());
+                    values1.put(KEY_TASKID, lineItem.getTaskId());
+                    values1.put(KEY_EXTID, lineItem.getExtId());
+                    values1.put(KEY_NAME_LINEITEM, lineItem.getItemName());
+                    values1.put(KEY_DESC, lineItem.getItemDesc());
+                    values1.put(KEY_LINEITEMPOS, lineItem.getLineitemPos());
+                    values1.put(KEY_DOCNUM, lineItem.getDocNum());
+                    values1.put(KEY_TXNID, lineItem.getTxnId());
+                    //values1.put(KEY_TXNDATE, MSUtils.yyyyMMddFormat.format(lineItem.getTxnDate()));
+                    //values1.put(KEY_SHIPDATE, MSUtils.yyyyMMddFormat.format(lineItem.getShipDate()));
+                    values1.put(KEY_NOTES, lineItem.getNotes());
+                    values1.put(KEY_STATUS, String.valueOf(lineItem.getmItemStatus()));
+                    values1.put(KEY_UOM, lineItem.getUom());
+                    values1.put(KEY_TOPICK, lineItem.getQtyToPick());
+                    values1.put(KEY_PICKED, lineItem.getQtyPicked());
+                    values1.put(KEY_BARCODE, lineItem.getBarcode());
+                    values1.put(KEY_BINLOCATION, lineItem.getBinLocation());
+                    values1.put(KEY_BINEXTID, lineItem.getBinExtId());
+                    values1.put(KEY_CUSTOMFIELD, lineItem.getCustomFields());
+                    values1.put(KEY_SERIANUMBER,String.valueOf(lineItem.isShowSerialNo()));
+                    values1.put(KEY_LOTNUMBER,String.valueOf(lineItem.isShowLotNo()));
+                    if(badd)
+                        ops.add(
+                            ContentProviderOperation.newInsert(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE)
+                                    .withValues(values1)
+                                    .build());
+                    else
+                        ops.add(
+                                ContentProviderOperation.newUpdate(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE)
+                                        .withValues(values1)
+                                        .build());
+                    if(lineItem.getSerialLotNumbers()!= null) {
+                        for (int j = 0; j < lineItem.getSerialLotNumbers().size(); j++) {
+                            //Serial number table
+                            SerialLotNumber serialLotNumber = lineItem.getSerialLotNumbers().get(j);
+                            ContentValues values2 = new ContentValues();
+                            values2.put(KEY_ID, serialLotNumber.getId());
+                            values2.put(KEY_LINEITEMID, serialLotNumber.getLineitemId());
+                            values2.put(KEY_TYPE, serialLotNumber.getType());
+                            values2.put(KEY_VALUE, serialLotNumber.getValue());
+                            if(badd)
+                             ops.add(
+                                    ContentProviderOperation.newInsert(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE)
+                                            .withValues(values2)
+                                            .build());
+                            else
+                                ops.add(
+                                        ContentProviderOperation.newUpdate(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE)
+                                                .withValues(values2)
+                                                .build());
+                        }
+                    }
+                }
+
+            }
+            myCR.applyBatch(ApplicationContentProvider.AUTHORITY,ops);
+        }
+        catch (RemoteException exp)
+        {
+            exp.printStackTrace();
+        }
+        catch (OperationApplicationException exp)
+        {
+            exp.printStackTrace();
+        }
+
+
+    }
+
+    public List<Picklist> getPicklistWithDetail()
+    {
+        List<Picklist> picklists = null;
+        picklists = allPickLists();
+        if(picklists != null)
+        {
+            for(int i = 0; i < picklists.size();i++) {
+                List<LineItem>  lineItems = allLineItems(picklists.get(i).getId());
+                if(lineItems != null) {
+                    picklists.get(i).setLineitems(lineItems);
+                    for (int j = 0; j < lineItems.size(); j++) {
+                        List<SerialLotNumber> serialLotNumbers = allSerialLotNumbers(lineItems.get(j).getId());
+                        if (serialLotNumbers != null)
+                            lineItems.get(j).setSerialLotNumbers(serialLotNumbers);
+
+                    }
+                }
+            }
+        }
+        return  picklists;
+
+    }
+
+    public void batchDeletePicklist(Picklist picklist)
+    {
+        String selection = "id = ?";
+        ArrayList<ContentProviderOperation> ops =
+                new ArrayList<ContentProviderOperation>();
+
+        ops.add(ContentProviderOperation.newDelete(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE)
+                .withSelection("id=?",new String[] {String.valueOf(picklist.getId())})
+                .build()
+        );
+
+        ops.add(ContentProviderOperation.newDelete(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE)
+                .withSelection("id=?",new String[] {String.valueOf(picklist.getId())})
+                .build()
+        );
+        if(picklist.getLineitems()!= null)
+        {
+            List<LineItem> lineItems = picklist.getLineitems();
+            for(int i = 0; i < lineItems.size();i++)
+            {
+                LineItem lineItem = lineItems.get(i);
+                List<SerialLotNumber> serialLotNumbers = lineItem.getSerialLotNumbers();
+                if(serialLotNumbers != null)
+                {
+                    for(int j = 0; j < serialLotNumbers.size();j++)
+                    {
+                        SerialLotNumber serialLotNumber = serialLotNumbers.get(j);
+                        ops.add(ContentProviderOperation.newDelete(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE)
+                                .withSelection("id=?",new String[] {String.valueOf(serialLotNumber.getId())})
+                                .build()
+                        );
+                    }
+                }
+
+                }
+
+        }
+
+
+    }
+
 }
