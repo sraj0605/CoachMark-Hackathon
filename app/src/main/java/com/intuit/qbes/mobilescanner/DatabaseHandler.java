@@ -587,6 +587,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void addPickListInBatch(Picklist mPickList,boolean badd)
     {
         //Picklist Table
+        String selection = "id = ?";
         ContentValues values = new ContentValues();
         values.put(KEY_ID, mPickList.getId());
         values.put(KEY_COMPANYID, mPickList.getCompanyId());
@@ -614,6 +615,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 ops.add(
                         ContentProviderOperation.newUpdate(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE)
                                 .withValues(values)
+                                .withSelection("id=?",new String[] {String.valueOf(mPickList.getId())})
                                 .build());
             if(mPickList.getLineitems() != null) {
                 for (int i = 0; i < mPickList.getLineitems().size();i++)
@@ -651,6 +653,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         ops.add(
                                 ContentProviderOperation.newUpdate(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE)
                                         .withValues(values1)
+                                        .withSelection("id=?",new String[] {String.valueOf(lineItem.getId())})
                                         .build());
                     if(lineItem.getSerialLotNumbers()!= null) {
                         for (int j = 0; j < lineItem.getSerialLotNumbers().size(); j++) {
@@ -670,6 +673,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                                 ops.add(
                                         ContentProviderOperation.newUpdate(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE)
                                                 .withValues(values2)
+                                                .withSelection("id=?",new String[] {String.valueOf(serialLotNumber.getId())})
                                                 .build());
                         }
                     }

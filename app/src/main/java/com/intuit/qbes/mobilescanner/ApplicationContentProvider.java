@@ -93,12 +93,13 @@ public class ApplicationContentProvider extends ContentProvider{
                             values,
                             selection,
                             selectionArgs);
+                    break;
                 case SYNCINFO:
                     rowsUpdated = sqlDB.update(mDbHandler.TABLE_SYNCINFO,
                             values,
                             selection,
                             selectionArgs);
-
+                    break;
                 default:
                     throw new IllegalArgumentException("Unknown URI: " + uri);
             }
@@ -107,6 +108,7 @@ public class ApplicationContentProvider extends ContentProvider{
         catch (SQLiteException exp )
         {
             Log.e("ContentProvider",exp.getMessage().toString());
+            throw new SQLiteException(exp.getMessage().toString());
         }
         return rowsUpdated;
     }
@@ -124,13 +126,11 @@ public class ApplicationContentProvider extends ContentProvider{
                 case PICKLISTS:
                     id = sqlDB.insertOrThrow(mDbHandler.TABLE_PICKLISTINFO_NAME, null, values);
                     ret = Uri.parse(PICKLIST_TABLE + "/" + id);
-                    Log.i("SyncAdapter","picklist inserted");
                     break;
 
                 case LINEITEMS:
                     id = sqlDB.insertOrThrow(mDbHandler.TABLE_LINEITEMINFO_NAME, null, values);
                     ret = Uri.parse(LINEITEM_TABLE + "/" + id);
-                    Log.i("SyncAdapter","lineitem inserted");
                     break;
                 case SERIALLOTNUMBERS:
                     id = sqlDB.insertOrThrow(mDbHandler.TABLE_SERIALNUBERINFO, null, values);
@@ -148,6 +148,7 @@ public class ApplicationContentProvider extends ContentProvider{
         catch (SQLiteException exp)
         {
             Log.e("ContentProvider",exp.getMessage().toString());
+            throw new SQLiteException(exp.getMessage().toString());
         }
 
         return ret;
@@ -201,6 +202,7 @@ public class ApplicationContentProvider extends ContentProvider{
         catch (SQLiteException exp)
         {
             Log.e("ContentProvider",exp.getMessage().toString());
+            throw new SQLiteException(exp.getMessage().toString());
         }
         return rowsDeleted;
     }
@@ -232,6 +234,7 @@ public class ApplicationContentProvider extends ContentProvider{
         catch (SQLiteException exp)
         {
             Log.e("ContentProvider",exp.getMessage().toString());
+            throw new SQLiteException(exp.getMessage().toString());
         }
         return cursor;
     }
@@ -241,25 +244,30 @@ public class ApplicationContentProvider extends ContentProvider{
     @NonNull
     @Override
     public synchronized ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations) throws OperationApplicationException {
-        //ContentProviderResult[] results = null;
+        ContentProviderResult[] results = null;
         SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
         sqlDB.beginTransaction();
         try
         {
             //results = super.applyBatch(operations);
             final int numOperations = operations.size();
-            final ContentProviderResult[] results = new ContentProviderResult[numOperations];
+            //final ContentProviderResult[]
+                    results = new ContentProviderResult[numOperations];
             for (int i = 0; i < numOperations; i++) {
                 results[i] = operations.get(i).apply(this, results, i);
             }
             sqlDB.setTransactionSuccessful();//Commit the transaction
             return results;
         }
+        catch (SQLiteException exp)
+        {
+            exp.printStackTrace();
+        }
         finally {
 
             sqlDB.endTransaction();
         }
-
+    return results;
     }
 
 }
