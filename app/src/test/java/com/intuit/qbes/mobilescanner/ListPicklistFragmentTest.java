@@ -76,7 +76,7 @@ public class ListPicklistFragmentTest {
 
             Assert.assertEquals(picklistname.getText().toString(), "Order number: 8804");
             Assert.assertEquals(picklistnote.getText().toString(), "note1");
-            Assert.assertEquals(picklistitems.getText().toString(), "7 item(s)");
+            Assert.assertEquals(picklistitems.getText().toString(), "0 item(s)");
             int count = recycleview.getAdapter().getItemCount();
 
             Assert.assertEquals(count, 3);
