@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/complete"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="140dp"
+        android:id="@+id/success_symbol" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dp"
+        android:text="You have successfully paired"
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/success_symbol"
+        android:id="@+id/success_text1"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dp"
+        android:text="this device with"
+        android:layout_marginTop="1dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/success_text1"
+        android:id="@+id/success_text2"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dp"
+        android:text="'ABC Company'"
+        android:layout_marginTop="1dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/success_text2"
+        android:id="@+id/success_text3"
+        />
+
+    <Button
+        app:layout_widthPercent="95%"
+        android:layout_height="wrap_content"
+        android:text="NEXT"
+        android:layout_marginBottom="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/success_next"
+        />
+
+
+</android.support.percent.PercentRelativeLayout>
+

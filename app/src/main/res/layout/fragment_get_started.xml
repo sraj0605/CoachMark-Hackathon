@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dp"
+        android:text="Welcome to the"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="200dp"
+        android:id="@+id/start_screen_text1"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dp"
+        android:text="QuickBooks Enterprise"
+        android:layout_marginTop="1dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/start_screen_text1"
+        android:id="@+id/start_screen_text2"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dp"
+        android:text="Inventory Mobile App!"
+        android:layout_marginTop="1dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/start_screen_text2"
+        android:id="@+id/start_screen_text3"
+        />
+
+    <Button
+        android:text="Get Started"
+        app:layout_widthPercent="90%"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:id="@+id/GetStartedButton" />
+
+
+</android.support.percent.PercentRelativeLayout>
+

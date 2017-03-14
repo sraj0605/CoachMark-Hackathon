@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ScrollView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dp"
+        android:text="Please enter the code"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="160dp"
+        android:id="@+id/codeEntry_screen_text1"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dp"
+        android:text="displayed in QuickBooks to"
+        android:layout_marginTop="1dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/codeEntry_screen_text1"
+        android:id="@+id/codeEntry_screen_text2"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dp"
+        android:text="pair this device with a"
+        android:layout_marginTop="1dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/codeEntry_screen_text2"
+        android:id="@+id/codeEntry_screen_text3"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dp"
+        android:text="company file."
+        android:layout_marginTop="1dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/codeEntry_screen_text3"
+        android:id="@+id/codeEntry_screen_text4"
+        />
+
+
+    <EditText
+        app:layout_widthPercent = "50%"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:maxLength="10"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:layout_below="@+id/codeEntry_screen_text4"
+        android:layout_marginTop="28dp"
+        android:hint="Enter the OTP"
+        android:id="@+id/Code" />
+
+    <View style="@style/DevPairLine"
+        android:id="@+id/DevPairline"
+        app:layout_widthPercent="40%"
+        android:layout_below="@id/Code"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="0dp"/>
+
+    <View style="@style/DevPairErrorLine"
+        android:id="@+id/DevPairErrorline"
+        app:layout_widthPercent="40%"
+        android:visibility="gone"
+        android:layout_below="@id/Code"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="0dp"/>
+
+
+    <Button
+        android:text="PAIR"
+        app:layout_widthPercent="90%"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Code"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="95dp"
+        android:id="@+id/PairButton" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This is not a valid code! Please try again"
+        android:textSize="12dp"
+        android:visibility="gone"
+        android:layout_marginLeft="85dp"
+        android:textColor="#ff4c4c"
+        android:layout_below="@+id/Code"
+        android:layout_marginTop="25dp"
+        android:id="@+id/DevPairErrorText" />
+
+
+</android.support.percent.PercentRelativeLayout>
+
+</ScrollView>

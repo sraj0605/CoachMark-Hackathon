@@ -120,6 +120,11 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         dismissDialog();
     }
 
+    @Override
+    public void onCodeValidation(String response) {
+
+    }
+
     public void updateSyncButton()
     {
 

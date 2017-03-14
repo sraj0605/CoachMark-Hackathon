@@ -97,7 +97,14 @@
             <meta-data android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+        <activity
+            android:name=".DevicePairingActivity"
+            android:label="@string/title_activity_device_pairing"
+            android:theme="@style/AppTheme">
+        </activity>
 
+        <service android:name=".DevicePairingService">
+        </service>
     </application>
 
 </manifest>

@@ -53,7 +53,8 @@ public class DataSync {
     private String fetchTAG  = "Fetch";
     private List<Picklist> mPicklists = new ArrayList<>();
     private Picklist mUpdatedPicklist = new Picklist();
-
+    private String validateTAG  = "Validate";
+    private String ErrorTAG = "NotValid";
     private DataSyncCallback mCallback;
 
 
@@ -61,6 +62,7 @@ public class DataSync {
     public interface DataSyncCallback {
         void onFetchPicklist(List<Picklist> mPicklists);
         void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale);
+        void onCodeValidation(String response);
 
     }
 
@@ -284,4 +286,90 @@ public class DataSync {
         }
         return  picklists;
     }
+
+    public void ValidateDevicePairing(final String code, final Context context, final DataSyncCallback callback)
+    {
+
+        try {
+            String URL = "http://172.16.100.28:9999/api/v1/device/pair/submitotp";
+
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.i("VOLLEY", response);
+
+                    try{
+                        mCallback = callback;
+                        mCallback.onCodeValidation(response);
+                    }
+                    catch(Exception e)
+                    {
+                        Log.d("Error:", e.getMessage());
+
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("VOLLEY", error.toString());
+
+                    if (error instanceof NoConnectionError) {
+                        //No Internet Error
+                        NoInternetDialog(context);
+
+                    }
+                    if(error.networkResponse != null) //400 is if it already verified
+                    {
+                      /*  if (error.networkResponse.statusCode == 404 || error.networkResponse.statusCode == 500 || error.networkResponse.statusCode == 400) {
+
+                            mCallback = callback;
+                            mCallback.onCodeValidation(ErrorTAG);
+
+                        }*/
+
+                    }
+
+
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError {
+                    try {
+                        return code == null ? null : code.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", code, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+                        responseString = String.valueOf(response.statusCode);
+                        // can get more details such as response.headers
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                    0,  // maxNumRetries = 0 means no retry
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+            stringRequest.setTag(validateTAG);
+            AppController.getInstance().addToRequestQueue(stringRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

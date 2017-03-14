@@ -55,6 +55,18 @@
         <item name="android:background">#2DA01C</item>
     </style>
 
+    <style name="DevPairErrorLine">
+        <item name="android:layout_width">10dp</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">#b20000</item>
+    </style>
+
+    <style name="DevPairLine">
+        <item name="android:layout_width">10dp</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">#2DA01C</item>
+    </style>
+
     <style name="ButtonFooter">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">68dp</item>

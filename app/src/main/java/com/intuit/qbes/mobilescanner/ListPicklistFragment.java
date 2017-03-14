@@ -76,6 +76,11 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
 
     }
 
+    @Override
+    public void onCodeValidation(String response) {
+
+    }
+
 
     public interface Callbacks {
         void onPickSelected(Picklist selectedPick);

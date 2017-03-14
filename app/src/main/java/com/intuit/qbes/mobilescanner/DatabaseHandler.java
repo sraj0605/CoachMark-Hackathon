@@ -12,6 +12,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import com.intuit.qbes.mobilescanner.model.CompanyFileDetails;
 import android.os.RemoteException;
 import android.provider.BaseColumns;
 import android.provider.ContactsContract;
@@ -44,8 +45,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String TABLE_LINEITEMINFO_NAME = "LineItemInfo";
     public static final String TABLE_SERIALNUBERINFO = "SerialNumberInfo";
     public static final String TABLE_SYNCINFO= "SyncInfo";
+    public static final String TABLE_COMPANYYFILEINFO_NAME = "CompanyFileInfo";
 
-//Table - 1
+
+    //Table - 1
     private static final String KEY_ID = "id";
     private static final String KEY_COMPANYID = "companyId";
     private static final String KEY_TASKTYPE = "taskType";
@@ -92,6 +95,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //Table-4
     private static final String KEY_GUID = "guid";
     private static final String KEY_LASTSYNCTIME = "lastSyncTime";
+
+
+//Table -5
+
+    private static final String KEY_REALMID = "companyId";
+    private static final String KEY_DEVICEGUID = "extDeviceId";
+    private static final String KEY_COMPANYNAME = "companyName";
 
 
     //Context object
@@ -178,6 +188,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             Log.i("DatabaseHandler","SyncInfo Table creation failed");
         }
 
+        try {
+            db.execSQL("CREATE TABLE " + TableDetails.Tables.COMPANYFILEINFO + " ("
+                    + TableDetails.CompanyFileInfo.KEY_REALMID + " LONG PRIMARY KEY,"
+                    + TableDetails.CompanyFileInfo.KEY_DEVICEGUID + " TEXT,"
+                    + TableDetails.CompanyFileInfo.KEY_COMPANYNAME + " TEXT "
+                    + ")");
+        }
+        catch (Exception exp)
+        {
+            exp.printStackTrace();
+            Log.i("DatabaseHandler","CompanyFileInfo Table creation failed");
+        }
+
         /*db.execSQL("create table PickListInfo " +
                 "(id long, companyId long,taskType long,name text,assigneeId long,createdById long,Status int,siteId long,notes text,showNotes text,syncToken long, modifiedTimestamp text)");
 
@@ -189,8 +212,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 "(id long,lineitemId long,type long,value text)");
 
         db.execSQL("create table SyncInfo " +
-                "(guid text,lastSyncTime text)");*/
+                "(guid text,lastSyncTime text)");
 
+        db.execSQL("create table CompanyFileInfo " +
+                "(id long, companyId long, extDeviceId text, companyName text)");*/
     }
 
     @Override
@@ -822,5 +847,48 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         }
         return count;
+    }
+    public void addCompanyFileDetails(CompanyFileDetails details)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try
+        {
+            ContentValues values = new ContentValues();
+
+            values.put(KEY_REALMID, details.getRealmID());
+            values.put(KEY_DEVICEGUID, details.getDeviceGUID());
+            values.put(KEY_COMPANYNAME, details.getCompanyName());
+
+            db.insert(TABLE_COMPANYYFILEINFO_NAME,null, values);
+            db.close();
+        }
+        catch (IllegalArgumentException exp)
+        {
+            exp.printStackTrace();
+        }
+
+
+    }
+
+    public CompanyFileDetails getDetails() {
+        CompanyFileDetails obj = new CompanyFileDetails();
+
+        String query = "SELECT  * FROM " + TABLE_COMPANYYFILEINFO_NAME;
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+        //Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_COMPANYFILE_TABLE, null, query, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+
+                obj.setRealmID((cursor.getLong(0)));
+                obj.setDeviceGUID((cursor.getString(1)));
+                obj.setCompanyName(cursor.getString(2));
+
+            } while (cursor.moveToNext());
+        }
+
+        return obj;
     }
 }

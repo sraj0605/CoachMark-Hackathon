@@ -13,6 +13,7 @@ public final class TableDetails {
         String LINEITEM = "LineItemInfo";
         String SERIALLOTNUMBER = "SerialNumberInfo";
         String SYNCINFO = "SyncInfo";
+        String COMPANYFILEINFO = "CompanyFileInfo";
     }
     interface PickListInfo{
 
@@ -61,5 +62,12 @@ public final class TableDetails {
     interface SyncInfo {
         String KEY_GUID = "guid";
         String KEY_LASTSYNCTIME = "lastSyncTime";
+    }
+
+    interface CompanyFileInfo {
+
+         String KEY_REALMID = "companyId";
+         String KEY_DEVICEGUID = "extDeviceId";
+         String KEY_COMPANYNAME = "companyName";
     }
 }

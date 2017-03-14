@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 
 import com.intuit.qbes.mobilescanner.barcode.BarcodeScannerDevice;
 import com.intuit.qbes.mobilescanner.barcode.DeviceManager;
+import com.intuit.qbes.mobilescanner.model.CompanyFileDetails;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.networking.Foreground;
@@ -40,15 +42,31 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle mDrawerToggle;
     private TextView mPickerFName;
     private TextView mPickerLName;
+    private CompanyFileDetails details = null;
+    private long companyId;
     private static final int REQUEST_DETAIL_ITEM = 1;
     private int mSelectedMenuId;
     private DeviceManager mDevice = null;
+    private static final int PAIRING_CODE = 2;
+    private DatabaseHandler db;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+            db = new DatabaseHandler(getApplicationContext());
+
+            if(DevicePairingCheck())
+            {
+                Intent intent = new Intent(this,DevicePairingActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            }
+
+
+            setContentView(R.layout.activity_main);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -238,4 +256,20 @@ Class fragmentClass = null;
         }
     }*/
 
+
+    private boolean DevicePairingCheck()
+    {
+        //check if realm_id, company_guid and company_name have been received or not
+        //if yes return false else return true;
+        details = db.getDetails();
+        companyId  = details.getRealmID();
+
+        if(companyId == -1) {
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    }
 }
