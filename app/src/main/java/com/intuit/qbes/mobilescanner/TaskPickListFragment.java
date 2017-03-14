@@ -106,15 +106,14 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         if(!isStale) {
             if (isSync) {
 
-                //dummyP = Picklist;
 
                 mPicklist = Picklist;
-                db.updatePickList(mPicklist,mPicklist.getId());
+                db.addPickListInBatch(mPicklist, false);
                 updateSyncButton();
 
             } else {
-                //db.deletePicklistWithDetails(Picklist.getId());
 
+                db.batchDeletePicklist(mPicklist);
                 mCallbacks.onPicklistComplete();
             }
         }
@@ -491,7 +490,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
     {
 
         dataSync = new DataSync();
-        dataSync.UpdatePicklist(dummyP,getContext(), this, isSync); // remove dummy later
+        dataSync.UpdatePicklist(picklist,getContext(), this, isSync); // remove dummy later
         showDialog();
 
     }
