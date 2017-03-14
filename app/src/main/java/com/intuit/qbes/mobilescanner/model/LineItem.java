@@ -28,15 +28,7 @@ import java.util.List;
 public class LineItem implements Parcelable {
 
     private static final String LOG_TAG = "LineItem";
-    private static final String JSON_TAG_RECNUM = "_id";
-    private static final String JSON_TAG_NAME = "name";
-    private static final String JSON_TAG_DESC = "desc";
-    private static final String JSON_TAG_UOM = "uom";
-    private static final String JSON_TAG_NEEDED = "Needed";
-    private static final String JSON_TAG_PICKED = "picked";
-    private static final String JSON_TAG_TOPICK = "to_pick";
-    private static final String JSON_TAG_BARCODE = "barcode";
-    private static final String TAG_ID = "picklist_id";
+
     @Expose(serialize = true)
     private long id;
     @Expose(serialize = false)
@@ -75,7 +67,7 @@ public class LineItem implements Parcelable {
     private  String customFields;
     // private ArrayList<String> serialLotNumbers = null;
     @Expose(serialize = true)
-    List<SerialLotNumber> serialLotNumbers = null;
+    List<SerialLotNumber> serialLotNumbers = new ArrayList<>();
     @Expose(serialize = false)
     private boolean deleted;
     @Expose(serialize = false)
@@ -259,7 +251,7 @@ public class LineItem implements Parcelable {
     }
 
     public boolean isShowSerialNo() {
-        return showSerialNo;
+        return this.showSerialNo;
     }
 
     public void setShowSerialNo(boolean showSerialNo) {
@@ -267,7 +259,7 @@ public class LineItem implements Parcelable {
     }
 
     public boolean isShowLotNo() {
-        return showLotNo;
+        return this.showLotNo;
     }
 
     public void setShowLotNo(boolean showLotNo) {

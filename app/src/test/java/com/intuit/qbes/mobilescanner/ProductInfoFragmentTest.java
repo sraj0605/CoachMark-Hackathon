@@ -65,7 +65,19 @@ public class ProductInfoFragmentTest{
 
     @Before
     public void setUp() throws Exception {
-        createDummyModel();
+
+
+
+    }
+    public void createDummyModel(LineItem lineItem)
+    {
+        mLineItem  = lineItem;//new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+
+    }
+
+    public void startActivity(LineItem lineItem)
+    {
+        createDummyModel(lineItem);
         Intent intent = new Intent(RuntimeEnvironment.application, ProductInfoActivity.class);
         intent.putExtra(ProductInfoFragment.EXTRA_LINEITEM, mLineItem);
         intent.putExtra(ProductInfoFragment.BARCODE_ENTERED,"dummy");
@@ -81,21 +93,14 @@ public class ProductInfoFragmentTest{
         mIncrement = (ImageView)view.findViewById(R.id.increase);
         mDecrement = (ImageView)view.findViewById(R.id.decrease);
         mQty_picked = (EditText)view.findViewById(R.id.qty_picked_value);
-     //   mSerialNo = (TextView) view.findViewById(R.id.item_SNO);
-
-    }
-    public void createDummyModel()
-    {
-        //ArrayList<String> arr = new ArrayList<>();
-        //arr.add("1234");
-        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
-        mLineItem.setBarcodeEntered("dummy");
-
     }
 
     @Test
     public void test_ActivityAndFragment_Launched()
     {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
         Assert.assertNotNull(productInfoActivity);
         Assert.assertNotNull(productInfoFragment);
 
@@ -104,6 +109,9 @@ public class ProductInfoFragmentTest{
     @Test
     public void test_UI_Control_Validation_Against_Model()
     {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
         view = productInfoFragment.getView();
         TextView mUPC_Value =   (TextView)view.findViewById(R.id.item_upc) ;
         TextView mUPC_Header = (TextView)view.findViewById(R.id.UPC_code);
@@ -166,8 +174,64 @@ public class ProductInfoFragmentTest{
     }
 
     @Test
+    public void test_serialNumber_list_view_model() throws NullPointerException
+    {
+        //show serial number is true but list does not have any serial number
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
+        view = productInfoFragment.getView();
+        TextView mSerialView = (TextView)view.findViewById(R.id.item_ViewSNO);
+        TextView mSNO_Header = (TextView)view.findViewById(R.id.SNO);
+        int serialViewVisibilty = mSerialView.getVisibility();
+        int serialHeaderVisibilty = mSNO_Header.getVisibility();
+        assertTrue("Serial number view is shown even if list does not have any serial number",serialViewVisibilty == 8);
+        assertTrue("Serial number header is not shown when serial number is enabled",serialHeaderVisibilty == 0);
+    }
+    @Test
+    public void test_serialNumber_list_view_model1() throws NullPointerException
+    {
+        //show serial number is true but list does not have any serial number
+        List<SerialLotNumber> serialLotNumbers = new ArrayList<>();
+        SerialLotNumber obj = new SerialLotNumber(1,1,1,"A6315");
+        serialLotNumbers.add(obj);
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialLotNumbers,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
+        view = productInfoFragment.getView();
+        TextView mSerialView = (TextView)view.findViewById(R.id.item_ViewSNO);
+        TextView mSNO_Header = (TextView)view.findViewById(R.id.SNO);
+        int serialViewVisibilty = mSerialView.getVisibility();
+        int serialHeaderVisibilty = mSNO_Header.getVisibility();
+        assertTrue("Serial number view is shown even if list does not have any serial number",serialViewVisibilty == 0);
+        assertTrue("Serial number header is not shown when serial number is enabled",serialHeaderVisibilty == 0);
+    }
+
+    @Test
+    public void test_serialNumber_list_view_model2() throws NullPointerException
+    {
+        //show serial number is true but list does not have any serial number
+        List<SerialLotNumber> serialLotNumbers = new ArrayList<>();
+        SerialLotNumber obj = new SerialLotNumber(1,1,1,"A6315");
+        serialLotNumbers.add(obj);
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialLotNumbers,"false","false","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
+        view = productInfoFragment.getView();
+        TextView mSerialView = (TextView)view.findViewById(R.id.item_ViewSNO);
+        TextView mSNO_Header = (TextView)view.findViewById(R.id.SNO);
+        int serialViewVisibilty = mSerialView.getVisibility();
+        int serialHeaderVisibilty = mSNO_Header.getVisibility();
+        assertTrue("Serial number view is shown even if list does not have any serial number",serialViewVisibilty == 8);
+        assertTrue("Serial number header is not shown when serial number is enabled",serialHeaderVisibilty == 8);
+    }
+
+    @Test
     public void test_increment_button_functionality()
     {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
         mIncrement.performClick();
         assertTrue("quantity not incremented",String.valueOf(mLineItem.getQtyPicked()).equals("1.0"));
 
@@ -176,6 +240,9 @@ public class ProductInfoFragmentTest{
     @Test
     public void test_decrement_button_functionality()
     {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
         mDecrement.performClick();
         assertTrue("quantity not incremented",String.valueOf(mLineItem.getQtyPicked()).equals("0.0"));
 
@@ -185,6 +252,12 @@ public class ProductInfoFragmentTest{
     @Test
     public void test_serial_number_click_functionality()
     {
+        List<SerialLotNumber> serialLotNumbers = new ArrayList<>();
+        SerialLotNumber obj = new SerialLotNumber(1,1,1,"A6315");
+        serialLotNumbers.add(obj);
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialLotNumbers,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
         view = productInfoFragment.getView();
         TextView mSerialNumberView = (TextView)view.findViewById(R.id.item_SNO);
         mSerialNumberView.performClick();
@@ -194,6 +267,9 @@ public class ProductInfoFragmentTest{
     @Test
     public void test_prodinfotosno()
     {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
         productInfoActivity.onSerialNumberClicked(mLineItem);
 
     }
@@ -201,6 +277,9 @@ public class ProductInfoFragmentTest{
     @Test
     public void test_confirm()
     {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
         view = productInfoFragment.getView();
 
         Button confirm = (Button)view.findViewById(R.id.button_confirm);
@@ -211,19 +290,47 @@ public class ProductInfoFragmentTest{
 
 
     @Test
-    public void test_updatetatus()
+    public void test_updatetatusAsPicked()
     {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
         mLineItem.setQtyPicked(5.0);
         mLineItem.setQtyToPick(5.0);
         productInfoFragment.updateItemStatus();
-
         Assert.assertEquals(mLineItem.getmItemStatus(),Status.Picked);
 
     }
+    @Test
+    public void test_updatetatusAsNotPicked()
+    {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
+        mLineItem.setQtyPicked(0);
+        mLineItem.setQtyToPick(5.0);
+        productInfoFragment.updateItemStatus();
+        Assert.assertEquals(mLineItem.getmItemStatus(),Status.NotPicked);
 
+    }
+    @Test
+    public void test_updatetatusAsNotPartialPicked()
+    {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
+        mLineItem.setQtyPicked(2.0);
+        mLineItem.setQtyToPick(5.0);
+        productInfoFragment.updateItemStatus();
+        Assert.assertEquals(mLineItem.getmItemStatus(),Status.PartiallyPicked);
+
+    }
     @Test
     public void integer_decimal_functionality_test()
     {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
         double val = 10.2;
        boolean result =  Utilities.noDecimal(10.2);
         Assert.assertFalse(result);
@@ -236,6 +343,9 @@ public class ProductInfoFragmentTest{
     @Test
     public void test_onactivityresult()
     {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
         int reqcode = 300;
         int rescode = Activity.RESULT_OK;
         Intent data = new Intent();
@@ -243,7 +353,156 @@ public class ProductInfoFragmentTest{
         productInfoFragment.onActivityResult(reqcode,rescode,data);
     }
 
+    @Test
+    public void test_hideQuantityPickedWarning_behaviour()
+    {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
+        productInfoFragment.hideQuantityPickedWarning();
+        view = productInfoFragment.getView();
+        TextView mQty_picked_error = (TextView)view.findViewById(R.id.qty_picked_error);
+        TextView mQty_picked_label = (TextView)view.findViewById(R.id.qty_picked);
+        assertTrue("quantity picker error is not hidden",mQty_picked_error.getVisibility() == View.GONE);
+    }
 
+    @Test
+    public void test_showQuantityPickedWarning_method()
+    {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
+        productInfoFragment.showQuantityPickedWarning();
+        view = productInfoFragment.getView();
+        TextView mQty_picked_error = (TextView)view.findViewById(R.id.qty_picked_error);
+        TextView mQty_picked_label = (TextView)view.findViewById(R.id.qty_picked);
+        assertTrue("quantity picker error is not hidden",mQty_picked_error.getVisibility() == View.VISIBLE);
+    }
 
+    @Test
+    public void test_showHideBarcodeErrorHeader_method()
+    {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
+        productInfoFragment.showHideBarcodeErrorHeader();
+        view = productInfoFragment.getView();
+        View mUPC_background = (View)view.findViewById(R.id.UPC_Error);
+        TextView mUPC_ErrorText = (TextView)view.findViewById(R.id.UPC_Errortext);
+        assertTrue("showHideBarcodeErrorHeader method not working as expected",mUPC_background.getVisibility() == View.GONE);
+        assertTrue("showHideBarcodeErrorHeader method not working as expected",mUPC_ErrorText.getVisibility() == View.GONE);
 
+    }
+
+    @Test
+    public void test_showHideBarcodeErrorHeader_method1()
+    {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,1.2,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("");
+        startActivity(mLineItem);
+        productInfoFragment.showHideBarcodeErrorHeader();
+        view = productInfoFragment.getView();
+        View mUPC_background = (View)view.findViewById(R.id.UPC_Error);
+        TextView mUPC_ErrorText = (TextView)view.findViewById(R.id.UPC_Errortext);
+        assertTrue("showHideBarcodeErrorHeader method not working as expected",mUPC_background.getVisibility() == View.VISIBLE);
+        assertTrue("showHideBarcodeErrorHeader method not working as expected",mUPC_ErrorText.getVisibility() == View.VISIBLE);
+
+    }
+
+    @Test
+    public void test_UPC_ErrorCheck_method()
+    {
+        //IF BARCODE IS  ENTERED AND QUANTITY IS PICKED ERROR SHOULD NOT BE SHOWN
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,1.2,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("dummy");
+        startActivity(mLineItem);
+        productInfoFragment.UPC_ErrorCheck();
+        view = productInfoFragment.getView();
+        View mUPC_background = (View)view.findViewById(R.id.UPC_Error);
+        TextView mUPC_ErrorText = (TextView)view.findViewById(R.id.UPC_Errortext);
+        assertTrue("UPC_ErrorCheck method not working as expected",mUPC_background.getVisibility() == View.GONE);
+        assertTrue("UPC_ErrorCheck method not working as expected",mUPC_ErrorText.getVisibility() == View.GONE);
+
+    }
+
+    @Test
+    public void test_UPC_ErrorCheck_method1()
+    {
+        //IF BARCODE IS NOT ENTERED AND QUANTITY IS PICKED ERROR SHOULD BE SHOWN
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,1.2,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("");
+        startActivity(mLineItem);
+        productInfoFragment.UPC_ErrorCheck();
+        view = productInfoFragment.getView();
+        View mUPC_background = (View)view.findViewById(R.id.UPC_Error);
+        TextView mUPC_ErrorText = (TextView)view.findViewById(R.id.UPC_Errortext);
+        assertTrue("UPC_ErrorCheck method not working as expected",mUPC_background.getVisibility() == View.VISIBLE);
+        assertTrue("UPC_ErrorCheck method not working as expected",mUPC_ErrorText.getVisibility() == View.VISIBLE);
+
+    }
+
+    @Test
+    public void test_correct_scanDataReceived()
+    {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,1.2,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("8901238910005");
+        startActivity(mLineItem);
+        productInfoFragment.scanDataReceived("8901238910005");
+        assertTrue("quantity not incremented on scan",String.valueOf(mLineItem.getQtyPicked()).equals("2.2"));
+
+    }
+
+    @Test
+    public void test_wrong_scanDataReceived()
+    {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,1.2,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("8901238910005");
+        startActivity(mLineItem);
+        productInfoFragment.scanDataReceived("ABCD");
+        assertTrue("quantity  incremented on wrong scan",String.valueOf(mLineItem.getQtyPicked()).equals("1.2"));
+
+    }
+
+    @Test
+    public void test_onBackPressed()
+    {
+        //should show error - serial number and quantity not matching
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,1.2,"8901238910005","Rack 1",12,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("8901238910005");
+        startActivity(mLineItem);
+        productInfoFragment.onBackPressed();
+    }
+
+    @Test
+    public void test_onBackPressed1()
+    {
+        //should not show error - serial number and quantity not matching
+        List<SerialLotNumber> serialLotNumbers = new ArrayList<>();
+        SerialLotNumber obj = new SerialLotNumber(1,1,1,"A6315");
+        serialLotNumbers.add(obj);
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,1.2,"8901238910005","Rack 1",12,"custom",serialLotNumbers,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("8901238910005");
+        startActivity(mLineItem);
+        productInfoFragment.onBackPressed();
+    }
+
+    @Test
+
+    public void test_upcdialog_shown()
+    {
+        try {
+
+            List<SerialLotNumber> serialLotNumbers = new ArrayList<>();
+            SerialLotNumber obj = new SerialLotNumber(1,1,1,"A6315");
+            serialLotNumbers.add(obj);
+            mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,1.2,"8901238910005","Rack 1",12,"custom",serialLotNumbers,"true","true","false", Status.NotPicked);
+            mLineItem.setBarcodeEntered("ABCD");
+            startActivity(mLineItem);
+
+        }
+        catch (Exception exp)
+        {
+
+        }
+    }
 }

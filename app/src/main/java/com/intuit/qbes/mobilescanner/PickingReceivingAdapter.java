@@ -33,7 +33,11 @@ public class PickingReceivingAdapter extends RecyclerView.Adapter<PickingReceivi
     }
 
 
-
+    public void updatePicklist(List<Picklist> pickingdata)
+    {
+        this.pickingdata = pickingdata;
+        notifyDataSetChanged();
+    }
 
     @Override
     public PickingReceivingViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {

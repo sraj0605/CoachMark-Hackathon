@@ -106,10 +106,10 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         if(!isStale) {
             if (isSync) {
 
-                dummyP = Picklist;
+                //dummyP = Picklist;
 
-                //   mPicklist = Picklist;
-                // db.updatePickList(mPicklist,mPicklist.getId());
+                mPicklist = Picklist;
+                db.updatePickList(mPicklist,mPicklist.getId());
                 updateSyncButton();
 
             } else {
@@ -255,21 +255,33 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
     @Override
     public void onStart() {
         super.onStart();
-        if (db == null)
-            db =  new DatabaseHandler(getActivity().getApplicationContext());
+
+        //@Check whether Picklist is already having line items
         if(lineitems == null)
             lineitems = mPicklist.getLineitems();
-        if(lineitems == null)
+
+        //@If picklist does not have line item read line items from db,for picklist,assign lineitems to picklist object for future use
+        if(lineitems == null || lineitems.size() == 0) {
+            db = new DatabaseHandler(getContext());
             lineitems = db.allLineItems(mPicklist.getId());
+            mPicklist.setLineitems(lineitems);
+        }
 
-        if(mAdapter ==  null)
-            mAdapter = new LineItemAdapter(lineitems);
+        //@if still we dont find line items there is no meaning of setting up UI Views,hence skipping
 
-        mRecyclerView.setAdapter(mAdapter);
-        //@get Scanner device and register for call back
-        mDeviceManager = DeviceManager.getDevice(getContext());
-        mDeviceManager.unRegisterDeviceFromCallback(this);
-        mDeviceManager.registerForCallback(this);
+        if(lineitems != null) {
+
+            //@Initialize recycle view adapter
+            if (mAdapter == null)
+                mAdapter = new LineItemAdapter(lineitems);
+
+            mRecyclerView.setAdapter(mAdapter);
+
+            //@get Scanner device and register for call back,such that scanned data will be received in this object's method
+            mDeviceManager = DeviceManager.getDevice(getContext());
+            mDeviceManager.unRegisterDeviceFromCallback(this);
+            mDeviceManager.registerForCallback(this);
+        }
 
     }
     //@callback from sorting Dialog fragment
@@ -441,6 +453,8 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         {
             int lineItemPosition = updateLineItem(lineItem);
             updateViewAtPosition(lineItemPosition);
+            DatabaseHandler db = new DatabaseHandler(getContext());
+            db.addPickListInBatch(mPicklist,false);
         }
         catch (Exception exp)
         {
@@ -485,7 +499,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
     private void SetupDummy()
     {
         dummyP.setStatus(Status.SentforPick);
-        dummyP.setSyncToken(18);
+        dummyP.setSyncToken(23);
         LineItem dummyl = new LineItem();
         List<SerialLotNumber> dummyS = new ArrayList<>();
         List<LineItem> dummyL = new ArrayList<>();

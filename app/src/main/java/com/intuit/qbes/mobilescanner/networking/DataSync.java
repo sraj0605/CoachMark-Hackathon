@@ -30,9 +30,11 @@ import com.intuit.qbes.mobilescanner.model.Picklist;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -224,27 +226,61 @@ public class DataSync {
         openDialog.show();
     }
 
-    public List<Picklist> getTasksSynchronously(int method, String url) {
+    public List<Picklist> getTasksSynchronously(int method, String url,int taskType,String lastSyncTime) throws IOException {
         List<Picklist> picklists = null;
+        final  int task = taskType;
         String response = null;
         RequestFuture<String> future = RequestFuture.newFuture();
-        StringRequest request = new StringRequest(method, url,future,future);
+
+        if(lastSyncTime != null)
+            url = url.concat("?lastModified=").concat(lastSyncTime);
+
+        StringRequest request = new StringRequest(method, url,future,future)
+        {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+
+                HashMap<String, String> params = new HashMap<>();
+                params.put("Content-Type ", String.valueOf("application/json"));
+                return params;
+            }
+        };
+
+        Log.i("SyncAdapter",request.getUrl());
         AppController.getInstance().addToRequestQueue(request);
 
         try {
             response = future.get(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            if(response == null)
+            {
+                Log.e("SyncAdapter", "response is null");
+            }
             if(response != null) {
                 Log.e("SyncAdapter", response);
                 picklists = Picklist.picklistsFromJSON(response);
             }
+
         } catch (InterruptedException e) {
-            Log.e("Retrieve  interrupted.", e.getMessage());
+            //Log.e("SyncAdapter Interupt.", e.getMessage());
+
         } catch (ExecutionException e) {
-            Log.e("Retrieve  failed.", e.getMessage());
+
+            if (VolleyError.class.isAssignableFrom(e.getCause().getClass())) {
+                VolleyError ve = (VolleyError) e.getCause();
+                Log.e("SyncAdapter",ve.toString());
+                if (ve.networkResponse != null) {
+                    Log.e("SyncAdapter",ve.networkResponse.toString());
+                    Log.e("SyncAdapter",String.valueOf(ve.networkResponse.statusCode));
+                    Log.e("SyncAdapter",String.valueOf(new String(ve.networkResponse.data)));
+                }
+            }
 
         } catch (TimeoutException e) {
-            Log.e("Retrieve  timed out.", e.getMessage());
 
+            if(e != null &&  e.getMessage()!= null)
+                Log.e("SyncAdapter Timeout.", e.getMessage());
+            throw new IOException("TimeOut in reaching server");
         }
         return  picklists;
     }

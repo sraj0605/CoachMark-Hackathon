@@ -55,13 +55,13 @@ import static android.provider.ContactsContract.Intents.Insert.ACTION;
  * The system calls onPerformSync() via an RPC call through the IBinder object supplied by
  * SyncService.
  */
-class SyncAdapter extends AbstractThreadedSyncAdapter implements DataSync.DataSyncCallback{
+class SyncAdapter extends AbstractThreadedSyncAdapter{
     public static final String TAG = "SyncAdapter";
     public static final String SYNC_STATUS = "SyncStatus";
-    public static final String url = "http://172.16.100.28:9999/api/v1/company/666667/tasks/";
+    public static final String url = "http://172.16.100.28:9999/api/v1/company/5315/tasks";
     private final ContentResolver mContentResolver;
     private final Context mContext;
-    private boolean bDevicePairing = false;
+    private boolean bManualSync = false;
     public Intent intent;
     /**
      * Constructor. Obtains handle to content resolver for later use.
@@ -105,56 +105,67 @@ class SyncAdapter extends AbstractThreadedSyncAdapter implements DataSync.DataSy
         List<Picklist> picklists = null;
 
         if (extras.getBoolean("MANUAL_SYNC") == true)//device pairing sync
-            bDevicePairing = true;
+            bManualSync = true;
+
+        //get the last sync utc time
+        DatabaseHandler db = new DatabaseHandler(mContext);
+        String lastSyncTime = db.getlastSyncedUTCTime("5315");
+
+        //get the tasks which is modified after last sync time
         DataSync obj = new DataSync();
 
-        picklists = obj.getTasksSynchronously(Request.Method.GET,url);
+        try {
+            picklists = obj.getTasksSynchronously(Request.Method.GET,url,1,lastSyncTime);
 
-        if(picklists != null)
-            updateDevice(picklists);
+        }
+        catch (IOException exp)
+        {
+            Log.i(TAG,"Unable to reach server");
+            syncResult.stats.numIoExceptions++;
+        }
+
+
+        if(picklists != null) {
+            int size = picklists.size();
+            Log.i(TAG,String.valueOf(size));
+            if(updateDevice(picklists))
+                db.storeLastSycTime("5315");
+        }
 
         Log.i(TAG, "Finished network synchronization");
     }
 
 
-    public void FetchAllPickList()
+
+    public boolean updateDevice(List<Picklist>picklistsFromServer)
     {
-        DataSync dataSync = new DataSync();
-        dataSync.FetchPicklists(mContext,this);
-    }
+        boolean bret = false;
+        try {
+            DatabaseHandler db = new DatabaseHandler(mContext);
+            for (int i = 0; i < picklistsFromServer.size(); i++) {
+                Picklist picklistOnServer = picklistsFromServer.get(i);
 
-    @Override
-    public void onFetchPicklist(List<Picklist> picklistsFromServer) {
-            updateDevice(picklistsFromServer);
+                if (db.PickListExists(picklistOnServer.getId()))//Server Picklist already exist in device,delete it and add gain
+                    db.batchDeletePicklist(picklistOnServer);
 
-    }
+                db.addPickListInBatch(picklistOnServer, true);
 
-    @Override
-    public void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale) {
-
-    }
-
-
-    public void updateDevice(List<Picklist>picklistsFromServer)
-    {
-        DatabaseHandler db =  new DatabaseHandler(mContext);
-        for(int i =0;i < picklistsFromServer.size();i++)
-        {
-           Picklist picklistOnServer = picklistsFromServer.get(i);
-            if(db.PickListExists(picklistOnServer.getId()))//Server Picklist already exist in device,delete it and add gain
-            {
-                db.deletePicklistWithDetails(picklistOnServer.getId());
+                bret = true;
             }
-            db.addPickListWithDetail(picklistOnServer);
-        }
-
-        db = null;
+            db = null;
         /* If it is a manual sync,there will be a listener,broadcast them*/
-        if(bDevicePairing) {
-            Intent i = new Intent(SYNC_STATUS);
-            mContext.sendBroadcast(i);
-            bDevicePairing = false;
+            if (bManualSync) {
+                Intent i = new Intent(SYNC_STATUS);
+                mContext.sendBroadcast(i);
+                bManualSync = false;
+            }
         }
+        catch (Exception exp)
+        {
+            bret = false;
+        }
+        return bret;
     }
+
 }
 

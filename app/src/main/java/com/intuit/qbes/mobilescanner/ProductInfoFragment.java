@@ -32,9 +32,11 @@ import android.widget.TextView;
 import com.intuit.qbes.mobilescanner.barcode.BarcodeScannerDevice;
 import com.intuit.qbes.mobilescanner.barcode.DeviceManager;
 import com.intuit.qbes.mobilescanner.model.LineItem;
+import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
 import com.intuit.qbes.mobilescanner.model.Status;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,6 +82,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     private static DeviceManager mDeviceManager = null;
     private boolean mQuantityMismatchDialogThrown = false;
     private String mBarCodeScanned = "";
+    private boolean isSerialNumberAssociated = false;
 
     public interface Callbacks {
         void onSerialNumberClicked(LineItem lineitem);
@@ -95,6 +98,8 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         {
             mlineItem = (LineItem) savedInstanceState.getParcelable(EXTRA_LINEITEM);
         }
+        updateSerialLotnumberForItem();
+
         setHasOptionsMenu(true);
     }
 
@@ -163,8 +168,21 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         init_barcode();
     }
 
+    public void updateSerialLotnumberForItem()
+    {
+        if(mlineItem.isShowSerialNo() == true && mlineItem.getSerialLotNumbers() != null && mlineItem.getSerialLotNumbers().size()==0) {
+            DatabaseHandler db = new DatabaseHandler(getContext());
+            List<SerialLotNumber> serialLotNumbers = db.allSerialLotNumbers(mlineItem.getId());
+            mlineItem.setSerialLotNumbers(serialLotNumbers);
+        }
+    }
+
     public void setUpUI()
     {
+        if(mlineItem.getSerialLotNumbers()!= null && mlineItem.getSerialLotNumbers().size() > 0)
+            isSerialNumberAssociated = true;
+        else
+            isSerialNumberAssociated = false;
 
         upcDialogSetup();
 
@@ -209,10 +227,9 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         }
         else
         {
-            if(mlineItem.getSerialLotNumbers() != null) {
-                if (mlineItem.getSerialLotNumbers().size() > 0 && (mlineItem.getBarcodeEntered().compareTo("") == 0))
-                    showUPCDialog();
-            }
+            if (isSerialNumberAssociated && (mlineItem.getBarcodeEntered().compareTo("") == 0))
+                showUPCDialog();
+
         }
     }
 
@@ -227,7 +244,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         }
         else
         {
-            if(mlineItem.getSerialLotNumbers() == null || (mlineItem.getSerialLotNumbers() != null && mlineItem.getSerialLotNumbers().size() == 0)) {
+            if(!isSerialNumberAssociated) {
                 mSerialView.setVisibility(view.GONE);
             }
             else {
@@ -310,7 +327,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
                 mQty_picked = (EditText)view.findViewById(R.id.qty_picked_value);
                 mQtyToPick = (TextView)view.findViewById(R.id.item_qty);
                 //String quantityPicked = Utilities.checkAndIncrementQuantity(mQtyToPick.getText().toString(),mQty_picked.getText().toString());
-                String quantityPicked = Utilities.IncrementQuantity(mQty_picked.getText().toString());
+                String quantityPicked = Utilities.incrementQuantity(mQty_picked.getText().toString());
                 validateQuantityPickedAgainstQuantityToPick(quantityPicked);
                 mQty_picked.setText(String.valueOf(quantityPicked));
                 mlineItem.setQtyPicked(Double.parseDouble(String.valueOf(quantityPicked)));
@@ -318,7 +335,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
             case R.id.decrease:
                 mQty_picked = (EditText)view.findViewById(R.id.qty_picked_value);
-                String val = Utilities.DecrementQuantity(mQty_picked.getText().toString());
+                String val = Utilities.decrementQuantity(mQty_picked.getText().toString());
                 validateQuantityPickedAgainstQuantityToPick(val);
                 mQty_picked.setText(String.valueOf(val));
                 mlineItem.setQtyPicked(Double.parseDouble(String.valueOf(val)));
@@ -566,11 +583,13 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     {
         if(!mlineItem.getBarcode().isEmpty()) {
 
-            if (!mUPC_Value.getText().toString().isEmpty()) {
+            boolean isUpcTextEmpty = mUPC_Value.getText().toString().isEmpty();
+
+            if (!isUpcTextEmpty) {
                 mUPC_background.setVisibility(view.GONE);
                 mUPC_ErrorText.setVisibility(view.GONE);
 
-            } else if (mUPC_Value.getText().toString().isEmpty() && ((Double.parseDouble(mQty_picked.getText().toString()) > 0) || (mlineItem.getSerialLotNumbers().size() > 0))) {
+            } else if (isUpcTextEmpty && ((Double.parseDouble(mQty_picked.getText().toString()) > 0) || isSerialNumberAssociated)) {
                 mUPC_background.setVisibility(view.VISIBLE);
                 mUPC_ErrorText.setVisibility(view.VISIBLE);
 
@@ -629,11 +648,15 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     {
         if(!mlineItem.getBarcode().isEmpty()) {
 
-            if ((mUPC_Value.getText().toString().isEmpty() && Double.parseDouble(mQty_picked.getText().toString()) == 0 && mlineItem.getSerialLotNumbers().size() == 0) || !mUPC_Value.getText().toString().isEmpty() ) {
+            boolean isUPCTextEmpty = mUPC_Value.getText().toString().isEmpty();
+            boolean isAnyQTYPicked = false;
+            if(Double.parseDouble(mQty_picked.getText().toString()) > 0)
+                isAnyQTYPicked = true;
+            if ((isUPCTextEmpty && !isAnyQTYPicked && !isSerialNumberAssociated) || !isUPCTextEmpty ) {
                 mUPC_background.setVisibility(view.GONE);
                 mUPC_ErrorText.setVisibility(view.GONE);
             }
-            else if (mUPC_Value.getText().toString().isEmpty() && (Double.parseDouble(mQty_picked.getText().toString()) > 0 || (mlineItem.getSerialLotNumbers().size() > 0))) {
+            else if (isUPCTextEmpty && (isAnyQTYPicked || (isSerialNumberAssociated))) {
                 mUPC_background.setVisibility(view.VISIBLE);
                 mUPC_ErrorText.setVisibility(view.VISIBLE);
 

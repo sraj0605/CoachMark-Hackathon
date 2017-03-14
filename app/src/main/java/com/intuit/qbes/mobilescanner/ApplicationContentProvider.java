@@ -33,16 +33,20 @@ public class ApplicationContentProvider extends ContentProvider{
     public static final Uri CONTENT_URI_LINEITEM_TABLE = Uri.parse("content://" + AUTHORITY + "/LineItemInfo");
     public static final Uri CONTENT_URI_SERIALLOTNUMBER_TABLE = Uri.parse("content://" + AUTHORITY + "/SerialNumberInfo");
     public static final Uri CONTENT_URI_TASK_TABLE = Uri.parse("content://" + AUTHORITY + "/TaskInfo");
+    public static final Uri CONTENT_URI_SYNCINFO_TABLE = Uri.parse("content://" + AUTHORITY + "/SyncInfo");
+
 
 
     //Table Name
     private static final String PICKLIST_TABLE = "PickListInfo";
     private static final String LINEITEM_TABLE = "LineItemInfo";
     public static final String SERIALLOTNUMBER_TABLE = "SerialNumberInfo";
+    public static final String SYNCINFO_TABLE = "SyncInfo";
 
     public static final int PICKLISTS = 1;
     public static final int LINEITEMS = 2;
     public static final int SERIALLOTNUMBERS = 3;
+    public static final int SYNCINFO = 4;
 
     //DataBase Handler
     private DatabaseHandler mDbHandler = null;
@@ -56,6 +60,7 @@ public class ApplicationContentProvider extends ContentProvider{
         sURIMatcher.addURI(AUTHORITY, PICKLIST_TABLE,PICKLISTS);
         sURIMatcher.addURI(AUTHORITY, LINEITEM_TABLE,LINEITEMS);
         sURIMatcher.addURI(AUTHORITY, SERIALLOTNUMBER_TABLE,SERIALLOTNUMBERS);
+        sURIMatcher.addURI(AUTHORITY, SYNCINFO_TABLE,SYNCINFO);
     }
     @Nullable
     @Override
@@ -63,7 +68,6 @@ public class ApplicationContentProvider extends ContentProvider{
         int uriType = sURIMatcher.match(uri);
         return String.valueOf(uriType);
     }
-
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         int uriType = Integer.parseInt(getType(uri));
@@ -89,11 +93,16 @@ public class ApplicationContentProvider extends ContentProvider{
                             values,
                             selection,
                             selectionArgs);
+                case SYNCINFO:
+                    rowsUpdated = sqlDB.update(mDbHandler.TABLE_SYNCINFO,
+                            values,
+                            selection,
+                            selectionArgs);
 
                 default:
                     throw new IllegalArgumentException("Unknown URI: " + uri);
             }
-            getContext().getContentResolver().notifyChange(uri, null);
+            //getContext().getContentResolver().notifyChange(uri, null);
         }
         catch (SQLiteException exp )
         {
@@ -126,6 +135,10 @@ public class ApplicationContentProvider extends ContentProvider{
                 case SERIALLOTNUMBERS:
                     id = sqlDB.insertOrThrow(mDbHandler.TABLE_SERIALNUBERINFO, null, values);
                     ret = Uri.parse(SERIALLOTNUMBER_TABLE + "/" + id);
+                    break;
+                case SYNCINFO:
+                    id = sqlDB.insertOrThrow(mDbHandler.TABLE_SYNCINFO, null, values);
+                    ret = Uri.parse(SYNCINFO_TABLE + "/" + id);
                     break;
 
                 default:
@@ -175,10 +188,15 @@ public class ApplicationContentProvider extends ContentProvider{
                             selection,
                             selectionArgs);
                     break;
+                case SYNCINFO:
+                    rowsDeleted = sqlDB.delete(mDbHandler.TABLE_SYNCINFO,
+                            selection,
+                            selectionArgs);
+                    break;
                 default:
                     throw new IllegalArgumentException("Unknown URI: " + uri);
             }
-            getContext().getContentResolver().notifyChange(uri, null);
+            //getContext().getContentResolver().notifyChange(uri, null);
         }
         catch (SQLiteException exp)
         {
@@ -195,6 +213,7 @@ public class ApplicationContentProvider extends ContentProvider{
         Cursor cursor = null;
         int uriType = sURIMatcher.match(uri);
         try {
+
             SQLiteDatabase sqlDB = mDbHandler.getReadableDatabase();
             switch (uriType) {
                 case PICKLISTS:
@@ -205,9 +224,10 @@ public class ApplicationContentProvider extends ContentProvider{
                     break;
                 case SERIALLOTNUMBERS:
                     cursor = sqlDB.query(mDbHandler.TABLE_SERIALNUBERINFO,null,selection,selectionArgs,null,null,null);
+                    break;
+                case SYNCINFO:
+                    cursor = sqlDB.query(mDbHandler.TABLE_SYNCINFO,null,selection,selectionArgs,null,null,null);
             }
-            //cursor = sqlDB.rawQuery(selection, null);
-            //cursor = sqlDB.query(mDbHandler.TABLE_PICKLISTINFO_NAME,null,selection,selectionArgs,null,null,null);
         }
         catch (SQLiteException exp)
         {
@@ -221,22 +241,25 @@ public class ApplicationContentProvider extends ContentProvider{
     @NonNull
     @Override
     public synchronized ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations) throws OperationApplicationException {
-        ContentProviderResult[] results = null;
+        //ContentProviderResult[] results = null;
         SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
         sqlDB.beginTransaction();
         try
         {
-            results = super.applyBatch(operations);
+            //results = super.applyBatch(operations);
+            final int numOperations = operations.size();
+            final ContentProviderResult[] results = new ContentProviderResult[numOperations];
+            for (int i = 0; i < numOperations; i++) {
+                results[i] = operations.get(i).apply(this, results, i);
+            }
             sqlDB.setTransactionSuccessful();//Commit the transaction
-        }
-        catch (SQLiteException exp){
-
+            return results;
         }
         finally {
 
             sqlDB.endTransaction();
         }
-        return results;
+
     }
 
 }

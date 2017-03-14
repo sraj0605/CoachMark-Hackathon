@@ -55,7 +55,7 @@ public class Utilities{
         }
         return  qtyPicked;
     }
-    public static  String IncrementQuantity(String qty)
+    public static  String incrementQuantity(String qty)
     {
         boolean isInt  = isInteger(qty);
         if(isInt) {
@@ -74,7 +74,7 @@ public class Utilities{
         }
         return  qty;
     }
-    public static String DecrementQuantity(String qty)
+    public static String decrementQuantity(String qty)
     {
         boolean isInt  = isInteger(qty);
         if(isInt)

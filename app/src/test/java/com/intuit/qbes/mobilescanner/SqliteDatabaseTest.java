@@ -37,7 +37,8 @@ public class SqliteDatabaseTest {
     List<LineItem> LineItems = new LinkedList<LineItem>();
     private LineItem lineitem;
     private List <Picklist> picklists;
-
+    private List<SerialLotNumber> serialLotNumbers = new ArrayList<>();
+    private SerialLotNumber serialLotNumber;
 
     @Before
     public void setup() throws  Exception
@@ -51,9 +52,14 @@ public class SqliteDatabaseTest {
                 .get();
 
         db = new DatabaseHandler(activity);
+        SerialLotNumber serialLotNumber = new SerialLotNumber(1,1,1,"A123");
+        serialLotNumbers.add(serialLotNumber);
         lineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false", Status.NotPicked);
+        lineitem.setSerialLotNumbers(serialLotNumbers);
         LineItems.add(0,lineitem);
         picklist = new Picklist(1, 1,1, "Picklist1",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",LineItems,"false");
+        picklist.setLineitems(LineItems);
+
 
     }
 
@@ -68,7 +74,7 @@ public class SqliteDatabaseTest {
     {
 
         db.addPickList(picklist);
-        picklists = db.allPickLists();
+        picklists = db.allPickLists(1,"default");
         Assert.assertEquals(picklists.get(0), picklist);
     }
 
@@ -79,7 +85,7 @@ public class SqliteDatabaseTest {
         Picklist testpicklist = new Picklist(1, 1,1, "PicklistTest",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",LineItems,"false");
         db.addPickList(picklist);
         db.updatePickList(testpicklist,1);
-        picklists =  db.allPickLists();
+        picklists =  db.allPickLists(1,"default");
         Assert.assertEquals(picklists.get(0).getName(), "PicklistTest");
     }
 
@@ -89,7 +95,7 @@ public class SqliteDatabaseTest {
 
         db.addPickList(picklist);
         db.deleteOnePicklist(picklist.getId());
-        picklists =  db.allPickLists();
+        picklists =  db.allPickLists(1,"default");
 
         Assert.assertEquals(picklists.size(),0);
     }
@@ -143,4 +149,54 @@ public class SqliteDatabaseTest {
 
     }
 
+    @Test
+    public void test_addPicklistWithDetail()
+    {
+        db.addPickListWithDetail(picklist);
+        List<Picklist> picklistFromDb = db.getPicklistWithDetail(picklist.getId(),"default");
+        Assert.assertEquals(picklistFromDb.get(0).getName(),"Picklist1");
+        db.deletePicklistWithDetails(picklist.getId());
+        Assert.assertEquals(db.allPickLists(1,"default").size(),0);
+    }
+
+    @Test
+    public void test_addPicklistAndItsChildInOneTransaction()
+    {
+        db.addPickListInBatch(picklist,true);
+        List<Picklist> picklistFromDb = db.getPicklistWithDetail(picklist.getId(),"default");
+        Assert.assertEquals(picklistFromDb.get(0).getName(),"Picklist1");
+        Picklist picklistTest = new Picklist(1, 1,1, "Picklist2",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",LineItems,"false");
+        db.addPickListInBatch(picklistTest,false);
+        List<Picklist> picklistFromDb1 = db.getPicklistWithDetail(picklistTest.getId(),"default");
+        Assert.assertEquals(picklistFromDb1.get(0).getName(),"Picklist2");
+        db.batchDeletePicklist(picklist);
+        Assert.assertEquals(db.allPickLists(1,"default").size(),0);
+
+
+    }
+
+    @Test
+    public void test_getItemCountForPicklist()
+    {
+        db.addPickListInBatch(picklist,true);
+        int itemCount = db.getItemCountForPicklist(picklist.getId());
+        Assert.assertEquals(itemCount,1);
+
+    }
+
+    @Test
+    public void test_SYNCAPI()
+    {
+        db.storeLastSycTime("TestGuid");
+        String lastSyncTime = db.getlastSyncedUTCTime("TestGuid");
+        Assert.assertNotNull(lastSyncTime);
+    }
+
+    @Test
+    public void test_getPickList()
+    {
+        db.addPickList(picklist);
+        Picklist pickListFromDb = db.getPickList(1,picklist.getId());
+        Assert.assertEquals(pickListFromDb.getName(),"Picklist1");
+    }
 }
