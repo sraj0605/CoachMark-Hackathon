@@ -36,7 +36,7 @@ public class ProductInfoActivity extends AppCompatActivity implements ProductInf
         boolean bScanned = getIntent().getBooleanExtra(ProductInfoFragment.IS_SCANNED,false);
         if(bScanned)
         {
-            String val = Utilities.IncrementQuantity(String.valueOf(lineitem.getQtyPicked()));//Utilities.checkAndIncrementQuantity(String.valueOf(lineitem.getQtyToPick()),String.valueOf(lineitem.getQtyPicked()));
+            String val = Utilities.incrementQuantity(String.valueOf(lineitem.getQtyPicked()));//Utilities.checkAndIncrementQuantity(String.valueOf(lineitem.getQtyToPick()),String.valueOf(lineitem.getQtyPicked()));
             lineitem.setQtyPicked(Double.parseDouble(String.valueOf(val)));
         }
      	ProductFragment = new ProductInfoFragment();
