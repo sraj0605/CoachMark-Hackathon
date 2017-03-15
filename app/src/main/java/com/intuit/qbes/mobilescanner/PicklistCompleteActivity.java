@@ -44,7 +44,9 @@ public class PicklistCompleteActivity extends AppCompatActivity implements View.
             case R.id.go_back:
             {
                 Intent mainactivity = new Intent(this, MainActivity.class);
+                mainactivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(mainactivity);
+                finish();
 
             }
 
