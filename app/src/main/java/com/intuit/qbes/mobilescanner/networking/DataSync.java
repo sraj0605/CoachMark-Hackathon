@@ -71,7 +71,7 @@ public class DataSync {
     {
 
         try {
-            String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/98";
+            String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/5";
             final String picklistJSONStr = Picklist.JSONStringFromPicklist(mPicklist);
 
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
@@ -324,12 +324,12 @@ public class DataSync {
                     }
                     if(error.networkResponse != null) //400 is if it already verified
                     {
-                      /*  if (error.networkResponse.statusCode == 404 || error.networkResponse.statusCode == 500 || error.networkResponse.statusCode == 400) {
+                        if (error.networkResponse.statusCode == 404 || error.networkResponse.statusCode == 500 || error.networkResponse.statusCode == 400) {
 
                             mCallback = callback;
                             mCallback.onCodeValidation(ErrorTAG);
 
-                        }*/
+                        }
 
                     }
 
