@@ -256,20 +256,28 @@ public class DataSync {
         AppController.getInstance().addToRequestQueue(request);
 
         try {
-            response = future.get(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            try {
+                response = future.get(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            }
+            catch (InterruptedException exp)
+            {
+                // Received interrupt signal, but still don't have response
+                // Restore thread's interrupted status to use higher up on the call stack
+                Log.i("SyncAdapter","InterruptedException");
+                Thread.currentThread().interrupt();
+            }
             if(response == null)
             {
-                Log.e("SyncAdapter", "response is null");
+                Log.i("SyncAdapter", "response is null");
             }
             if(response != null) {
-                Log.e("SyncAdapter", response);
+                Log.i("SyncAdapter", response);
                 picklists = Picklist.picklistsFromJSON(response);
             }
 
-        } catch (InterruptedException e) {
-            //Log.e("SyncAdapter Interupt.", e.getMessage());
-
         } catch (ExecutionException e) {
+
+            Log.i("SyncAdapter", "ExecutionException");
 
             if (VolleyError.class.isAssignableFrom(e.getCause().getClass())) {
                 VolleyError ve = (VolleyError) e.getCause();
@@ -282,6 +290,8 @@ public class DataSync {
             }
 
         } catch (TimeoutException e) {
+
+            Log.i("SyncAdapter", "TimeoutException");
 
             if(e != null &&  e.getMessage()!= null)
                 Log.e("SyncAdapter Timeout.", e.getMessage());

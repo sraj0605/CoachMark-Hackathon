@@ -267,6 +267,8 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
                                         int position = getAdapterPosition();
                                         try {
                                             int count = getItemCount();
+                                            DatabaseHandler db = new DatabaseHandler(getContext());
+                                            db.deleteSerialNumber(lineitem.getId(),serialNOList.get(position).getValue());
                                             serialNOList.remove(position);
                                             notifyItemRemoved(position);
                                             //chandan
@@ -309,7 +311,11 @@ public class SerialNumberFragment extends Fragment implements View.OnClickListen
         }
         public void add(int location, String iName){
             try {
-                SerialLotNumber serialLotNumber = new SerialLotNumber(lineitem.getId(),lineitem.getTxnId(),0,iName);
+                SerialLotNumber serialLotNumber = new SerialLotNumber();
+                serialLotNumber.setId(0);
+                serialLotNumber.setLineitemId(lineitem.getId());
+                serialLotNumber.setValue(iName);
+                serialLotNumber.setType(1);
                 serialNOList.add(serialLotNumber);
                 notifyItemInserted(location);
             }

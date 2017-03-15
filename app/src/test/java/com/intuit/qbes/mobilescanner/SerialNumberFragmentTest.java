@@ -18,6 +18,7 @@ import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
 import com.intuit.qbes.mobilescanner.model.Status;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -198,5 +199,11 @@ public class SerialNumberFragmentTest {
         ImageView minus = (ImageView) serialnoFragment.getView().findViewById(R.id.remove_serialno);
         minus.performClick();
 
+    }
+
+    @After
+    public void tearDown()
+    {
+        serialnoFragment.onDestroy();
     }
 }

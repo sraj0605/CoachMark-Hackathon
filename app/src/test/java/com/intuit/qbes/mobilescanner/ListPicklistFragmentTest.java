@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.intuit.qbes.mobilescanner.model.Picklist;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -105,5 +106,11 @@ public class ListPicklistFragmentTest {
         List<Picklist> result;
         result = listpicklistFragment.createList(3);
         Assert.assertEquals(result.size(), 3);
+    }
+
+    @After
+    public void tearDown()
+    {
+        listpicklistFragment.onDestroy();
     }
 }

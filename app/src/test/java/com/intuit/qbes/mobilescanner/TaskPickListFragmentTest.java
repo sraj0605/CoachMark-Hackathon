@@ -239,6 +239,10 @@ public class TaskPickListFragmentTest {
     }
 
 
-
+    @After
+    public void tearDown()
+    {
+        taskPickListFragment.onDestroy();
+    }
 
 }

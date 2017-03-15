@@ -25,6 +25,7 @@ import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
 import com.intuit.qbes.mobilescanner.model.Status;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -504,5 +505,11 @@ public class ProductInfoFragmentTest{
         {
 
         }
+    }
+
+    @After
+    public void tearDown()
+    {
+        productInfoFragment.onDestroy();
     }
 }

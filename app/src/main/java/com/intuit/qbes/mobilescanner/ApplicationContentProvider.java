@@ -89,10 +89,13 @@ public class ApplicationContentProvider extends ContentProvider{
                             selectionArgs);
                     break;
                 case SERIALLOTNUMBERS:
-                    rowsUpdated = sqlDB.update(mDbHandler.TABLE_SERIALNUBERINFO,
+                    /*rowsUpdated = sqlDB.update(mDbHandler.TABLE_SERIALNUBERINFO,
                             values,
                             selection,
-                            selectionArgs);
+                            selectionArgs);*/
+                    /*As of now lets keep all as insert*/
+                    /*We have made sure that only new serial number will come here hence inserting*/
+                    long rowInserted = sqlDB.insertOrThrow(mDbHandler.TABLE_SERIALNUBERINFO, null, values);
                     break;
                 case SYNCINFO:
                     rowsUpdated = sqlDB.update(mDbHandler.TABLE_SYNCINFO,
