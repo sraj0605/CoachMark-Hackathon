@@ -86,10 +86,10 @@ public class DevicePairingService extends Service {
                                         }
 
                                     }
-                             /*   else if(cd.getPairingStatus() == "4" && !mTimeOut)
+                                else if(cd.getPairingStatus() == "4" && !mTimeOut)
                                     {
                                         sendMessage("deny");
-                                    }*/
+                                    }
                                 else if(!mTimeOut){
                                             PollService();
                                     }
