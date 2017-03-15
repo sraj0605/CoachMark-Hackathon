@@ -96,6 +96,9 @@ public class DataSync {
                     if (error instanceof NoConnectionError) {
                         //No Internet Error
                         NoInternetDialog(context);
+                        mCallback = callback;
+                        mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, true);
+
 
                     }
                     if(error.networkResponse != null)
