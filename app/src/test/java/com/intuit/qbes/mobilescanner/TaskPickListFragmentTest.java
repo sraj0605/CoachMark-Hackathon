@@ -75,7 +75,6 @@ public class TaskPickListFragmentTest {
                 .start()
                 .get();
         taskPickListFragment = TaskPickListFragment.newInstance(mPickList);
-        taskPickListFragment.onAttach(RuntimeEnvironment.application.getApplicationContext());
         SupportFragmentTestUtil.startVisibleFragment(taskPickListFragment);
 
     }
@@ -228,9 +227,6 @@ public class TaskPickListFragmentTest {
         assertTrue("Not sorted properly based on item name",
                 itemName.getText().toString().equals("Iphone"));
 
-        taskPickListFragment.onSortingOptionSelection(SortFilterOption.Location);
-        taskPickListFragment.onSortingOptionSelection(SortFilterOption.SalesOrder);
-        taskPickListFragment.onSortingOptionSelection(SortFilterOption.Status);
     }
 
     @Test
@@ -238,9 +234,7 @@ public class TaskPickListFragmentTest {
     {
 
         taskPickListFragment.scanDataReceived("yes");
-        taskPickListFragment.onAttach(RuntimeEnvironment.application.getApplicationContext());
         taskPickListFragment.scanDataReceived("8901238910005");
-
 
     }
 
