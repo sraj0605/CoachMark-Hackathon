@@ -165,7 +165,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         try {
             db.execSQL("CREATE TABLE " + TableDetails.Tables.SERIALLOTNUMBER + " ("
-                    + TableDetails.KEY_ID + " LONG PRIMARY KEY,"
+                    + TableDetails.KEY_ID + " LONG,"
                     + TableDetails.SerialNumberInfo.KEY_LINEITEMID + " LONG NOT NULL,"
                     + TableDetails.SerialNumberInfo.KEY_TYPE + " LONG,"
                     + TableDetails.SerialNumberInfo.KEY_VALUE + " TEXT "
@@ -574,11 +574,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     //get all serial lot numbers for a line item
-    public List<SerialLotNumber> allSerialLotNumbers(long id) {
+    public List<SerialLotNumber> allSerialLotNumbers(long lineitemId) {
 
         List<SerialLotNumber> serialLotNumbers = new ArrayList<>();
-        String selection = "id = ?";
-        String [] selectionArgs = new String[] {String.valueOf(id)};
+        String selection = "lineitemId = ?";
+        String [] selectionArgs = new String[] {String.valueOf(lineitemId)};
         Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE,null,selection,selectionArgs,null,null);
         SerialLotNumber serialLotNumber = null;
         if(cursor != null) {
@@ -602,7 +602,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //delete one serial lot number
     public void deleteSerialNumber(long id,String SerialNumber)
     {
-        String selection = "id=? and value=?";
+        String selection = "lineitemId=? and value=?";
         String [] selectionArgs = new String[] {String.valueOf(id),String.valueOf(SerialNumber)};
         myCR.delete(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE,selection,selectionArgs);
 
@@ -690,16 +690,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                             values2.put(KEY_TYPE, serialLotNumber.getType());
                             values2.put(KEY_VALUE, serialLotNumber.getValue());
                             if(badd)
-                             ops.add(
+                                ops.add(
                                     ContentProviderOperation.newInsert(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE)
                                             .withValues(values2)
                                             .build());
-                            else
-                                ops.add(
-                                        ContentProviderOperation.newUpdate(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE)
-                                                .withValues(values2)
-                                                .withSelection("id=?",new String[] {String.valueOf(serialLotNumber.getId())})
-                                                .build());
+                            else {
+
+                                /*
+                                1.Check if serial number already exist,dont add in query */
+                                if(!isSerialNumberExist(serialLotNumber.getLineitemId(),serialLotNumber.getValue())) {
+                                    ops.add(
+                                            ContentProviderOperation.newUpdate(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE)
+                                                    .withValues(values2)
+                                                    .withSelection("lineitemId=? and value=?", new String[]{String.valueOf(serialLotNumber.getLineitemId()), serialLotNumber.getValue()})
+                                                    .build());
+                                }
+                            }
                         }
                     }
                 }
@@ -771,7 +777,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     {
                         SerialLotNumber serialLotNumber = serialLotNumbers.get(j);
                         ops.add(ContentProviderOperation.newDelete(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE)
-                                .withSelection("id=?",new String[] {String.valueOf(serialLotNumber.getId())})
+                                .withSelection("lineitemId=? and value=?",new String[] {String.valueOf(serialLotNumber.getLineitemId()),serialLotNumber.getValue()})
                                 .build()
                         );
                     }
@@ -890,5 +896,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         return obj;
+    }
+    public boolean isSerialNumberExist(long lineitemId,String value)
+    {
+        String selection = "lineitemId=? and value=?";
+        String [] selectionArgs = new String[] {String.valueOf(lineitemId),value};
+        Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE,null,selection,selectionArgs,null,null);
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
     }
 }

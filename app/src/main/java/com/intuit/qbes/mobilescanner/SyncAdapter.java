@@ -5,6 +5,7 @@ package com.intuit.qbes.mobilescanner;
  */
 
 import com.android.volley.Request;
+import com.android.volley.VolleyError;
 import com.intuit.qbes.mobilescanner.Account.GenericAccountService;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
@@ -58,7 +59,7 @@ import static android.provider.ContactsContract.Intents.Insert.ACTION;
 class SyncAdapter extends AbstractThreadedSyncAdapter{
     public static final String TAG = "SyncAdapter";
     public static final String SYNC_STATUS = "SyncStatus";
-    public static final String url = "http://172.16.100.28:9999/api/v1/company/5315/tasks";
+    public static final String url = "http://172.16.100.28:9999/api/v1/company/666667/tasks/";
     private final ContentResolver mContentResolver;
     private final Context mContext;
     private boolean bManualSync = false;
@@ -109,7 +110,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
 
         //get the last sync utc time
         DatabaseHandler db = new DatabaseHandler(mContext);
-        String lastSyncTime = db.getlastSyncedUTCTime("5315");
+        String lastSyncTime = db.getlastSyncedUTCTime("666667");
 
         //get the tasks which is modified after last sync time
         DataSync obj = new DataSync();
@@ -124,12 +125,22 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
             syncResult.stats.numIoExceptions++;
         }
 
-
         if(picklists != null) {
             int size = picklists.size();
             Log.i(TAG,String.valueOf(size));
             if(updateDevice(picklists))
-                db.storeLastSycTime("5315");
+                db.storeLastSycTime("666667");
+        }
+        else
+        {
+            //server has not given any delta or task
+            if (bManualSync) {
+                Log.i("SyncAdapter","calling refresh");
+                Intent i = new Intent(SYNC_STATUS);
+                i.putExtra("NEW_TASK_FOUND",false);
+                mContext.sendBroadcast(i);
+                bManualSync = false;
+            }
         }
 
         Log.i(TAG, "Finished network synchronization");
@@ -145,8 +156,11 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
             for (int i = 0; i < picklistsFromServer.size(); i++) {
                 Picklist picklistOnServer = picklistsFromServer.get(i);
 
-                if (db.PickListExists(picklistOnServer.getId()))//Server Picklist already exist in device,delete it and add gain
+                if (db.PickListExists(picklistOnServer.getId())) {//Server Picklist already exist in device,delete it and add gain
+
                     db.batchDeletePicklist(picklistOnServer);
+                }
+
 
                 db.addPickListInBatch(picklistOnServer, true);
 
@@ -155,7 +169,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
             db = null;
         /* If it is a manual sync,there will be a listener,broadcast them*/
             if (bManualSync) {
+                Log.i("SyncAdapter","calling refresh");
                 Intent i = new Intent(SYNC_STATUS);
+                i.putExtra("NEW_TASK_FOUND",true);
                 mContext.sendBroadcast(i);
                 bManualSync = false;
             }

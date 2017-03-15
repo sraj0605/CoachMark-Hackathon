@@ -9,6 +9,7 @@ import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.model.Status;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,5 +75,10 @@ public class DividerItemDecorationTest {
         obj = new DividerItemDecoration(detailPicklistActivity,com.intuit.qbes.mobilescanner.DividerItemDecoration.VERTICAL_LIST);
         RecyclerView recycleview = (RecyclerView)testPickListFragment.getView().findViewById(R.id.detail_picklist_rv2);
         obj.onDraw(c,recycleview);
+    }
+    @After
+    public void tearDown()
+    {
+        testPickListFragment.onDestroy();
     }
 }
