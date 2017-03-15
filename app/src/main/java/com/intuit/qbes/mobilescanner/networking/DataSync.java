@@ -67,11 +67,11 @@ public class DataSync {
     }
 
 
-    public void UpdatePicklist(Picklist mPicklist, final Context context, final DataSyncCallback callback, final Boolean isSync)
+    public void UpdatePicklist(Picklist mPicklist, final Context context, final DataSyncCallback callback, final Boolean isSync, String id)
     {
 
         try {
-            String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/5";
+            String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/" + id;
             final String picklistJSONStr = Picklist.JSONStringFromPicklist(mPicklist);
 
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {

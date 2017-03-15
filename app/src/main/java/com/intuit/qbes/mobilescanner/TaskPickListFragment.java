@@ -48,6 +48,7 @@ import com.intuit.qbes.mobilescanner.networking.PicklistHttp;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.io.StringBufferInputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -430,7 +431,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
 
             case R.id.update_sync:
             {
-                savePicklist(mPicklist, true);
+                savePicklist(mPicklist, true, String.valueOf(mPicklist.getId()));
                 break;
             }
             case R.id.update_complete:
@@ -491,11 +492,11 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         //mAdapter.sortDataSetByUserOption(SortFilterOption.Status,false);
     }
 
-    private void savePicklist(Picklist picklist, Boolean isSync)
+    private void savePicklist(Picklist picklist, Boolean isSync, String id)
     {
 
         dataSync = new DataSync();
-        dataSync.UpdatePicklist(picklist,getContext(), this, isSync); // remove dummy later
+        dataSync.UpdatePicklist(picklist,getContext(), this, isSync, id); // remove dummy later
         showDialog();
 
     }
@@ -746,7 +747,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
                 .setPositiveButton(R.string.Yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         //Check if any item is not completely picked and complete or show discrepency screen accordingly.
-                        savePicklist(mPicklist, false);
+                        savePicklist(mPicklist, false, String.valueOf(mPicklist.getId()));
 
                     }
                 })
