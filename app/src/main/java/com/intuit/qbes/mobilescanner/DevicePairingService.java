@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
@@ -44,6 +45,8 @@ public class DevicePairingService extends Service {
     private String otp, device_id;
     private Intent mIntent;
     private Boolean mTimeOut = false;
+    public static final String PREFS_NAME = "Service_Response";
+
 
     @Nullable
     @Override
@@ -175,6 +178,7 @@ public class DevicePairingService extends Service {
         intent.putExtra("message", status);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
+        SaveServiceResponse(status);
         //stopSelf();
 
     }
@@ -190,4 +194,14 @@ public class DevicePairingService extends Service {
         super.onDestroy();
     }
 
+    public void SaveServiceResponse(String response)
+    {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+        // Writing data to SharedPreferences
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("Response", response);
+        editor.commit();
+
+    }
 }

@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -28,6 +29,8 @@ import com.intuit.qbes.mobilescanner.networking.DataSync;
 
 import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by ashah9 on 2/20/17.
  */
@@ -49,6 +52,9 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
     private PairSuccessCallback mCallback = null;
     private Handler handler;
     private Runnable runnable;
+    public static final String PREFS_NAME = "Service_Response";
+    private SharedPreferences settings;
+
 
     public  CodeEntryFragment()
     {
@@ -151,6 +157,13 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
         // with actions named "custom-event-name".
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(
                 mMessageReceiver, new IntentFilter("PollingResponse"));
+
+        settings = getActivity().getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String value = settings.getString("Response", "");
+
+        if(value!=null && value != "")
+            HandleServiceResponse(value);
+
         super.onResume();
     }
 
@@ -242,34 +255,10 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
             // TODO Auto-generated method stub
             // Get extra data included in the Intent
             String message = intent.getStringExtra("message");
-            if(message.compareTo("success") == 0)
-            {
-                if(mCallback !=null) {
-                    mCallback.onPairSuccess();
-                }
 
-                dismissDialog();
+            if(message!=null && message != "")
+            HandleServiceResponse(message);
 
-            }
-            else if(message.compareTo("timeout") == 0)
-            {
-                if(mCallback !=null) {
-                    mCallback.onTimeOut();
-                }
-                dismissDialog();
-
-            }
-            else if(message.compareTo("deny") == 0)
-            {
-                if(mCallback !=null) {
-                    mCallback.onDeny();
-                }
-                dismissDialog();
-
-            }
-            LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(
-                    mMessageReceiver);
-            handler.removeCallbacks(runnable);
         }
 
 
@@ -341,6 +330,43 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
         };
         handler.postDelayed(runnable, 10*60*1000);
 
+    }
+
+    public void HandleServiceResponse(String response)
+    {
+        if(response.compareTo("success") == 0)
+        {
+            if(mCallback !=null) {
+                mCallback.onPairSuccess();
+            }
+
+            dismissDialog();
+
+        }
+        else if(response.compareTo("timeout") == 0)
+        {
+            if(mCallback !=null) {
+                mCallback.onTimeOut();
+            }
+            dismissDialog();
+
+        }
+        else if(response.compareTo("deny") == 0)
+        {
+            if(mCallback !=null) {
+                mCallback.onDeny();
+            }
+            dismissDialog();
+
+        }
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(
+                mMessageReceiver);
+        handler.removeCallbacks(runnable);
+
+        //Reset shared pref
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("Response", "");
+        editor.commit();
     }
 }
 
