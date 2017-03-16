@@ -28,10 +28,12 @@ import com.symbol.emdk.barcode.ScannerConfig;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
+
 
 /**
  * Created by ckumar5 on 05/02/17.
@@ -810,7 +812,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(KEY_GUID, guid);
             values.put(KEY_LASTSYNCTIME, utcTime);
-            myCR.insert(ApplicationContentProvider.CONTENT_URI_SYNCINFO_TABLE, values);
+            Log.i("SyncAdapter",utcTime);
+            String whereClause = "guid = " + String.valueOf(guid);
+            if(syncTimeExistsforCompanyId(guid))
+                    myCR.update(ApplicationContentProvider.CONTENT_URI_SYNCINFO_TABLE, values,whereClause,null);
+            else
+                myCR.insert(ApplicationContentProvider.CONTENT_URI_SYNCINFO_TABLE,values);
         }
         catch (IllegalArgumentException exp)
         {
@@ -818,6 +825,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
 
+    }
+
+    public boolean syncTimeExistsforCompanyId(String guid)
+    {
+        String selection = "guid = ?";
+        String utcTime = null;
+        String [] selectionArgs = new String[] {guid};
+        Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_SYNCINFO_TABLE,null,selection,selectionArgs,null,null);
+        if(cursor != null && cursor.getCount() > 0)
+        {
+           return true;
+
+        }
+
+        return false;
     }
     //get last sync time
     public String getlastSyncedUTCTime(String guid)
