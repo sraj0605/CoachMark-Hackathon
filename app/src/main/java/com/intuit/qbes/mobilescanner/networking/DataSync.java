@@ -107,10 +107,10 @@ public class DataSync {
                     {
                         ServerIssueDialog(context);
                     }
-                    if (error instanceof ServerError)
+                 /*   if (error instanceof ServerError)
                     {
                         ServerIssueDialog(context);
-                    }
+                    }*/
                     if(error.networkResponse != null)
                     {
                         if (error.networkResponse.statusCode == 409 || error.networkResponse.statusCode == 400) {
@@ -369,10 +369,10 @@ public class DataSync {
                     {
                         ServerIssueDialog(context);
                     }
-                    if (error instanceof ServerError)
+                  /*  if (error instanceof ServerError)
                     {
                         ServerIssueDialog(context);
-                    }
+                    }*/
                     if(error.networkResponse != null) //400 is if it already verified
                     {
                         if (error.networkResponse.statusCode == 404 || error.networkResponse.statusCode == 500 || error.networkResponse.statusCode == 400) {

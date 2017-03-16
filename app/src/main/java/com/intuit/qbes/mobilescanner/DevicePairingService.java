@@ -122,10 +122,10 @@ public class DevicePairingService extends Service {
                     {
                         ServerIssueDialog(getBaseContext());
                     }
-                    if (error instanceof ServerError)
+                /*    if (error instanceof ServerError)
                     {
                         ServerIssueDialog(getBaseContext());
-                    }
+                    }*/
                 }
             }){
                 @Override
