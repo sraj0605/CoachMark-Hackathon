@@ -52,4 +52,8 @@ public class PicklistCompleteActivity extends AppCompatActivity implements View.
 
         }
     }
+
+    @Override
+    public void onBackPressed() {
+    }
 }
