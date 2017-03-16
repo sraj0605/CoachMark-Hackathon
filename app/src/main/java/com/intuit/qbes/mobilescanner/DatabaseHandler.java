@@ -878,7 +878,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     public void addCompanyFileDetails(CompanyFileDetails details)
     {
-        SQLiteDatabase db = this.getWritableDatabase();
+      //  SQLiteDatabase db = this.getWritableDatabase();
 
         try
         {
@@ -887,9 +887,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(KEY_REALMID, details.getRealmID());
             values.put(KEY_DEVICEGUID, details.getDeviceGUID());
             values.put(KEY_COMPANYNAME, details.getCompanyName());
+            myCR.insert(ApplicationContentProvider.CONTENT_URI_COMPANYFILEINFO_TABLE, values);
 
-            db.insert(TABLE_COMPANYYFILEINFO_NAME,null, values);
-            db.close();
+         /*   db.insert(TABLE_COMPANYYFILEINFO_NAME,null, values);
+            db.close();*/
         }
         catch (IllegalArgumentException exp)
         {
@@ -905,8 +906,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String query = "SELECT  * FROM " + TABLE_COMPANYYFILEINFO_NAME;
         SQLiteDatabase db = this.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery(query, null);
+        //Cursor cursor = db.rawQuery(query, null);
         //Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_COMPANYFILE_TABLE, null, query, null, null);
+        String selection = null;
+        String [] selectionArgs = null;
+        Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_COMPANYFILEINFO_TABLE,null,selection,selectionArgs,null,null);
         if (cursor.moveToFirst()) {
             do {
 
@@ -916,7 +920,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             } while (cursor.moveToNext());
         }
-
         return obj;
     }
     public boolean isSerialNumberExist(long lineitemId,String value)

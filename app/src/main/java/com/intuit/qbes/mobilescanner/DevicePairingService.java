@@ -115,12 +115,13 @@ public class DevicePairingService extends Service {
                     VolleyLog.d("Response", "Error: " + error.getMessage());
                     if (error instanceof NoConnectionError) {
                         //No Internet Error
-                        NoInternetDialog(getBaseContext());
+                        sendMessage("NoInternet");
 
                     }
                     if (error instanceof TimeoutError)
                     {
-                        ServerIssueDialog(getBaseContext());
+                        sendMessage("ServiceError");
+
                     }
                 /*    if (error instanceof ServerError)
                     {
@@ -154,51 +155,6 @@ public class DevicePairingService extends Service {
         }
     }
 
-
-    public void NoInternetDialog(Context context)
-    {
-        final Dialog openDialog = new Dialog(context);
-        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        openDialog.setContentView(R.layout.connection_error_dialog);
-        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.NetowrkbtnOk);
-        openDialog.setCancelable(false);
-        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-
-            public void onClick(View v) {
-
-
-                openDialog.dismiss();
-
-            }
-
-        });
-
-        openDialog.show();
-    }
-
-    public void ServerIssueDialog(Context context)
-    {
-        final Dialog openDialog = new Dialog(context);
-        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        openDialog.setContentView(R.layout.serverissue_dialog);
-        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.ServerIssuebtnOk);
-        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-
-            public void onClick(View v) {
-
-
-                openDialog.dismiss();
-
-            }
-
-        });
-
-        openDialog.show();
-    }
 
 
     //send local broadcast to CodeEntryFragment

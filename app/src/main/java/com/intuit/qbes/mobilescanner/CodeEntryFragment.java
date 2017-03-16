@@ -1,5 +1,6 @@
 package com.intuit.qbes.mobilescanner;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,6 +18,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -359,6 +361,18 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
             dismissDialog();
 
         }
+        else if(response.compareTo("NoInternet") == 0)
+        {
+            NoInternetDialog(getContext());
+            dismissDialog();
+
+        }
+        else if(response.compareTo("ServiceError") == 0)
+        {
+            ServerIssueDialog(getContext());
+            dismissDialog();
+
+        }
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(
                 mMessageReceiver);
         handler.removeCallbacks(runnable);
@@ -368,6 +382,52 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
         editor.putString("Response", "");
         editor.commit();
     }
+
+    public void NoInternetDialog(Context context)
+    {
+        final Dialog openDialog = new Dialog(context);
+        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        openDialog.setContentView(R.layout.connection_error_dialog);
+        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.NetowrkbtnOk);
+        openDialog.setCancelable(false);
+        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+
+            public void onClick(View v) {
+
+
+                openDialog.dismiss();
+
+            }
+
+        });
+
+        openDialog.show();
+    }
+
+    public void ServerIssueDialog(Context context)
+    {
+        final Dialog openDialog = new Dialog(context);
+        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        openDialog.setContentView(R.layout.serverissue_dialog);
+        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.ServerIssuebtnOk);
+        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+
+            public void onClick(View v) {
+
+
+                openDialog.dismiss();
+
+            }
+
+        });
+
+        openDialog.show();
+    }
+
 }
 
 

@@ -34,6 +34,7 @@ public class ApplicationContentProvider extends ContentProvider{
     public static final Uri CONTENT_URI_SERIALLOTNUMBER_TABLE = Uri.parse("content://" + AUTHORITY + "/SerialNumberInfo");
     public static final Uri CONTENT_URI_TASK_TABLE = Uri.parse("content://" + AUTHORITY + "/TaskInfo");
     public static final Uri CONTENT_URI_SYNCINFO_TABLE = Uri.parse("content://" + AUTHORITY + "/SyncInfo");
+    public static final Uri CONTENT_URI_COMPANYFILEINFO_TABLE = Uri.parse("content://" + AUTHORITY + "/CompanyFileInfo");
 
 
 
@@ -42,11 +43,15 @@ public class ApplicationContentProvider extends ContentProvider{
     private static final String LINEITEM_TABLE = "LineItemInfo";
     public static final String SERIALLOTNUMBER_TABLE = "SerialNumberInfo";
     public static final String SYNCINFO_TABLE = "SyncInfo";
+    public static final String COMPANYFILEINFO_TABLE = "CompanyFileInfo";
+
 
     public static final int PICKLISTS = 1;
     public static final int LINEITEMS = 2;
     public static final int SERIALLOTNUMBERS = 3;
     public static final int SYNCINFO = 4;
+    public static final int COMPANYFILEINFO = 5;
+
 
     //DataBase Handler
     private DatabaseHandler mDbHandler = null;
@@ -61,6 +66,8 @@ public class ApplicationContentProvider extends ContentProvider{
         sURIMatcher.addURI(AUTHORITY, LINEITEM_TABLE,LINEITEMS);
         sURIMatcher.addURI(AUTHORITY, SERIALLOTNUMBER_TABLE,SERIALLOTNUMBERS);
         sURIMatcher.addURI(AUTHORITY, SYNCINFO_TABLE,SYNCINFO);
+        sURIMatcher.addURI(AUTHORITY, COMPANYFILEINFO_TABLE,COMPANYFILEINFO);
+
     }
     @Nullable
     @Override
@@ -142,6 +149,10 @@ public class ApplicationContentProvider extends ContentProvider{
                 case SYNCINFO:
                     id = sqlDB.insertOrThrow(mDbHandler.TABLE_SYNCINFO, null, values);
                     ret = Uri.parse(SYNCINFO_TABLE + "/" + id);
+                    break;
+                case COMPANYFILEINFO:
+                    id = sqlDB.insertOrThrow(mDbHandler.TABLE_COMPANYYFILEINFO_NAME, null, values);
+                    ret = Uri.parse(COMPANYFILEINFO_TABLE + "/" + id);
                     break;
 
                 default:
@@ -232,6 +243,9 @@ public class ApplicationContentProvider extends ContentProvider{
                     break;
                 case SYNCINFO:
                     cursor = sqlDB.query(mDbHandler.TABLE_SYNCINFO,null,selection,selectionArgs,null,null,null);
+                    break;
+                case COMPANYFILEINFO:
+                    cursor = sqlDB.query(mDbHandler.TABLE_COMPANYYFILEINFO_NAME,null,selection,selectionArgs,null,null,null);
             }
         }
         catch (SQLiteException exp)
