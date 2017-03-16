@@ -86,7 +86,7 @@ public class DevicePairingActivity extends AppCompatActivity implements GetStart
 
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.flDevicePairing, fragment, tag);
-       // ft.addToBackStack(null);
+        ft.addToBackStack(null);
         ft.commit();
     }
 

@@ -55,5 +55,10 @@ public class PicklistCompleteActivity extends AppCompatActivity implements View.
 
     @Override
     public void onBackPressed() {
+
+        Intent mainactivity = new Intent(this, MainActivity.class);
+        mainactivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(mainactivity);
+        finish();
     }
 }
