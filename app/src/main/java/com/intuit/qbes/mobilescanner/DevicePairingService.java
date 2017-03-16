@@ -81,7 +81,7 @@ public class DevicePairingService extends Service {
 
                                     cd = CompanyFileDetails.CompanyDetailsFromJSON(response);
 
-                                    if(cd.getPairingStatus() == "5" && !mTimeOut) {
+                                    if(cd.getPairingStatus().compareTo("5") == 0 && !mTimeOut) {
                                         db = new DatabaseHandler(getBaseContext());
                                         if (cd.getCompanyName() != null) {           //change logic once list of enum is available
                                             db.addCompanyFileDetails(cd);
@@ -89,7 +89,7 @@ public class DevicePairingService extends Service {
                                         }
 
                                     }
-                                else if(cd.getPairingStatus() == "4" && !mTimeOut)
+                                else if(cd.getPairingStatus().compareTo("4") == 0 && !mTimeOut)
                                     {
                                         sendMessage("deny");
                                     }
