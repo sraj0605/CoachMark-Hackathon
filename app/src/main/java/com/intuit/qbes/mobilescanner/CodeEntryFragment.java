@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -54,6 +55,7 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
     private PairSuccessCallback mCallback = null;
     private Handler handler;
     private Runnable runnable;
+   // private long mLastClickTime;
     public static final String PREFS_NAME = "Service_Response";
     private SharedPreferences settings;
 
@@ -136,11 +138,24 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
             ServiceTimeOut(mIntent);
 
             getActivity().startService(mIntent);
-            showDialog();
+           // showDialog();
         }
         else if(response.compareTo("NotValid") == 0)
         {
             SetErrorScreen();
+            dismissDialog();
+        }
+        else if(response.compareTo("NoInternet") == 0)
+        {
+            NoInternetDialog(getContext());
+            dismissDialog();
+
+
+        }
+        else if(response.compareTo("ServiceIssue") == 0)
+        {
+            ServerIssueDialog(getContext());
+            dismissDialog();
         }
     }
 
@@ -184,24 +199,25 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
         {
             case R.id.PairButton:
             {
-                if(!(mCode.getText().toString().isEmpty()) && !(mCode.getText().toString().length() < 4))
+             //   if (SystemClock.elapsedRealtime() - mLastClickTime > 3000) {
+               //     mLastClickTime = SystemClock.elapsedRealtime();
+                    if (!(mCode.getText().toString().isEmpty()) && !(mCode.getText().toString().length() < 4))
 
-                {
-                    DevicePairingCode = mCode.getText().toString();
-                    details.setOTP(DevicePairingCode);
-                    GetDeviceNameID();
-                    deviceDetailsJSON = DeviceDetails.JSONStringFromDeviceDetails(details);
-                    dataSync = new DataSync();
-                    dataSync.ValidateDevicePairing(deviceDetailsJSON, getContext(), this);
+                    {
+                        DevicePairingCode = mCode.getText().toString();
+                        details.setOTP(DevicePairingCode);
+                        GetDeviceNameID();
+                        deviceDetailsJSON = DeviceDetails.JSONStringFromDeviceDetails(details);
+                        dataSync = new DataSync();
+                        dataSync.ValidateDevicePairing(deviceDetailsJSON, getContext(), this);
+                        showDialog();
 
+                        break;
+                    } else {
+                        SetErrorScreen();
 
-                    break;
-                }
-                else
-                {
-                    SetErrorScreen();
-
-                }
+                    }
+               // }
             }
             default:
                 break;

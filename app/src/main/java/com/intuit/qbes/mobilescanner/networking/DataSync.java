@@ -3,6 +3,8 @@ package com.intuit.qbes.mobilescanner.networking;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -43,6 +45,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.android.volley.DefaultRetryPolicy.DEFAULT_TIMEOUT_MS;
 
 /**
@@ -57,8 +60,10 @@ public class DataSync {
     private Picklist mUpdatedPicklist = new Picklist();
     private String validateTAG  = "Validate";
     private String ErrorTAG = "NotValid";
-    private DataSyncCallback mCallback;
+    private String NetworkErrorTAG = "NoInternet";
+    private String ServiceErrorTAG = "ServiceIssue";
 
+    private DataSyncCallback mCallback;
 
 
     public interface DataSyncCallback {
@@ -106,6 +111,9 @@ public class DataSync {
                     if (error instanceof TimeoutError)
                     {
                         ServerIssueDialog(context);
+                        mCallback = callback;
+                        mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, true);
+
                     }
                  /*   if (error instanceof ServerError)
                     {
@@ -244,24 +252,32 @@ public class DataSync {
 
     public void ServerIssueDialog(Context context)
     {
-        final Dialog openDialog = new Dialog(context);
-        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        openDialog.setContentView(R.layout.serverissue_dialog);
-        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.ServerIssuebtnOk);
-        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
 
-            @Override
+            final Dialog openDialog = new Dialog(context);
+            openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            openDialog.setContentView(R.layout.serverissue_dialog);
+            Button dialogCloseButton = (Button) openDialog.findViewById(R.id.ServerIssuebtnOk);
+            dialogCloseButton.setOnClickListener(new View.OnClickListener() {
 
-            public void onClick(View v) {
+                @Override
+
+                public void onClick(View v) {
 
 
-                openDialog.dismiss();
+                    openDialog.dismiss();
+                }
 
-            }
+            });
 
-        });
+            openDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
 
-        openDialog.show();
+                }
+            });
+
+            openDialog.show();
+
     }
 
     public List<Picklist> getTasksSynchronously(int method, String url,int taskType,String lastSyncTime) throws IOException {
@@ -362,12 +378,31 @@ public class DataSync {
 
                     if (error instanceof NoConnectionError) {
                         //No Internet Error
-                        NoInternetDialog(context);
+                        try{
+                            mCallback = callback;
+                            mCallback.onCodeValidation(NetworkErrorTAG);
+                        }
+                        catch(Exception e)
+                        {
+                            Log.d("Error:", e.getMessage());
+
+                        }
 
                     }
                     if (error instanceof TimeoutError)
                     {
-                        ServerIssueDialog(context);
+
+
+                        try{
+                            mCallback = callback;
+                            mCallback.onCodeValidation(ServiceErrorTAG);
+                        }
+                        catch(Exception e)
+                        {
+                            Log.d("Error:", e.getMessage());
+
+                        }
+
                     }
                   /*  if (error instanceof ServerError)
                     {
@@ -424,6 +459,8 @@ public class DataSync {
             e.printStackTrace();
         }
     }
+
+
 
 
 }
