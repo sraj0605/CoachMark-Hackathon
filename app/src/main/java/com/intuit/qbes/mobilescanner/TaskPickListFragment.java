@@ -327,10 +327,12 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
 
         if(lineitems.contains(lineItem))
         {
-            lineItem = lineitems.get(lineitems.indexOf(lineItem));
-            lineItem.setBarcodeEntered(sData);
-            if(mCallbacks != null)
-                mCallbacks.onLineItemSelected(lineItem,true);
+            if(!mMessageThrown) {
+                lineItem = lineitems.get(lineitems.indexOf(lineItem));
+                lineItem.setBarcodeEntered(sData);
+                if (mCallbacks != null)
+                    mCallbacks.onLineItemSelected(lineItem, true);
+            }
         }
         else
         {
