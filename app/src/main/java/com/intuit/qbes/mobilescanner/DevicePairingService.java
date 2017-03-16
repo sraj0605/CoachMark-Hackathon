@@ -21,6 +21,8 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
@@ -116,6 +118,14 @@ public class DevicePairingService extends Service {
                         NoInternetDialog(getBaseContext());
 
                     }
+                    if (error instanceof TimeoutError)
+                    {
+                        ServerIssueDialog(getBaseContext());
+                    }
+                    if (error instanceof ServerError)
+                    {
+                        ServerIssueDialog(getBaseContext());
+                    }
                 }
             }){
                 @Override
@@ -168,6 +178,29 @@ public class DevicePairingService extends Service {
         openDialog.show();
     }
 
+    public void ServerIssueDialog(Context context)
+    {
+        final Dialog openDialog = new Dialog(context);
+        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        openDialog.setContentView(R.layout.serverissue_dialog);
+        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.ServerIssuebtnOk);
+        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+
+            public void onClick(View v) {
+
+
+                openDialog.dismiss();
+
+            }
+
+        });
+
+        openDialog.show();
+    }
+
+
     //send local broadcast to CodeEntryFragment
 
     private void sendMessage( String status) {
@@ -204,4 +237,6 @@ public class DevicePairingService extends Service {
         editor.commit();
 
     }
+
+
 }

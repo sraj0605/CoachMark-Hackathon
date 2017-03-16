@@ -15,6 +15,8 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
@@ -100,6 +102,14 @@ public class DataSync {
                         mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, true);
 
 
+                    }
+                    if (error instanceof TimeoutError)
+                    {
+                        ServerIssueDialog(context);
+                    }
+                    if (error instanceof ServerError)
+                    {
+                        ServerIssueDialog(context);
                     }
                     if(error.networkResponse != null)
                     {
@@ -231,6 +241,29 @@ public class DataSync {
         openDialog.show();
     }
 
+
+    public void ServerIssueDialog(Context context)
+    {
+        final Dialog openDialog = new Dialog(context);
+        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        openDialog.setContentView(R.layout.serverissue_dialog);
+        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.ServerIssuebtnOk);
+        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+
+            public void onClick(View v) {
+
+
+                openDialog.dismiss();
+
+            }
+
+        });
+
+        openDialog.show();
+    }
+
     public List<Picklist> getTasksSynchronously(int method, String url,int taskType,String lastSyncTime) throws IOException {
         List<Picklist> picklists = null;
         final  int task = taskType;
@@ -331,6 +364,14 @@ public class DataSync {
                         //No Internet Error
                         NoInternetDialog(context);
 
+                    }
+                    if (error instanceof TimeoutError)
+                    {
+                        ServerIssueDialog(context);
+                    }
+                    if (error instanceof ServerError)
+                    {
+                        ServerIssueDialog(context);
                     }
                     if(error.networkResponse != null) //400 is if it already verified
                     {
