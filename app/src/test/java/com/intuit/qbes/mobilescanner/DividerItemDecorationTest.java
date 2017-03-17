@@ -59,7 +59,7 @@ public class DividerItemDecorationTest {
     public void createDummyModel()
     {
         mLineitems = new ArrayList<>();
-        mPickList = new Picklist(1, 1,1, "Picklist1",1,1, Status.NotPicked,1,"note1","show",1,"2017-01-10",mLineitems,"false");
+        mPickList = new Picklist(1, "1",1, "Picklist1",1,1, Status.NotPicked,1,"note1","show",1,"2017-01-10",mLineitems,"false");
 
     }
 

@@ -49,7 +49,7 @@ public class Picklist implements Parcelable {
     @Expose(serialize = false)
     private long id;
     @Expose(serialize = false)
-    private long companyId;
+    private String companyId;
     @Expose(serialize = false)
     private long taskType;
     @Expose(serialize = false)
@@ -84,7 +84,7 @@ public class Picklist implements Parcelable {
     }
 
     public Picklist(long id,
-                    long companyId,
+                    String companyId,
                     long taskType,
                     String name,
                     long assigneeId,
@@ -129,7 +129,7 @@ public class Picklist implements Parcelable {
     {
         try {
             id = in.readLong();
-            companyId = in.readLong();
+            companyId = in.readString();
             taskType = in.readLong();
             name = in.readString();
             assigneeId = in.readLong();
@@ -156,11 +156,11 @@ public class Picklist implements Parcelable {
         this.id = id;
     }
 
-    public long getCompanyId() {
+    public String getCompanyId() {
         return companyId;
     }
 
-    public void setCompanyId(long companyId) {
+    public void setCompanyId(String companyId) {
         this.companyId = companyId;
     }
 
@@ -360,7 +360,7 @@ public class Picklist implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         try {
             dest.writeLong(getId());
-            dest.writeLong(getCompanyId());
+            dest.writeString(getCompanyId());
             dest.writeLong(getTaskType());
             dest.writeString(getName());
             dest.writeLong(getAssigneeId());

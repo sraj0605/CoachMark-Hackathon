@@ -87,7 +87,7 @@ public class TaskPickListFragmentTest {
 
         mLineitems.add(mLineItem);
         mLineitems.add(mLineItem1);
-        mPickList = new Picklist(1, 1,1, "Picklist1",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",mLineitems,"false");
+        mPickList = new Picklist(1, "1",1, "Picklist1",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",mLineitems,"false");
 
     }
 

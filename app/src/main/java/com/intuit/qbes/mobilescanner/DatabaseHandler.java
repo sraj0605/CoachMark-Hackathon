@@ -119,7 +119,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         try {
             db.execSQL("CREATE TABLE " + TableDetails.Tables.PICKLIST + " ("
                     + TableDetails.KEY_ID + " LONG PRIMARY KEY,"
-                    + TableDetails.PickListInfo.KEY_COMPANYID + " LONG NOT NULL,"
+                    + TableDetails.PickListInfo.KEY_COMPANYID + " TEXT NOT NULL,"
                     + TableDetails.PickListInfo.KEY_TASKTYPE + " LONG NOT NULL,"
                     + TableDetails.PickListInfo.KEY_NAME + " TEXT NOT NULL,"
                     + TableDetails.PickListInfo.KEY_ASSIGNEDID + " LONG,"
@@ -279,7 +279,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 do {
                     mPickList = new Picklist();
                     mPickList.setId((cursor.getLong(0)));
-                    mPickList.setCompanyId((cursor.getLong(1)));
+                    mPickList.setCompanyId((cursor.getString(1)));
                     mPickList.setTaskType((cursor.getLong(2)));
                     mPickList.setName((cursor.getString(3)));
                     mPickList.setAssigneeId((cursor.getLong(4)));
@@ -315,7 +315,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 do {
                     mPickList = new Picklist();
                     mPickList.setId((cursor.getLong(0)));
-                    mPickList.setCompanyId((cursor.getLong(1)));
+                    mPickList.setCompanyId((cursor.getString(1)));
                     mPickList.setTaskType((cursor.getLong(2)));
                     mPickList.setName((cursor.getString(3)));
                     mPickList.setAssigneeId((cursor.getLong(4)));
@@ -813,14 +813,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(KEY_GUID, guid);
             values.put(KEY_LASTSYNCTIME, utcTime);
             Log.i("SyncAdapter",utcTime);
-            String whereClause = "guid = " + String.valueOf(guid);
+            String whereClause = "guid= ?";
             if(syncTimeExistsforCompanyId(guid))
-                    myCR.update(ApplicationContentProvider.CONTENT_URI_SYNCINFO_TABLE, values,whereClause,null);
+                    myCR.update(ApplicationContentProvider.CONTENT_URI_SYNCINFO_TABLE, values,whereClause,new String[]{guid});
             else
                 myCR.insert(ApplicationContentProvider.CONTENT_URI_SYNCINFO_TABLE,values);
         }
-        catch (IllegalArgumentException exp)
+        catch (Exception exp)
         {
+            Log.i("SyncAdapter",exp.getMessage().toString());
             exp.printStackTrace();
         }
 
@@ -829,17 +830,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public boolean syncTimeExistsforCompanyId(String guid)
     {
+        boolean bret = false;
         String selection = "guid = ?";
         String utcTime = null;
         String [] selectionArgs = new String[] {guid};
         Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_SYNCINFO_TABLE,null,selection,selectionArgs,null,null);
         if(cursor != null && cursor.getCount() > 0)
         {
-           return true;
+            bret = true;
 
         }
 
-        return false;
+        return bret;
     }
     //get last sync time
     public String getlastSyncedUTCTime(String guid)

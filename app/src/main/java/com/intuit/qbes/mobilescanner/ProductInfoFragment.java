@@ -198,8 +198,12 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
     {
 
         mItemName.setText(mlineItem.getItemName().toString());
-        mItemDescription.setText(mlineItem.getItemDesc().toString());
-        mLocation.setText(mlineItem.getBinLocation().toString());
+
+        if(mlineItem.getItemDesc() != null)
+            mItemDescription.setText(mlineItem.getItemDesc().toString());
+
+        if(mlineItem.getBinLocation() != null)
+            mLocation.setText(mlineItem.getBinLocation().toString());
 
         if(mlineItem.getBarcodeEntered().compareTo("") !=0)
             mUPC_Value.setText(mlineItem.getBarcodeEntered());

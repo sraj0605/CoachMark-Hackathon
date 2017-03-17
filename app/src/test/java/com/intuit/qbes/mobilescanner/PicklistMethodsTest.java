@@ -26,7 +26,7 @@ public class PicklistMethodsTest {
     public void setUp() {
 
         picklist.setId(1);
-        picklist.setCompanyId(1);
+        picklist.setCompanyId("1");
         picklist.setName("Picklist1");
         picklist.setTaskType(1);
         picklist.setAssigneeId(12);

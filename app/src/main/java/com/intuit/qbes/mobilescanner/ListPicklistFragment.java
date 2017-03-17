@@ -267,9 +267,9 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
         lineitems2.add(P2obj3);
         lineitems2.add(P2obj4);
         lineitems3.add(P3obj1);
-        Picklist p1 = new Picklist(1, 1,1, "Order number: 8804",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems1,"false");
-        Picklist p2 = new Picklist(2, 1,1, "Order number: 8795",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems2,"false");
-        Picklist p3 = new Picklist(3, 1,1, "Order number: 8792",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems3,"false");
+        Picklist p1 = new Picklist(1, "1",1, "Order number: 8804",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems1,"false");
+        Picklist p2 = new Picklist(2, "1",1, "Order number: 8795",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems2,"false");
+        Picklist p3 = new Picklist(3, "1",1, "Order number: 8792",1,1,Status.NotPicked,1,"note1","show",1,"2017-01-10",lineitems3,"false");
         p1.setTotalitems(lineitems1.size());
         result.add(p1);
         p2.setTotalitems(lineitems2.size());

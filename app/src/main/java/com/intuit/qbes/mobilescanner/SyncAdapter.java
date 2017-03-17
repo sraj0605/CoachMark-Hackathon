@@ -124,6 +124,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
             Log.i(TAG,"Device is not yet paired");
             syncResult.stats.numIoExceptions++;
             return;
+            //companyId = "3e76df0599af48ceba2b895540a7f782";
         }
         String lastSyncTime = db.getlastSyncedUTCTime(companyId);
 
@@ -131,7 +132,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
         DataSync obj = new DataSync();
 
         try {
-            String taskUrl = Utilities.constructURL(DataSync.taskURL,db.getDetails().getDeviceGUID());
+            String taskUrl = Utilities.constructURL(DataSync.taskURL,companyId);
             picklists = obj.getTasksSynchronously(Request.Method.GET,taskUrl,1,lastSyncTime);
 
         }
@@ -144,14 +145,15 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
         if(picklists != null) {
             int size = picklists.size();
             Log.i(TAG,String.valueOf(size));
+
             if(updateDevice(picklists))
-                db.storeLastSycTime(String.valueOf(db.getDetails().getRealmID()));
+                db.storeLastSycTime(companyId);
         }
         else
         {
             //server has not given any delta or task
             if (bManualSync) {
-                Log.i("SyncAdapter","calling refresh");
+                Log.i("SyncAdapter","calling refresh-1");
                 Intent i = new Intent(SYNC_STATUS);
                 i.putExtra("NEW_TASK_FOUND",false);
                 mContext.sendBroadcast(i);
