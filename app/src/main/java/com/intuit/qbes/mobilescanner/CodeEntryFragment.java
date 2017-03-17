@@ -55,7 +55,7 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
     private PairSuccessCallback mCallback = null;
     private Handler handler;
     private Runnable runnable;
-   // private long mLastClickTime;
+    private long mLastClickTime = 0;
     public static final String PREFS_NAME = "Service_Response";
     private SharedPreferences settings;
 
@@ -199,8 +199,8 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
         {
             case R.id.PairButton:
             {
-             //   if (SystemClock.elapsedRealtime() - mLastClickTime > 3000) {
-               //     mLastClickTime = SystemClock.elapsedRealtime();
+                if (SystemClock.elapsedRealtime() - mLastClickTime > 3000) {
+                    mLastClickTime = SystemClock.elapsedRealtime();
                     if (!(mCode.getText().toString().isEmpty()) && !(mCode.getText().toString().length() < 4))
 
                     {
@@ -217,7 +217,7 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
                         SetErrorScreen();
 
                     }
-               // }
+                }
             }
             default:
                 break;
