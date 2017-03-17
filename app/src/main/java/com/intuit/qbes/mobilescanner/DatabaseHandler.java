@@ -901,7 +901,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public CompanyFileDetails getDetails() {
-        CompanyFileDetails obj = new CompanyFileDetails();
+        CompanyFileDetails obj = null;
 
         String query = "SELECT  * FROM " + TABLE_COMPANYYFILEINFO_NAME;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -913,7 +913,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor = myCR.query(ApplicationContentProvider.CONTENT_URI_COMPANYFILEINFO_TABLE,null,selection,selectionArgs,null,null);
         if (cursor.moveToFirst()) {
             do {
-
+                obj = new CompanyFileDetails();
                 obj.setRealmID((cursor.getLong(0)));
                 obj.setDeviceGUID((cursor.getString(1)));
                 obj.setCompanyName(cursor.getString(2));

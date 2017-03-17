@@ -7,6 +7,7 @@ package com.intuit.qbes.mobilescanner;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.intuit.qbes.mobilescanner.Account.GenericAccountService;
+import com.intuit.qbes.mobilescanner.model.CompanyFileDetails;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
@@ -110,13 +111,28 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
 
         //get the last sync utc time
         DatabaseHandler db = new DatabaseHandler(mContext);
-        String lastSyncTime = db.getlastSyncedUTCTime("666667");
+        CompanyFileDetails companyFileDetails = db.getDetails();
+        String companyId;
+        if(companyFileDetails != null)
+        {
+            companyId = String.valueOf(db.getDetails().getRealmID());
+            if(companyId == null)
+                return;
+        }
+        else
+        {
+            Log.i(TAG,"Device is not yet paired");
+            syncResult.stats.numIoExceptions++;
+            return;
+        }
+        String lastSyncTime = db.getlastSyncedUTCTime(companyId);
 
         //get the tasks which is modified after last sync time
         DataSync obj = new DataSync();
 
         try {
-            picklists = obj.getTasksSynchronously(Request.Method.GET,url,1,lastSyncTime);
+            String taskUrl = Utilities.constructURL(DataSync.taskURL,db.getDetails().getDeviceGUID());
+            picklists = obj.getTasksSynchronously(Request.Method.GET,taskUrl,1,lastSyncTime);
 
         }
         catch (IOException exp)
@@ -129,7 +145,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
             int size = picklists.size();
             Log.i(TAG,String.valueOf(size));
             if(updateDevice(picklists))
-                db.storeLastSycTime("666667");
+                db.storeLastSycTime(String.valueOf(db.getDetails().getRealmID()));
         }
         else
         {

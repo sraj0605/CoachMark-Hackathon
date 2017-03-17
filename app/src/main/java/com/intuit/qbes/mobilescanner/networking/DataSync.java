@@ -62,7 +62,7 @@ public class DataSync {
     private String ErrorTAG = "NotValid";
     private String NetworkErrorTAG = "NoInternet";
     private String ServiceErrorTAG = "ServiceIssue";
-
+    public static String taskURL ="https://alpha.prc.intuit.com/prc/v1/company/";
     private DataSyncCallback mCallback;
 
 

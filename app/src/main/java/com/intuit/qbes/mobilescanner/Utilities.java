@@ -119,4 +119,10 @@ public class Utilities{
         else
             return false;
     }
+
+    public static String constructURL(String serverIp,String companyGUID)
+    {
+        return serverIp.concat(companyGUID).concat("/").concat("tasks");
+
+    }
 }
