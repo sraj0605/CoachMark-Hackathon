@@ -262,7 +262,11 @@ Class fragmentClass = null;
         //check if realm_id, company_guid and company_name have been received or not
         //if yes return false else return true;
         details = db.getDetails();
-        companyId  = details.getRealmID();
+        if(details != null) {
+            companyId = details.getRealmID();
+        }
+        else
+            companyId = -1;
 
         if(companyId == -1) {
             return true;
