@@ -102,7 +102,7 @@
         android:text="This is not a valid code! Please try again"
         android:textSize="12dp"
         android:visibility="gone"
-        android:layout_marginLeft="85dp"
+        android:layout_centerHorizontal="true"
         android:textColor="#ff4c4c"
         android:layout_below="@+id/Code"
         android:layout_marginTop="25dp"
