@@ -132,8 +132,8 @@ public class DevicePairingService extends Service {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String>  params = new HashMap<String, String>();
-                    params.put("deviceId", "device1111");    //remove hardcode later
-                    params.put("otp", otp );   // remove hardcode later
+                    params.put("deviceId", device_id);
+                    params.put("otp", otp );
 
                     return params;
                 }

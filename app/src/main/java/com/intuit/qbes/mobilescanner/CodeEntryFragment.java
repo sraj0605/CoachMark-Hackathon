@@ -288,13 +288,11 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
       device_id = Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
-      device_name = android.os.Build.MODEL;
+          device_name = android.os.Build.MODEL;
 
-    //  details.setDeviceID(device_id);
-    //  details.setDeviceName(device_name);
+          details.setDeviceID(device_id);
+          details.setDeviceName(device_name);
 
-        details.setDeviceID("device1111");
-        details.setDeviceName("mydevice");
 
 
     }
