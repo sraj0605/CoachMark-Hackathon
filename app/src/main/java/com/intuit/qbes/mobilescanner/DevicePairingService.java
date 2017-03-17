@@ -216,13 +216,6 @@ public class DevicePairingService extends Service{
 
 
 
-    public  void UpdateDb(List<Picklist> mPickLists)
-    {
-        db = new DatabaseHandler(getBaseContext());
-        for(int i = 0; i< mPickLists.size() ; i++) {
-            db.addPickListInBatch(mPickLists.get(i), true);
-            db.storeLastSycTime(db.getDetails().getRealmID());
-        }
-    }
+    
 
 }

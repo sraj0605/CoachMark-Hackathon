@@ -22,7 +22,7 @@ import com.intuit.qbes.mobilescanner.networking.DataSync;
 
 import java.util.List;
 
-public class DevicePairingActivity extends AppCompatActivity implements GetStartedFragment.GetStartedCallback, CodeEntryFragment.PairSuccessCallback, SuccessfulPairFragment.PairCompleteCallback, TimeoutFragment.TryAgainCallback, DenyFragment.DenyTryAgainCallback, DataSync.DataSyncCallback{
+public class DevicePairingActivity extends AppCompatActivity implements GetStartedFragment.GetStartedCallback, CodeEntryFragment.PairSuccessCallback, SuccessfulPairFragment.PairCompleteCallback, TimeoutFragment.TryAgainCallback, DenyFragment.DenyTryAgainCallback{
 
     private static String LOG_TAG = "DevicePairingActivity";
     private Class fragmentClass = null;
@@ -195,7 +195,6 @@ public class DevicePairingActivity extends AppCompatActivity implements GetStart
     @Override
     public void onPairComplete() {
 
-        UpdateDB();
         Intent intent = new Intent(this,MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
@@ -219,28 +218,7 @@ public class DevicePairingActivity extends AppCompatActivity implements GetStart
         fragmentManager.popBackStack();
     }
 
-    public void UpdateDB()
 
-    {
-        tasks = new DataSync();
-        tasks.FetchPicklists(this,this);
-    }
 
-    @Override
-    public void onFetchPicklist(List<Picklist> mPicklists) {
 
-        for(int i = 0 ; i<mPicklists.size() ; i++) {
-            db.addPickListInBatch(mPicklists.get(i),true);
-        }
-    }
-
-    @Override
-    public void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale) {
-
-    }
-
-    @Override
-    public void onCodeValidation(String response) {
-
-    }
 }
