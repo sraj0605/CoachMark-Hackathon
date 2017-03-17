@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity
     private TextView mPickerFName;
     private TextView mPickerLName;
     private CompanyFileDetails details = null;
-    private long companyId;
+    private String companyId;
     private static final int REQUEST_DETAIL_ITEM = 1;
     private int mSelectedMenuId;
     private DeviceManager mDevice = null;
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity
 
             db = new DatabaseHandler(getApplicationContext());
 
-            if(DevicePairingCheck())
+           if(DevicePairingCheck())
             {
                 Intent intent = new Intent(this,DevicePairingActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -266,9 +266,9 @@ Class fragmentClass = null;
             companyId = details.getRealmID();
         }
         else
-            companyId = -1;
+            companyId = "-1";
 
-        if(companyId == -1) {
+        if(companyId == "-1") {
             return true;
         }
         else {

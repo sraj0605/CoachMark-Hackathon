@@ -316,6 +316,7 @@ public class Picklist implements Parcelable {
         String jsonString = new String();
         try {
             GsonBuilder builder = new GsonBuilder()
+                    .serializeNulls()
                     .setDateFormat("yyyy-MM-dd");
             builder.excludeFieldsWithoutExposeAnnotation();
             Gson gson = builder.create();

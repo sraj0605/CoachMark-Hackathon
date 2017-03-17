@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -28,6 +29,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.intuit.qbes.mobilescanner.DatabaseHandler;
 import com.intuit.qbes.mobilescanner.ListPicklistFragment;
 import com.intuit.qbes.mobilescanner.R;
+import com.intuit.qbes.mobilescanner.Utilities;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 
@@ -37,6 +39,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +67,7 @@ public class DataSync {
     private String ServiceErrorTAG = "ServiceIssue";
     public static String taskURL ="https://alpha.prc.intuit.com/prc/v1/company/";
     private DataSyncCallback mCallback;
+    private  DatabaseHandler db;
 
 
     public interface DataSyncCallback {
@@ -78,7 +82,9 @@ public class DataSync {
     {
 
         try {
-            String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/" + id;
+            db = new DatabaseHandler(context);
+            String URL = Utilities.constructURL(taskURL,db.getDetails().getRealmID());
+            URL = URL.concat("/").concat(id);
             final String picklistJSONStr = Picklist.JSONStringFromPicklist(mPicklist);
 
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
@@ -162,19 +168,24 @@ public class DataSync {
     {
 
         try {
-            String URL = "http://172.16.100.28:9999/api/v1/company/666667/tasks/98";
+            db = new DatabaseHandler(context);
+            String URL = Utilities.constructURL(taskURL,db.getDetails().getRealmID());
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             try {
-                                mPicklists.add(Picklist.picklistFromJSON(response));
-                                mCallback = callback;
-                                mCallback.onFetchPicklist(mPicklists);
+                                mPicklists = (Picklist.picklistsFromJSON(response));
+                                Log.i("ResponseCrash", String.valueOf(mPicklists.size()));
+
+                                //mCallback = callback;
+                                callback.onFetchPicklist(mPicklists);
+
 
                             } catch (Exception e) {
 
+                                if(e.getMessage()!=null)
                                 Log.d("Error:", e.getMessage());
 
                             }
@@ -282,13 +293,18 @@ public class DataSync {
 
     public List<Picklist> getTasksSynchronously(int method, String url,int taskType,String lastSyncTime) throws IOException {
         List<Picklist> picklists = null;
+        String uri;
         final  int task = taskType;
         String response = null;
         RequestFuture<String> future = RequestFuture.newFuture();
 
-        if(lastSyncTime != null)
+        if(lastSyncTime != null) {
+            lastSyncTime = Uri.encode(lastSyncTime);
             url = url.concat("?lastModified=").concat(lastSyncTime);
 
+
+        }
+        Log.i("SyncAdapter",url);
         StringRequest request = new StringRequest(method, url,future,future)
         {
 
@@ -300,13 +316,11 @@ public class DataSync {
                 return params;
             }
         };
-
-        Log.i("SyncAdapter",request.getUrl());
         AppController.getInstance().addToRequestQueue(request);
 
         try {
             try {
-                response = future.get(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                response = future.get(10, TimeUnit.SECONDS);
             }
             catch (InterruptedException exp)
             {
@@ -353,7 +367,7 @@ public class DataSync {
     {
 
         try {
-            String URL = "http://172.16.100.28:9999/api/v1/device/pair/submitotp";
+            String URL = "https://alpha.prc.intuit.com/prc/v1/device/pair/submitotp";
 
 
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {

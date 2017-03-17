@@ -192,7 +192,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         try {
             db.execSQL("CREATE TABLE " + TableDetails.Tables.COMPANYFILEINFO + " ("
-                    + TableDetails.CompanyFileInfo.KEY_REALMID + " LONG PRIMARY KEY,"
+                    + TableDetails.CompanyFileInfo.KEY_REALMID + " TEXT PRIMARY KEY,"
                     + TableDetails.CompanyFileInfo.KEY_DEVICEGUID + " TEXT,"
                     + TableDetails.CompanyFileInfo.KEY_COMPANYNAME + " TEXT "
                     + ")");
@@ -916,7 +916,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 obj = new CompanyFileDetails();
-                obj.setRealmID((cursor.getLong(0)));
+                obj.setRealmID((cursor.getString(0)));
                 obj.setDeviceGUID((cursor.getString(1)));
                 obj.setCompanyName(cursor.getString(2));
 

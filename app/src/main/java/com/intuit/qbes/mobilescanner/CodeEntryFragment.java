@@ -57,7 +57,11 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
     private Runnable runnable;
     private long mLastClickTime = 0;
     public static final String PREFS_NAME = "Service_Response";
+    public static final String PAIRING_DETAILS = "Pairing_Details";
+    public static final String MOBILE_TIMEOUT = "Mobile_Timeout";
+    private Intent ServiceIntent;
     private SharedPreferences settings;
+    private DatabaseHandler db;
 
 
     public  CodeEntryFragment()
@@ -118,6 +122,22 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
     @Override
     public void onFetchPicklist(List<Picklist> mPicklists) {
 
+        db = new DatabaseHandler(getContext());
+
+        for(int i = 0; i < mPicklists.size() ; i++)
+        {
+            db.addPickListInBatch(mPicklists.get(i),true);
+        }
+
+        if(mPicklists.size() > 0)
+        db.storeLastSycTime(db.getDetails().getRealmID());
+
+        if(mCallback !=null) {
+            mCallback.onPairSuccess();
+        }
+
+        dismissDialog();
+
     }
 
     @Override
@@ -132,8 +152,8 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
         if(response.compareTo("200") == 0)
         {
             Intent mIntent = new Intent(getContext(), DevicePairingService.class);
-            mIntent.putExtra("otp", DevicePairingCode );
-            mIntent.putExtra("deviceId", device_id );
+            ServiceIntent = mIntent;
+            SaveDPdetails(DevicePairingCode,device_id);
 
             ServiceTimeOut(mIntent);
 
@@ -187,6 +207,8 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
     @Override
     public void onDestroy()
     {
+        if(ServiceIntent!=null)
+        getActivity().stopService(ServiceIntent);
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(
                 mMessageReceiver);
         super.onDestroy();
@@ -341,7 +363,8 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
         handler = new Handler();
         runnable = new Runnable() {
             public void run() {
-                getActivity().stopService(sIntent);
+                //getActivity().stopService(sIntent);
+                MobileTimeOut(true);
             }
         };
         handler.postDelayed(runnable, 10*60*1000);
@@ -352,11 +375,8 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
     {
         if(response.compareTo("success") == 0)
         {
-            if(mCallback !=null) {
-                mCallback.onPairSuccess();
-            }
-
-            dismissDialog();
+            dataSync = new DataSync();
+           dataSync.FetchPicklists(getContext(),this);
 
         }
         else if(response.compareTo("timeout") == 0)
@@ -364,6 +384,7 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
             if(mCallback !=null) {
                 mCallback.onTimeOut();
             }
+            MobileTimeOut(false);
             dismissDialog();
 
         }
@@ -442,6 +463,29 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
         openDialog.show();
     }
 
+    public void SaveDPdetails(String otp, String device_id)
+    {
+        SharedPreferences settings = getActivity().getSharedPreferences(PAIRING_DETAILS, MODE_PRIVATE);
+
+        // Writing data to SharedPreferences
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("otp", otp);
+        editor.putString("device_id", device_id);
+        editor.commit();
+
+    }
+
+
+    public void MobileTimeOut(Boolean TimeOut)
+    {
+        SharedPreferences settings = getActivity().getSharedPreferences(MOBILE_TIMEOUT, MODE_PRIVATE);
+
+        // Writing data to SharedPreferences
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean("isTimeOut", TimeOut);
+        editor.commit();
+
+    }
 }
 
 

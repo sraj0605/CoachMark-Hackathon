@@ -12,12 +12,12 @@ import com.google.gson.GsonBuilder;
 
 public class CompanyFileDetails {
 
-    private long companyId;
+    private String companyId;
     private String extDeviceId;
     private String companyName;
     private String pairingStatus;
 
-    public long getRealmID() {
+    public String getRealmID() {
         return companyId;
     }
 
@@ -29,7 +29,7 @@ public class CompanyFileDetails {
 
     public String getPairingStatus() { return pairingStatus; }
 
-    public void setRealmID(long realmID) {this.companyId = realmID;}
+    public void setRealmID(String realmID) {this.companyId = realmID;}
 
     public void setDeviceGUID(String deviceGUID) {this.extDeviceId = deviceGUID;}
 
@@ -40,10 +40,10 @@ public class CompanyFileDetails {
 
     public CompanyFileDetails()
     {
-        this.companyId = -1;
+        this.companyId = "-1";
     }
 
-    public CompanyFileDetails(long realmID,
+    public CompanyFileDetails(String realmID,
                          String deviceGUID,
                          String companyName,
                          String pairingStatus)

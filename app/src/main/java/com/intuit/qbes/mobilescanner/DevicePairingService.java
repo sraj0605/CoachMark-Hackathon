@@ -28,26 +28,33 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.intuit.qbes.mobilescanner.model.CompanyFileDetails;
+import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.networking.AppController;
 import com.intuit.qbes.mobilescanner.networking.DataSync;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by ashah9 on 2/27/17.
  */
 
-public class DevicePairingService extends Service {
+public class DevicePairingService extends Service{
 
 
     private String pollTAG  = "Polling";
     private CompanyFileDetails cd = new CompanyFileDetails();
     private DatabaseHandler db;
     private String otp, device_id;
-    private Intent mIntent;
     private Boolean mTimeOut = false;
+    private DataSync dataSync;
     public static final String PREFS_NAME = "Service_Response";
+    public static final String PAIRING_DETAILS = "Pairing_Details";
+    public static final String MOBILE_TIMEOUT = "Mobile_Timeout";
+    private DataSync tasks;
+
+
 
 
     @Nullable
@@ -60,10 +67,11 @@ public class DevicePairingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // TODO Auto-generated method stub
-        otp = intent.getStringExtra("otp");
-        device_id = intent.getStringExtra("deviceId");
+        SharedPreferences PairingDetails = getSharedPreferences(PAIRING_DETAILS, MODE_PRIVATE);
+        otp = PairingDetails.getString("otp", "");
+        device_id = PairingDetails.getString("device_id", "");
+        dataSync = new DataSync();
         PollService();
-        mIntent = intent;
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -72,8 +80,11 @@ public class DevicePairingService extends Service {
     public void PollService()
     {
 
+        SharedPreferences TimeOut = getSharedPreferences(MOBILE_TIMEOUT, MODE_PRIVATE);
+        mTimeOut = TimeOut.getBoolean("isTimeOut", false);
+
         try {
-            String URL = "http://172.16.100.28:9999/api/v1/device/pair";
+            String URL = " https://alpha.prc.intuit.com/prc/v1/device/pair";
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                     new Response.Listener<String>() {
@@ -95,11 +106,18 @@ public class DevicePairingService extends Service {
                                     {
                                         sendMessage("deny");
                                     }
+                                    else if(cd.getPairingStatus().compareTo("6") == 0 && !mTimeOut)
+                                    {
+                                        sendMessage("timeout");
+                                    }
                                 else if(!mTimeOut){
                                             PollService();
                                     }
-                                    else {
+                                    else if(mTimeOut){
                                      sendMessage("timeout");
+                                    }
+                                else{
+                                        stopSelf();
                                     }
                                 //stop service; if success save response to DB send success response to codefrag; else send timeout error; deny error
 
@@ -162,6 +180,7 @@ public class DevicePairingService extends Service {
     private void sendMessage( String status) {
 
         //put IF check for success or time out error or deny
+
         Log.d("sender", "Broadcasting Message");
         Intent intent = new Intent("PollingResponse");
         intent.putExtra("message", status);
@@ -174,8 +193,8 @@ public class DevicePairingService extends Service {
 
     @Override
     public void onDestroy(){
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
-        mTimeOut = true;
+       // Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+       // mTimeOut = true;
         if(AppController.getInstance().getRequestQueue()!=null)
         {
             AppController.getInstance().getRequestQueue().cancelAll(pollTAG);
@@ -190,9 +209,20 @@ public class DevicePairingService extends Service {
         // Writing data to SharedPreferences
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("Response", response);
+
         editor.commit();
 
     }
 
+
+
+    public  void UpdateDb(List<Picklist> mPickLists)
+    {
+        db = new DatabaseHandler(getBaseContext());
+        for(int i = 0; i< mPickLists.size() ; i++) {
+            db.addPickListInBatch(mPickLists.get(i), true);
+            db.storeLastSycTime(db.getDetails().getRealmID());
+        }
+    }
 
 }
