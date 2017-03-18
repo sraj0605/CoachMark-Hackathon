@@ -86,8 +86,8 @@ public class DevicePairingService extends Service{
         try {
 
 
-            //String URL = " https://alpha.prc.intuit.com/prc/v1/device/pair";
-            String URL = "http://172.16.100.28:9999/api/v1/device/pair";
+            String URL = " https://alpha.prc.intuit.com/prc/v1/device/pair";
+            //String URL = "http://172.16.100.28:9999/api/v1/device/pair";
             StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                     new Response.Listener<String>() {
                         @Override
