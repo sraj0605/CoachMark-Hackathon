@@ -753,11 +753,14 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
                         Status picklistStatus = Status.PartiallyPicked;
                         for(int i = 0; i < mPicklist.getLineitems().size();i++)
                         {
-                            if(mPicklist.getLineitems().get(i).getmItemStatus() == Status.Picked)
-                            {
-                                picklistStatus = Status.Picked;
+                            if(mPicklist.getLineitems().get(i).getmItemStatus() != Status.Picked)
                                 break;
+                            else
+                            {
+                                if(i == mPicklist.getLineitems().size() - 1)
+                                    picklistStatus = Status.Picked;
                             }
+
                         }
                         mPicklist.setStatus(picklistStatus);
                         savePicklist(mPicklist, false, String.valueOf(mPicklist.getId()));
