@@ -118,9 +118,7 @@ public class DevicePairingService extends Service{
                                     else if(mTimeOut){
                                      sendMessage("timeout");
                                     }
-                                else{
-                                        stopSelf();
-                                    }
+
                                 //stop service; if success save response to DB send success response to codefrag; else send timeout error; deny error
 
                             } catch (Exception e) {
