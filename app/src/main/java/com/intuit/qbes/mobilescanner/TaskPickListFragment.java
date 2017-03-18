@@ -750,7 +750,16 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
                 .setPositiveButton(R.string.Yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         //Check if any item is not completely picked and complete or show discrepency screen accordingly.
-                        mPicklist.setStatus(Status.Complete);
+                        Status picklistStatus = Status.PartiallyPicked;
+                        for(int i = 0; i < mPicklist.getLineitems().size();i++)
+                        {
+                            if(mPicklist.getLineitems().get(i).getmItemStatus() == Status.Picked)
+                            {
+                                picklistStatus = Status.Picked;
+                                break;
+                            }
+                        }
+                        mPicklist.setStatus(picklistStatus);
                         savePicklist(mPicklist, false, String.valueOf(mPicklist.getId()));
 
                     }

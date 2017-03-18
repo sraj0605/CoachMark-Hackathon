@@ -65,7 +65,8 @@ public class DataSync {
     private String ErrorTAG = "NotValid";
     private String NetworkErrorTAG = "NoInternet";
     private String ServiceErrorTAG = "ServiceIssue";
-    public static String taskURL ="https://alpha.prc.intuit.com/prc/v1/company/";
+    //public static String taskURL ="https://alpha.prc.intuit.com/prc/v1/company/";
+    public static String taskURL ="http://172.16.100.28:9999/api/v1/company/";
     private DataSyncCallback mCallback;
     private  DatabaseHandler db;
 
@@ -367,7 +368,9 @@ public class DataSync {
     {
 
         try {
-            String URL = "https://alpha.prc.intuit.com/prc/v1/device/pair/submitotp";
+
+            //String URL = "https://alpha.prc.intuit.com/prc/v1/device/pair/submitotp";
+            String URL = "http://172.16.100.28:9999/api/v1/device/pair/submitotp";
 
 
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
