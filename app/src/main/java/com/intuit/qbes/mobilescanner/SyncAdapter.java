@@ -11,6 +11,7 @@ import com.intuit.qbes.mobilescanner.model.CompanyFileDetails;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
+import com.intuit.qbes.mobilescanner.model.Status;
 import com.intuit.qbes.mobilescanner.networking.DataSync;
 import com.intuit.qbes.mobilescanner.networking.PicklistHttp;
 
@@ -179,7 +180,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
                     db.batchDeletePicklist(picklistOnServer);
                 }
 
-
+                if(picklistOnServer.getStatus()!= Status.Picked)
                 db.addPickListInBatch(picklistOnServer, true);
 
                 bret = true;
