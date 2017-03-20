@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
@@ -48,6 +49,7 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     public static final String EXTRA_PICKLIST = "com.intuit.qbes.mobilescanner.picklist";
 
     private RecyclerView mRecyclerView;
+    private TextView mNoPicklist;
     private Callbacks mCallbacks;
     private List<Picklist> mPicklists = null;
     private List<Picklist> dummyPicklists = null;
@@ -126,10 +128,17 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     public void onStart() {
         super.onStart();
         //Read all picklists from DB
-
+        mNoPicklist = (TextView)getView().findViewById(R.id.NoPicklist);
         DatabaseHandler db = new DatabaseHandler(getContext());
         if(mPicklists == null)
             mPicklists = db.allPickLists(1,"default");
+
+        if(mPicklists == null || mPicklists.size() == 0)
+        {
+            mNoPicklist.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.INVISIBLE);
+
+        }
 
         /*we can retry*/
         if(mPicklists != null)
@@ -159,7 +168,18 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
                 mPicklists.get(i).setTotalitems(db.getItemCountForPicklist(mPicklists.get(i).getId()));
             }
         }
-        adapter.updatePicklist(mPicklists);
+        if(mPicklists == null || mPicklists.size() == 0)
+        {
+            mNoPicklist.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.INVISIBLE);
+
+        }
+        else{
+            adapter.updatePicklist(mPicklists);
+            mNoPicklist.setVisibility(View.INVISIBLE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+
+        }
     }
 
     @Override

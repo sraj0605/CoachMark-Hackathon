@@ -53,6 +53,7 @@ public class DevicePairingService extends Service{
     public static final String PAIRING_DETAILS = "Pairing_Details";
     public static final String MOBILE_TIMEOUT = "Mobile_Timeout";
     private DataSync tasks;
+    private int RetryCount = 0;
 
 
 
@@ -138,7 +139,14 @@ public class DevicePairingService extends Service{
                     }
                     if (error instanceof TimeoutError)
                     {
-                        sendMessage("ServiceError");
+                        if(RetryCount < 4 )
+                        {
+                            PollService();
+                            RetryCount++;
+                        }
+                        else {
+                            sendMessage("ServiceError");
+                        }
 
                     }
                 /*    if (error instanceof ServerError)

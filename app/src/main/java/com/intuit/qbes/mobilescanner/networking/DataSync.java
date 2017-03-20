@@ -200,6 +200,15 @@ public class DataSync {
                         NoInternetDialog(context);
 
                     }
+                    if(error.networkResponse != null) //400 is if it already verified
+                    {
+                        if (error.networkResponse.statusCode == 404 || error.networkResponse.statusCode == 500 || error.networkResponse.statusCode == 400) {
+
+                            callback.onFetchPicklist(mPicklists);
+
+                        }
+
+                    }
                 }
             });
 

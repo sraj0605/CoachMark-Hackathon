@@ -11,4 +11,15 @@
     android:layout_height="match_parent"/>
 
 
+    <TextView
+        android:id="@+id/NoPicklist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="#d3d3cd"
+        android:text="You have no picklists assigned to you."
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:visibility="gone"/>
+
+
 </RelativeLayout>
