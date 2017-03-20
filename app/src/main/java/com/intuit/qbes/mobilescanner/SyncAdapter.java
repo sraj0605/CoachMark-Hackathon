@@ -126,7 +126,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
             return;
             //companyId = "3e76df0599af48ceba2b895540a7f782";
         }
-        String lastSyncTime = db.getlastSyncedUTCTime(companyId);
+        String lastSyncTime = null;//db.getlastSyncedUTCTime(companyId);
 
         //get the tasks which is modified after last sync time
         DataSync obj = new DataSync();
