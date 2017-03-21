@@ -122,6 +122,7 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
     @Override
     public void onFetchPicklist(List<Picklist> mPicklists) {
 
+
         db = new DatabaseHandler(getContext());
 
         for(int i = 0; i < mPicklists.size() ; i++)
@@ -355,6 +356,7 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
 
     public void dismissDialog()
     {
+        if(mProgressDialog!=null)
         mProgressDialog.dismiss();
     }
 

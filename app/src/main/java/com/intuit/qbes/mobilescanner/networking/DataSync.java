@@ -129,7 +129,7 @@ public class DataSync {
                     if(error.networkResponse != null)
                     {
                         if (error.networkResponse.statusCode == 409 || error.networkResponse.statusCode == 400) {
-                            StaleDataDialog(context);
+                            //StaleDataDialog(context);
                             mCallback = callback;
                             mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, true);
 
@@ -248,7 +248,7 @@ public class DataSync {
         openDialog.show();
     }
 
-    public void StaleDataDialog(Context context)
+    /*public void StaleDataDialog(Context context)
     {
         final Dialog openDialog = new Dialog(context);
         openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -268,7 +268,7 @@ public class DataSync {
         });
 
         openDialog.show();
-    }
+    }*/
 
 
     public void ServerIssueDialog(Context context)

@@ -118,6 +118,10 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
                 mCallbacks.onPicklistComplete();
             }
         }
+        else if(isStale)
+        {
+            StaleDataDialog(getContext());
+        }
         dismissDialog();
     }
 
@@ -785,5 +789,32 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
     public void dismissDialog()
     {
         mProgressDialog.dismiss();
+    }
+
+    public void StaleDataDialog(Context context)
+    {
+        final Dialog openDialog = new Dialog(context);
+        openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        openDialog.setContentView(R.layout.staledata_dialog);
+        openDialog.setCancelable(false);
+        Button dialogCloseButton = (Button) openDialog.findViewById(R.id.StalebtnOk);
+        dialogCloseButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+
+            public void onClick(View v) {
+
+
+                Intent mainactivity = new Intent(getActivity(), MainActivity.class);
+                mainactivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(mainactivity);
+                getActivity().finish();
+
+
+            }
+
+        });
+
+        openDialog.show();
     }
 }

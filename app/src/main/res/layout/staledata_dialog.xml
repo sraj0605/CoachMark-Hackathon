@@ -17,7 +17,7 @@
         />
 
     <TextView
-        android:text= "Oops, you'll need to"
+        android:text= "Oops, you'll lose"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:textSize="16dp"
@@ -28,7 +28,7 @@
         />
 
     <TextView
-        android:text= "update picklists"
+        android:text= "changes for this picklist."
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:textSize="16dp"
@@ -38,7 +38,7 @@
         />
 
     <TextView
-        android:text= "before another sync."
+        android:text= "Please update the piclist."
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:textSize="16dp"
