@@ -125,7 +125,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
             Log.i(TAG,"Device is not yet paired");
             syncResult.stats.numIoExceptions++;
             return;
-            //companyId = "3e76df0599af48ceba2b895540a7f782";
         }
         String lastSyncTime = null;//db.getlastSyncedUTCTime(companyId);
 
@@ -176,11 +175,25 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
                 Picklist picklistOnServer = picklistsFromServer.get(i);
 
                 if (db.PickListExists(picklistOnServer.getId())) {//Server Picklist already exist in device,delete it and add gain
+                    Log.i(TAG,"Picklist exists");
                 }
                 else {
 
-                    if (picklistOnServer.getStatus() != Status.Picked || picklistOnServer.getStatus() != Status.PartiallyPicked)
-                        db.addPickListInBatch(picklistOnServer, true);
+                        if(picklistOnServer.getStatus() == Status.Picked)
+                        {
+                            Log.i(TAG,String.valueOf(picklistOnServer.getStatus()));
+                            Log.i(TAG,"Picklist not adding");
+                        }
+                        else if(picklistOnServer.getStatus() == Status.PartiallyPicked)
+                        {
+                            Log.i(TAG,String.valueOf(picklistOnServer.getStatus()));
+                            Log.i(TAG,"Picklist not adding");
+                        }
+                        else
+                        {
+                            Log.i(TAG,"Picklist adding");
+                            db.addPickListInBatch(picklistOnServer, true);
+                        }
                 }
 
                 bret = true;
