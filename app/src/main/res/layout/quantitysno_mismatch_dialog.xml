@@ -61,12 +61,21 @@
         android:id="@+id/MismatchbtnOk"
         android:textSize="15dp"
         android:layout_height="wrap_content"
-        app:layout_widthPercent = "95%"
+        app:layout_widthPercent = "50%"
         android:layout_marginBottom="1dp"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/Mismatchalert_msg4"
         />
 
+    <Button
+        android:text="@string/CANCEL"
+        android:id="@+id/MismatchbtnCancel"
+        android:textSize="15dp"
+        android:layout_height="wrap_content"
+        app:layout_widthPercent = "50%"
+        android:layout_toRightOf="@+id/MismatchbtnOk"
+        android:layout_marginBottom="1dp"
+        android:layout_below="@+id/Mismatchalert_msg4"
+        />
 
 </android.support.percent.PercentRelativeLayout>
 

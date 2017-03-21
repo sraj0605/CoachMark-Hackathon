@@ -176,12 +176,12 @@ class SyncAdapter extends AbstractThreadedSyncAdapter{
                 Picklist picklistOnServer = picklistsFromServer.get(i);
 
                 if (db.PickListExists(picklistOnServer.getId())) {//Server Picklist already exist in device,delete it and add gain
-
-                    db.batchDeletePicklist(picklistOnServer);
                 }
+                else {
 
-                if(picklistOnServer.getStatus()!= Status.Picked)
-                db.addPickListInBatch(picklistOnServer, true);
+                    if (picklistOnServer.getStatus() != Status.Picked || picklistOnServer.getStatus() != Status.PartiallyPicked)
+                        db.addPickListInBatch(picklistOnServer, true);
+                }
 
                 bret = true;
             }

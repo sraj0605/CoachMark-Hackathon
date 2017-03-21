@@ -18,6 +18,7 @@
     <string name="No">No</string>
     <string name="Yes">Yes</string>
     <string name="OK">OK</string>
+    <string name="CANCEL">CANCEL</string>
 
     <string name="title_activity_picklist_complete">PicklistCompleteActivity</string>
     <string name="title_activity_device_pairing">DevicePairingActivity</string>

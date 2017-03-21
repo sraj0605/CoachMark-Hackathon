@@ -438,7 +438,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
                 }
                 else if((Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSerialLotNumbers().size()))
                 {
-
+                    if(!(mQty_picked_error.getVisibility() == view.VISIBLE || mUPC_ErrorText.getVisibility() == view.VISIBLE))
                     QntyMismatchDialog();
                 }
                 else
@@ -463,7 +463,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
                 }
                 else if((Double.parseDouble(mQty_picked.getText().toString()) != mlineItem.getSerialLotNumbers().size()))
                 {
-                 
+                    if(!(mQty_picked_error.getVisibility() == view.VISIBLE || mUPC_ErrorText.getVisibility() == view.VISIBLE))
                     QntyMismatchDialog();
                 }
                 else
@@ -609,7 +609,23 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
             openDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
             openDialog.setContentView(R.layout.quantitysno_mismatch_dialog);
             Button dialogCloseButton = (Button) openDialog.findViewById(R.id.MismatchbtnOk);
+            Button dialogCancelButton = (Button) openDialog.findViewById(R.id.MismatchbtnCancel);
+
             dialogCloseButton.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+
+                public void onClick(View v) {
+
+                    mQuantityMismatchDialogThrown = false;
+                    openDialog.dismiss();
+                    finishActivity();
+
+                }
+
+            });
+
+            dialogCancelButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
 
@@ -621,6 +637,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
                 }
 
             });
+
 
             openDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
