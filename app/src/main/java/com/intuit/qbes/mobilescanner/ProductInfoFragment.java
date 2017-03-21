@@ -231,7 +231,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
         }
         else
         {
-            if (isSerialNumberAssociated && (mlineItem.getBarcodeEntered().compareTo("") == 0))
+            if ((isSerialNumberAssociated || mlineItem.getQtyPicked() >0) && (mlineItem.getBarcodeEntered().compareTo("") == 0))
                 showUPCDialog();
 
         }
@@ -277,6 +277,7 @@ public class ProductInfoFragment extends Fragment implements View.OnClickListene
 
         }
         validateQuantityPickedAgainstQuantityToPick(mQty_picked.getText().toString());
+        showHideBarcodeErrorHeader();
     }
     @Override
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
