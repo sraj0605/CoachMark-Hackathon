@@ -72,9 +72,6 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
     private LineItemAdapter mAdapter = null;
     private static final String updateTAG = "Update";
     private ProgressDialog mProgressDialog;
-
-    private  Picklist dummyP = new Picklist();
-
     private Picklist mPicklist = null;
     private TaskPickListFragment.Callbacks mCallbacks;
 
@@ -103,7 +100,8 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onUpdatePicklist(Picklist Picklist, Boolean isSync, Boolean isStale, String error) {
-
+        if(db == null)
+            db =new DatabaseHandler(getContext());
         if(!isStale) {
             if (isSync) {
 
@@ -184,9 +182,6 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         {
             mPicklist = (Picklist) savedInstanceState.getParcelable(EXTRA_PICKLIST);
         }
-
-        SetupDummy();
-
         setHasOptionsMenu(true);
     }
 
@@ -515,25 +510,6 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         showDialog();
 
     }
-
-    private void SetupDummy()
-    {
-        dummyP.setStatus(Status.SentforPick);
-        dummyP.setSyncToken(23);
-        LineItem dummyl = new LineItem();
-        List<SerialLotNumber> dummyS = new ArrayList<>();
-        List<LineItem> dummyL = new ArrayList<>();
-        dummyl.setId(223);
-        dummyl.setNotes("Sync Notes 3");
-        dummyl.setmItemStatus(Status.SentforPick);
-        dummyl.setQtyPicked(25.0);
-        dummyl.setBinLocation("Sync Bin 3");
-        dummyl.setBinExtId(100212);
-        dummyl.setSerialLotNumbers(dummyS);
-        dummyL.add(dummyl);
-        dummyP.setLineitems(dummyL);
-    }
-
     private class LineItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView mItemName;
@@ -796,7 +772,8 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
 
     public void dismissDialog()
     {
-        mProgressDialog.dismiss();
+        if(mProgressDialog != null)
+            mProgressDialog.dismiss();
     }
 
     public void StaleDataDialog(Context context)

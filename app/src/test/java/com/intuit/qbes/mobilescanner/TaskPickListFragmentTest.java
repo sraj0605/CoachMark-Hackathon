@@ -5,6 +5,7 @@ package com.intuit.qbes.mobilescanner;
  */
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.location.Location;
@@ -36,9 +37,11 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.Shadows;
 import org.robolectric.fakes.RoboMenuItem;
+import org.robolectric.internal.Shadow;
 import org.robolectric.shadows.ShadowActivity;
 //import org.robolectric.shadows.support.v4.Shadows;
 import org.robolectric.shadows.ShadowDialog;
+import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
 import org.robolectric.util.ActivityController;
 import org.robolectric.util.FragmentTestUtil;
@@ -52,6 +55,7 @@ import static org.junit.Assert.assertNotNull;
 
 import static org.junit.Assert.assertThat;
 //import static org.robolectric.shadows.support.v4.ShadowLocalBroadcastManager.shadowOf;
+import static org.robolectric.Shadows.shadowOf;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
 @RunWith(RobolectricTestRunner.class)
@@ -74,6 +78,7 @@ public class TaskPickListFragmentTest {
                 .withIntent(intent)
                 .create()
                 .start()
+                .resume()
                 .get();
         taskPickListFragment = TaskPickListFragment.newInstance(mPickList);
         SupportFragmentTestUtil.startVisibleFragment(taskPickListFragment);
@@ -84,7 +89,7 @@ public class TaskPickListFragmentTest {
     {
         mLineitems = new ArrayList<>();
         mLineItem = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",Status.NotPicked);
-        mLineItem1 = new LineItem(1,1,1,"Iphone","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 2",12,"custom",null,"true","true","false",Status.NotPicked);
+        mLineItem1 = new LineItem(1,1,1,"Iphone","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 2",12,"custom",null,"true","true","false",Status.Picked);
 
         mLineitems.add(mLineItem);
         mLineitems.add(mLineItem1);
@@ -95,8 +100,8 @@ public class TaskPickListFragmentTest {
     @Test
     public void test_ActivityAndFragment_Launched()
     {
-        Assert.assertNotNull(detailPicklistActivity);
-        Assert.assertNotNull(taskPickListFragment);
+        Assert.assertNotNull("DetailPickListActivity not launched",detailPicklistActivity);
+        Assert.assertNotNull("TaskPickList Fragment is not launched",taskPickListFragment);
 
 
     }
@@ -140,41 +145,143 @@ public class TaskPickListFragmentTest {
     }
 
     @Test
-    public void test_sort_button_click()
+    public void test_sort_button_item_click()
     {
         TextView sortby = (TextView) taskPickListFragment.getView().findViewById(R.id.sortby);
         junit.framework.Assert.assertNotNull(sortby);
-
         TextView mSortOrderSelection = (TextView)taskPickListFragment.getView().findViewById(R.id.sortbyselection);
         mSortOrderSelection.performClick();
-
+        SortingDialog dialogFragment = (SortingDialog) taskPickListFragment.getFragmentManager().findFragmentByTag("sort by");
+        junit.framework.Assert.assertNotNull("Sorting fragment should have existed",dialogFragment);
+        TextView sortByItemName = (TextView) dialogFragment.getView().findViewById(R.id.sortByItems);
+        sortByItemName.performClick();
+        RecyclerView recycleview = (RecyclerView)taskPickListFragment.getView().findViewById(R.id.detail_picklist_rv2);
+        Assert.assertNotNull(recycleview);
+        recycleview.measure(0,0);
+        recycleview.layout(0,0,100,1000);
+        View itemView = recycleview.findViewHolderForAdapterPosition(0).itemView;
+        Assert.assertNotNull(itemView);
+        TextView itemName = (TextView) itemView.findViewById(R.id.itemName);
+        assertTrue("Item Name contains incorrect text sort by item",
+                mLineItem1.getItemName().toString().equals(itemName.getText().toString()));
         ImageView mSortReverseIcon = (ImageView) taskPickListFragment.getView().findViewById(R.id.sorticon);
         mSortReverseIcon.performClick();
+        itemName = (TextView) itemView.findViewById(R.id.itemName);
+        assertTrue("Item Name contains incorrect text sort by item,reverse",
+                mLineItem.getItemName().toString().equals(itemName.getText().toString()));
+    }
 
+    @Test
+    public void test_sort_button_Location_click()
+    {
+        TextView sortby = (TextView) taskPickListFragment.getView().findViewById(R.id.sortby);
+        junit.framework.Assert.assertNotNull(sortby);
+        TextView mSortOrderSelection = (TextView)taskPickListFragment.getView().findViewById(R.id.sortbyselection);
+        mSortOrderSelection.performClick();
+        SortingDialog dialogFragment = (SortingDialog) taskPickListFragment.getFragmentManager().findFragmentByTag("sort by");
+        junit.framework.Assert.assertNotNull("Sorting fragment should have existed",dialogFragment);
+        TextView sortByLocation = (TextView) dialogFragment.getView().findViewById(R.id.sortByLocation);
+        sortByLocation.performClick();
+        RecyclerView recycleview = (RecyclerView)taskPickListFragment.getView().findViewById(R.id.detail_picklist_rv2);
+        Assert.assertNotNull(recycleview);
+        recycleview.measure(0,0);
+        recycleview.layout(0,0,100,1000);
+        View itemView = recycleview.findViewHolderForAdapterPosition(0).itemView;
+        Assert.assertNotNull(itemView);
+        TextView location = (TextView) itemView.findViewById(R.id.locationName);
+        String locationFormat1 = String.format("Bin No : %s",mLineItem.getBinLocation().toString());
+        String locationFormat2 = String.format("Bin No : %s",mLineItem1.getBinLocation().toString());
+        assertTrue("location Name contains incorrect text sort by location",
+                locationFormat1.toString().equals(location.getText().toString()));
+        ImageView mSortReverseIcon = (ImageView) taskPickListFragment.getView().findViewById(R.id.sorticon);
+        mSortReverseIcon.performClick();
+        location = (TextView) itemView.findViewById(R.id.locationName);
+        assertTrue("location Name contains incorrect text sort by item,reverse",
+                locationFormat2.toString().equals(location.getText().toString()));
+    }
+
+    @Test
+    public void test_sort_button_salesorder_click()
+    {
+        TextView sortby = (TextView) taskPickListFragment.getView().findViewById(R.id.sortby);
+        junit.framework.Assert.assertNotNull(sortby);
+        TextView mSortOrderSelection = (TextView)taskPickListFragment.getView().findViewById(R.id.sortbyselection);
+        mSortOrderSelection.performClick();
+        SortingDialog dialogFragment = (SortingDialog) taskPickListFragment.getFragmentManager().findFragmentByTag("sort by");
+        junit.framework.Assert.assertNotNull("Sorting fragment should have existed",dialogFragment);
+        TextView sortByLocation = (TextView) dialogFragment.getView().findViewById(R.id.sortBySalesOrder);
+        sortByLocation.performClick();
+        RecyclerView recycleview = (RecyclerView)taskPickListFragment.getView().findViewById(R.id.detail_picklist_rv2);
+        Assert.assertNotNull(recycleview);
+        recycleview.measure(0,0);
+        recycleview.layout(0,0,100,1000);
+        View itemView = recycleview.findViewHolderForAdapterPosition(0).itemView;
+        Assert.assertNotNull(itemView);
+        TextView salesorder = (TextView) itemView.findViewById(R.id.salesOrderName);
+        String salesOrderFormat1 = String.format("Sales Order: %s",mLineItem.getDocNum());
+        String salesOrderFormat2 = String.format("Sales Order: %s",mLineItem1.getDocNum());
+        assertTrue("sales order Name contains incorrect text sort by sales order",
+                salesOrderFormat1.toString().equals(salesorder.getText().toString()));
+        ImageView mSortReverseIcon = (ImageView) taskPickListFragment.getView().findViewById(R.id.sorticon);
+        mSortReverseIcon.performClick();
+        salesorder = (TextView) itemView.findViewById(R.id.salesOrderName);
+        assertTrue("sales order Name contains incorrect text sort by salesorder,reverse",
+                salesOrderFormat2.toString().equals(salesorder.getText().toString()));
+    }
+
+    @Test
+    public void test_sort_button_status_click()
+    {
+        TextView sortby = (TextView) taskPickListFragment.getView().findViewById(R.id.sortby);
+        junit.framework.Assert.assertNotNull(sortby);
+        TextView mSortOrderSelection = (TextView)taskPickListFragment.getView().findViewById(R.id.sortbyselection);
+        mSortOrderSelection.performClick();
+        SortingDialog dialogFragment = (SortingDialog) taskPickListFragment.getFragmentManager().findFragmentByTag("sort by");
+        junit.framework.Assert.assertNotNull("Sorting fragment should have existed",dialogFragment);
+        TextView sortByLocation = (TextView) dialogFragment.getView().findViewById(R.id.sortByStatus);
+        sortByLocation.performClick();
+        RecyclerView recycleview = (RecyclerView)taskPickListFragment.getView().findViewById(R.id.detail_picklist_rv2);
+        Assert.assertNotNull(recycleview);
+        recycleview.measure(0,0);
+        recycleview.layout(0,0,100,1000);
+        View itemView = recycleview.findViewHolderForAdapterPosition(0).itemView;
+        Assert.assertNotNull(itemView);
+        TextView itemName = (TextView) itemView.findViewById(R.id.itemName);
+        assertTrue("Not sorted by status",
+                mLineItem1.getItemName().toString().equals(itemName.getText().toString()));
+        ImageView mSortReverseIcon = (ImageView) taskPickListFragment.getView().findViewById(R.id.sorticon);
+        mSortReverseIcon.performClick();
+        itemName = (TextView) itemView.findViewById(R.id.itemName);
+        assertTrue("Not sorted by status,reverse",
+                mLineItem.getItemName().toString().toString().equals(itemName.getText().toString()));
 
     }
 
-@Test
+    @Test
     public void test_onitemselect()
     {
         String barcode ="8901238910005";
         detailPicklistActivity.onLineItemSelected(mLineItem,true);
+        Intent startedIntent = shadowOf(detailPicklistActivity).getNextStartedActivity();
+        ShadowIntent shadowIntent = shadowOf(startedIntent);
+        Assert.assertEquals(ProductInfoActivity.class, shadowIntent.getIntentClass());
     }
 
-
+    //not in use method
     @Test
     public void test_onpicksaved()
     {
         Integer code = 200;
         detailPicklistActivity.onPicklistSaved(code,mPickList);
     }
-
+    //not in use method
     @Test
     public void test_onbarcodeready()
     {
         detailPicklistActivity.onBarcodeReady();
     }
 
+    //not in use method
     @Test
     public void test_onactivityresult()
     {
@@ -184,6 +291,10 @@ public class TaskPickListFragmentTest {
         data.putExtra(EXTRA_LINEITEM, mLineItem);
         data.putExtra(ProductInfoFragment.BARCODE_ENTERED,"500");
         detailPicklistActivity.onActivityResult(reqcode,rescode,data);
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        ImageView dialogImage = (ImageView) dialog.findViewById(R.id.alert);
+        Assert.assertNotNull(dialogImage);
+        dialog.dismiss();
     }
 
 @Test
@@ -213,30 +324,16 @@ public class TaskPickListFragmentTest {
 
     }
 
-    @Test
-    public void test_sort_selection()
-    {
-        taskPickListFragment.onSortingOptionSelection(SortFilterOption.Items);
-
-        RecyclerView recycleview = (RecyclerView)taskPickListFragment.getView().findViewById(R.id.detail_picklist_rv2);
-        Assert.assertNotNull(recycleview);
-        recycleview.measure(0,0);
-        recycleview.layout(0,0,100,1000);
-        View itemView = recycleview.findViewHolderForAdapterPosition(0).itemView;
-        Assert.assertNotNull(itemView);
-        TextView itemName = (TextView) itemView.findViewById(R.id.itemName);
-        assertTrue("Not sorted properly based on item name",
-                itemName.getText().toString().equals("Iphone"));
-        taskPickListFragment.onSortingOptionSelection(SortFilterOption.Location);
-        taskPickListFragment.onSortingOptionSelection(SortFilterOption.SalesOrder);
-        taskPickListFragment.onSortingOptionSelection(SortFilterOption.Location);
-    }
 
     @Test
     public void test_scandata_rec()
     {
         taskPickListFragment.scanDataReceived("8901238910005");
         taskPickListFragment.scanDataReceived("yes");
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        ImageView dialogImage = (ImageView) dialog.findViewById(R.id.alert);
+        Assert.assertNotNull(dialogImage);
+        dialog.dismiss();
     }
 
     @Test
@@ -252,6 +349,33 @@ public class TaskPickListFragmentTest {
         View view = taskPickListFragment.getView();
         Button completeButton = (Button)view.findViewById(R.id.update_complete);
         completeButton.performClick();
+        DatabaseHandler db = new DatabaseHandler(detailPicklistActivity);
+        List<Picklist> picklists = db.allPickLists(1,"");
+        Assert.assertEquals(picklists.size(),0);
+    }
+
+    @Test
+    public void test_onUpdatePickList()
+    {
+        taskPickListFragment.onUpdatePicklist(mPickList,true,false,"");
+    }
+
+    @Test
+    public void test_staledataDialog()
+    {
+        taskPickListFragment.StaleDataDialog(detailPicklistActivity);
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        Assert.assertNotNull(dialog);
+        dialog.dismiss();
+    }
+
+    @Test
+    public void test_CompleteListDialog()
+    {
+        taskPickListFragment.CompleteList_Dialog();
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        Assert.assertNotNull(dialog);
+        dialog.dismiss();
     }
     @After
     public void tearDown()
