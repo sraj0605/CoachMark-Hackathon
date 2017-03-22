@@ -5,7 +5,6 @@ apply from: rootProject.file('gradle/jacoco.gradle')
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
-
     defaultConfig {
         applicationId "com.intuit.qbes.mobilescanner"
         minSdkVersion 19
@@ -52,6 +51,7 @@ dependencies {
     testCompile "org.robolectric:shadows-support-v4:3.0"
     testCompile 'org.json:json:20140107'
     testCompile "org.mockito:mockito-core:2.0.57-beta"
+    testCompile 'org.robolectric:shadows-httpclient:3.0'
     androidTestCompile 'junit:junit:4.12'
     compile 'com.google.code.gson:gson:2.2.4'
 }
