@@ -237,8 +237,8 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         //super.onCreateOptionsMenu(menu, inflater);
 
     }
-
-    @Override
+//right now no use
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
@@ -262,7 +262,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         }
 
         return true;
-    }
+    }*/
 
     @Override
     public void onStart() {

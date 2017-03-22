@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
@@ -14,10 +15,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,6 +43,7 @@ import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.internal.Shadow;
 import org.robolectric.shadows.ShadowActivity;
 //import org.robolectric.shadows.support.v4.Shadows;
+import org.robolectric.shadows.ShadowAlertDialog;
 import org.robolectric.shadows.ShadowDialog;
 import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
@@ -66,6 +70,7 @@ public class TaskPickListFragmentTest {
     private List<LineItem> mLineitems;
     private LineItem mLineItem;
     private LineItem mLineItem1;
+    private LineItem mLineItem2;
 
     private Picklist mPickList;
     @Before
@@ -90,6 +95,8 @@ public class TaskPickListFragmentTest {
         mLineitems = new ArrayList<>();
         mLineItem = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 1",12,"custom",null,"true","true","false",Status.NotPicked);
         mLineItem1 = new LineItem(1,1,1,"Iphone","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 2",12,"custom",null,"true","true","false",Status.Picked);
+        mLineItem2 = new LineItem(1,1,1,"Iphone","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",10.2,0,"8901238910005","Rack 2",12,"custom",null,"true","true","false",Status.PartiallyPicked);
+
 
         mLineitems.add(mLineItem);
         mLineitems.add(mLineItem1);
@@ -358,6 +365,9 @@ public class TaskPickListFragmentTest {
     public void test_onUpdatePickList()
     {
         taskPickListFragment.onUpdatePicklist(mPickList,true,false,"");
+        taskPickListFragment.onUpdatePicklist(mPickList,true,true,"");
+        taskPickListFragment.onUpdatePicklist(mPickList,true,true,"Network");
+        taskPickListFragment.onUpdatePicklist(mPickList,true,true,"Timeout");
     }
 
     @Test
@@ -366,7 +376,12 @@ public class TaskPickListFragmentTest {
         taskPickListFragment.StaleDataDialog(detailPicklistActivity);
         Dialog dialog = ShadowDialog.getLatestDialog();
         Assert.assertNotNull(dialog);
-        dialog.dismiss();
+        Button close = (Button) dialog.findViewById(R.id.StalebtnOk);
+        close.performClick();
+        Intent startedIntent = shadowOf(detailPicklistActivity).getNextStartedActivity();
+        ShadowIntent shadowIntent = shadowOf(startedIntent);
+        Assert.assertEquals(MainActivity.class, shadowIntent.getIntentClass());
+        //dialog.dismiss();
     }
 
     @Test
@@ -375,11 +390,32 @@ public class TaskPickListFragmentTest {
         taskPickListFragment.CompleteList_Dialog();
         Dialog dialog = ShadowDialog.getLatestDialog();
         Assert.assertNotNull(dialog);
+        AlertDialog alertDialog = (AlertDialog) dialog;
+        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick();
         dialog.dismiss();
+
+
+    }
+    @Test
+    public void test_onSaveInstaceState()
+    {
+        detailPicklistActivity.recreate();
+        Assert.assertNotNull(detailPicklistActivity);
+        //Add ui validation
+    }
+
+    @Test
+    public void test_updateSyncButton()
+    {
+        taskPickListFragment.updateSyncButton();
+        ImageButton mSyncTick = (ImageButton)taskPickListFragment.getView().findViewById(R.id.img_update_sync);
+        Assert.assertEquals(mSyncTick.getVisibility(),View.VISIBLE);
     }
     @After
     public void tearDown()
     {
+        taskPickListFragment.onDetach();
+        taskPickListFragment.onStop();
         taskPickListFragment.onDestroy();
     }
 

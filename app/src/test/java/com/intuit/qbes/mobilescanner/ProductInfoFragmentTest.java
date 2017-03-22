@@ -551,6 +551,16 @@ public class ProductInfoFragmentTest{
 
     }
 
+    @Test
+    public void test_noBarcodeModel1()
+    {
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",2,2,"","Rack 1",12,"custom",null,"false","false","false", Status.NotPicked);
+        //mLineItem.setBarcodeEntered("8901238910005");
+        startActivity(mLineItem);
+        productInfoActivity.onBackPressed();
+        Assert.assertEquals(productInfoActivity.isFinishing(),true);
+    }
+
     @After
     public void tearDown()
     {
