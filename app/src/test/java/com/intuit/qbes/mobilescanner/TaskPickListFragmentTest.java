@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -226,19 +227,32 @@ public class TaskPickListFragmentTest {
         TextView itemName = (TextView) itemView.findViewById(R.id.itemName);
         assertTrue("Not sorted properly based on item name",
                 itemName.getText().toString().equals("Iphone"));
-
+        taskPickListFragment.onSortingOptionSelection(SortFilterOption.Location);
+        taskPickListFragment.onSortingOptionSelection(SortFilterOption.SalesOrder);
+        taskPickListFragment.onSortingOptionSelection(SortFilterOption.Location);
     }
 
     @Test
     public void test_scandata_rec()
     {
-
-        taskPickListFragment.scanDataReceived("yes");
         taskPickListFragment.scanDataReceived("8901238910005");
-
+        taskPickListFragment.scanDataReceived("yes");
     }
 
-
+    @Test
+    public void test_Sync_PickList()
+    {
+        View view = taskPickListFragment.getView();
+        Button syncButton = (Button)view.findViewById(R.id.update_sync);
+        syncButton.performClick();
+    }
+    @Test
+    public void test_complete_PickList()
+    {
+        View view = taskPickListFragment.getView();
+        Button completeButton = (Button)view.findViewById(R.id.update_complete);
+        completeButton.performClick();
+    }
     @After
     public void tearDown()
     {
