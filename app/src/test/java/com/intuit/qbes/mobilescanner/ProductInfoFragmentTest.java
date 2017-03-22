@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -38,6 +39,7 @@ import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowActivity;
 //import org.robolectric.shadows.support.v4.Shadows;
 import org.robolectric.shadows.ShadowDialog;
+import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
 import org.robolectric.util.ActivityController;
 
@@ -49,6 +51,7 @@ import static com.intuit.qbes.mobilescanner.ProductInfoFragment.EXTRA_LINEITEM;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
+import static org.robolectric.Shadows.shadowOf;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
 @RunWith(RobolectricTestRunner.class)
@@ -505,6 +508,47 @@ public class ProductInfoFragmentTest{
         {
 
         }
+    }
+
+    @Test
+    public void test_onSerialNumberClicked()
+    {
+        List<SerialLotNumber> serialLotNumbers = new ArrayList<>();
+        SerialLotNumber obj = new SerialLotNumber(1,1,1,"A6315");
+        SerialLotNumber obj1 = new SerialLotNumber(1,1,1,"A6315");
+        serialLotNumbers.add(obj);
+        serialLotNumbers.add(obj1);
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",2,0,"8901238910005","Rack 1",12,"custom",serialLotNumbers,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("8901238910005");
+        startActivity(mLineItem);
+        productInfoActivity.onSerialNumberClicked(mLineItem);
+        Class fragmentClass = null;
+        fragmentClass = SerialNumberFragment.class;
+        String tag = fragmentClass.getCanonicalName();
+        SerialNumberFragment serialNumberFragment =(SerialNumberFragment) productInfoActivity.getSupportFragmentManager().findFragmentByTag(tag);
+        Assert.assertNotNull(serialNumberFragment);
+        Button confirm = (Button)serialNumberFragment.getView().findViewById(R.id.serialno_confirm);
+        confirm.performClick();
+        fragmentClass = ProductInfoFragment.class;
+        tag = fragmentClass.getCanonicalName();
+        productInfoFragment = (ProductInfoFragment) productInfoActivity.getSupportFragmentManager().findFragmentByTag(tag);
+        Assert.assertNotNull(productInfoFragment);
+    }
+
+    @Test
+    public void test_onProductInfoActivityBackPress()
+    {
+        List<SerialLotNumber> serialLotNumbers = new ArrayList<>();
+        SerialLotNumber obj = new SerialLotNumber(1,1,1,"A6315");
+        SerialLotNumber obj1 = new SerialLotNumber(1,1,1,"A6315");
+        serialLotNumbers.add(obj);
+        serialLotNumbers.add(obj1);
+        mLineItem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",2,2,"8901238910005","Rack 1",12,"custom",serialLotNumbers,"true","true","false", Status.NotPicked);
+        mLineItem.setBarcodeEntered("8901238910005");
+        startActivity(mLineItem);
+        productInfoActivity.onBackPressed();
+        Assert.assertEquals(productInfoActivity.isFinishing(),true);
+
     }
 
     @After

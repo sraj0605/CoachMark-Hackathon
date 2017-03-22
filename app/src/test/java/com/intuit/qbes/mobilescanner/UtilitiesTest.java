@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Status;
+import com.intuit.qbes.mobilescanner.networking.DataSync;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -79,5 +80,14 @@ public class UtilitiesTest {
         assertTrue("noDecimal - method failed", isDecimal == false);
         isDecimal = Utilities.noDecimal(5);
         assertTrue("noDecimal - method failed", isDecimal == true);
+    }
+
+    @Test
+    public void test_constructURL()
+    {
+        String actual = Utilities.constructURL(DataSync.taskURL,"1234");
+        String expectedURL = DataSync.taskURL.concat("1234/").concat("tasks");
+        assertTrue("construct url failed",expectedURL.equals(actual));
+
     }
 }

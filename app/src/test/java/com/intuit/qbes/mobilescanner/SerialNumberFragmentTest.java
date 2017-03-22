@@ -54,6 +54,8 @@ public class SerialNumberFragmentTest {
     @Before
     public void setUp() throws Exception {
 
+
+
         createDummyModel();
         serialnoFragment = SerialNumberFragment.newInstance(mlineitem);
         //SupportFragmentTestUtil.startFragment(detailPicklistFragment1);
@@ -63,7 +65,8 @@ public class SerialNumberFragmentTest {
 
     public void createDummyModel()
     {
-        mlineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",1,0,"8901238910005","Rack 1",4,"custom",serialnos1,"true","true","false", Status.NotPicked);
+        serialnos1.add(new SerialLotNumber(1,1,1,"hello"));
+        mlineitem  = new LineItem(1,1,1,"Redmi","pick it",1,"sales-1",1,"2017-01-10","2017-01-10","note1","ea",2,0,"8901238910005","Rack 1",4,"custom",serialnos1,"true","true","false", Status.NotPicked);
 
     }
 
@@ -97,9 +100,11 @@ public class SerialNumberFragmentTest {
 
 
         Assert.assertEquals(mlineitem.getItemName(), item_name.getText().toString());
-        int n = (int)mlineitem.getQtyToPick();
-        int n1 = Integer.parseInt(sno_added_value.getText().toString());
-        Assert.assertEquals((int)mlineitem.getQtyToPick(), Integer.parseInt(sno_added_value.getText().toString()));
+        //int n = (int)mlineitem.getQtyToPick();
+        Assert.assertEquals(recycleview.getAdapter().getItemCount(), 1);
+
+        //int n1 = Integer.parseInt(sno_added_value.getText().toString());
+        //Assert.assertEquals((int)mlineitem.getQtyToPick(), Integer.parseInt(sno_added_value.getText().toString()));
 
 
 
@@ -131,7 +136,7 @@ public class SerialNumberFragmentTest {
         Assert.assertNotNull(sno_text);
         Assert.assertNotNull(cancel);
 
-        Assert.assertEquals(recycleview.getAdapter().getItemCount(),1);
+        Assert.assertEquals(recycleview.getAdapter().getItemCount(),2);
 
 
     }
@@ -176,12 +181,13 @@ public class SerialNumberFragmentTest {
 
         sno_enter.setText("TestSno");
         serialnoFragment.onClick(plus);
-        sno_enter.setText("TestSno");
-        serialnoFragment.onClick(plus);
+        /*sno_enter.setText("TestSno");
+        serialnoFragment.onClick(plus);*/
 
 
         Button confirm = (Button)serialnoFragment.getView().findViewById(R.id.serialno_confirm);
         confirm.performClick();
+
 
     }
 
