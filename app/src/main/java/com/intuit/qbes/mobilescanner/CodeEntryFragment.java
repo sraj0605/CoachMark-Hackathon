@@ -142,9 +142,11 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
     }
 
     @Override
-    public void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale) {
+    public void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale, String error) {
 
     }
+
+
 
     @Override
     public void onCodeValidation(String response) {

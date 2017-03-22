@@ -102,7 +102,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
     }
 
     @Override
-    public void onUpdatePicklist(Picklist Picklist, Boolean isSync, Boolean isStale) {
+    public void onUpdatePicklist(Picklist Picklist, Boolean isSync, Boolean isStale, String error) {
 
         if(!isStale) {
             if (isSync) {
@@ -118,9 +118,17 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
                 mCallbacks.onPicklistComplete();
             }
         }
-        else if(isStale)
+        else if(isStale && error.compareTo("") == 0)
         {
             StaleDataDialog(getContext());
+        }
+        else if(isStale && error.compareTo("Network")==0)
+        {
+
+        }
+        else if(isStale && error.compareTo("Timeout")==0)
+        {
+
         }
         dismissDialog();
     }
@@ -817,4 +825,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
 
         openDialog.show();
     }
+
+
+   
 }

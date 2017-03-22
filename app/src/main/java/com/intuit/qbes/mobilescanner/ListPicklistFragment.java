@@ -74,9 +74,11 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     }
 
     @Override
-    public void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale) {
+    public void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale, String error) {
 
     }
+
+
 
     @Override
     public void onCodeValidation(String response) {

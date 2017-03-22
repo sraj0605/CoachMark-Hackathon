@@ -29,6 +29,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.intuit.qbes.mobilescanner.DatabaseHandler;
 import com.intuit.qbes.mobilescanner.ListPicklistFragment;
 import com.intuit.qbes.mobilescanner.R;
+import com.intuit.qbes.mobilescanner.TaskPickListFragment;
 import com.intuit.qbes.mobilescanner.Utilities;
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
@@ -73,7 +74,7 @@ public class DataSync {
 
     public interface DataSyncCallback {
         void onFetchPicklist(List<Picklist> mPicklists);
-        void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale);
+        void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale, String error );
         void onCodeValidation(String response);
 
     }
@@ -97,7 +98,7 @@ public class DataSync {
                         mUpdatedPicklist = Picklist.picklistFromJSON(response);
 
                         mCallback = callback;
-                        mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, false);
+                        mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, false, "");
                     }
 
                     Log.i("VOLLEY", response);
@@ -111,7 +112,7 @@ public class DataSync {
                         //No Internet Error
                         NoInternetDialog(context);
                         mCallback = callback;
-                        mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, true);
+                        mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, true, "Network");
 
 
                     }
@@ -119,7 +120,7 @@ public class DataSync {
                     {
                         ServerIssueDialog(context);
                         mCallback = callback;
-                        mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, true);
+                        mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, true, "Timeout");
 
                     }
                  /*   if (error instanceof ServerError)
@@ -131,7 +132,7 @@ public class DataSync {
                         if (error.networkResponse.statusCode == 409 || error.networkResponse.statusCode == 400) {
                             //StaleDataDialog(context);
                             mCallback = callback;
-                            mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, true);
+                            mCallback.onUpdatePicklist(mUpdatedPicklist, isSync, true, "");
 
                         }
                     }
