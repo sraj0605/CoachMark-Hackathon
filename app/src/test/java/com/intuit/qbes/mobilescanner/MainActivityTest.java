@@ -15,7 +15,11 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowIntent;
+
+import static org.robolectric.Shadows.shadowOf;
 
 /**
  * Created by ashah9 on 2/7/17.
@@ -46,6 +50,14 @@ public class MainActivityTest {
     {
         Assert.assertNotNull(mainActivity);
 
+    }
+
+    @Test
+    public void test_devicePairingActivity()
+    {
+        Intent startedIntent = shadowOf(mainActivity).getNextStartedActivity();
+        ShadowIntent shadowIntent = shadowOf(startedIntent);
+        Assert.assertEquals(DevicePairingActivity.class, shadowIntent.getIntentClass());
     }
 
     @Test

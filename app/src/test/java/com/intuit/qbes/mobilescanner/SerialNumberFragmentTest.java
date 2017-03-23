@@ -1,12 +1,14 @@
 package com.intuit.qbes.mobilescanner;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.menu.ActionMenuItem;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +29,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.shadows.ShadowAlertDialog;
+import org.robolectric.shadows.ShadowDialog;
 import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
 
 import java.util.ArrayList;
@@ -181,10 +184,12 @@ public class SerialNumberFragmentTest {
 
         sno_enter.setText("TestSno");
         serialnoFragment.onClick(plus);
-        /*sno_enter.setText("TestSno");
-        serialnoFragment.onClick(plus);*/
-
-
+        sno_enter.setText("TestSno");
+        serialnoFragment.onClick(plus);
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        AlertDialog alertDialog = (AlertDialog)dialog;
+        Assert.assertNotNull(alertDialog);
+        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick();
         Button confirm = (Button)serialnoFragment.getView().findViewById(R.id.serialno_confirm);
         confirm.performClick();
 
@@ -192,8 +197,17 @@ public class SerialNumberFragmentTest {
     }
 
     @Test
+    public void test_confirmWithLessQuantity()
+    {
+        Button confirm = (Button)serialnoFragment.getView().findViewById(R.id.serialno_confirm);
+        confirm.performClick();
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        AlertDialog alertDialog = (AlertDialog)dialog;
+        Assert.assertNotNull(alertDialog);
+        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick();
+    }
 
-
+    @Test
     public void test_click_minus_functionality()
     {
         EditText sno_enter = (EditText)serialnoFragment.getView().findViewById(R.id.AddSno);
@@ -207,6 +221,19 @@ public class SerialNumberFragmentTest {
 
     }
 
+    @Test
+    public void test_scanDataREceived()
+    {
+        serialnoFragment.scanDataReceived("wow");
+        RecyclerView recycleview = (RecyclerView)serialnoFragment.getView().findViewById(R.id.serialnumber_rv);
+
+        recycleview.measure(0,0);
+        recycleview.layout(0,0,100,1000);
+        View itemView = recycleview.findViewHolderForAdapterPosition(0).itemView;
+        Assert.assertNotNull(itemView);
+        Assert.assertEquals(recycleview.getAdapter().getItemCount(),2);
+
+    }
     @After
     public void tearDown()
     {

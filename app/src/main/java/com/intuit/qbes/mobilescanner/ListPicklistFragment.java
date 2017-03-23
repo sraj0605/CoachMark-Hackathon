@@ -43,7 +43,7 @@ import static android.provider.ContactsContract.Intents.Insert.ACTION;
  * Use the {@link ListPicklistFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListPicklistFragment extends Fragment implements PickingReceivingAdapter.AdapterCallback, DataSync.DataSyncCallback{
+public class ListPicklistFragment extends Fragment implements PickingReceivingAdapter.AdapterCallback{
 
     private static final String LOG_TAG = "ListPicklistFragment";
     public static final String EXTRA_PICKLIST = "com.intuit.qbes.mobilescanner.picklist";
@@ -67,23 +67,6 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
     private List<SerialLotNumber> serialnos4 = new ArrayList<SerialLotNumber>();
     private List<SerialLotNumber> serialnos5 = new ArrayList<SerialLotNumber>();
     private PickingReceivingAdapter adapter = null;
-	 @Override
-    public void onFetchPicklist(List<Picklist> mPicklists) {
-      //  List<Picklist> test = new ArrayList<>();
-      //  test = mPicklists;
-    }
-
-    @Override
-    public void onUpdatePicklist(Picklist mPicklist, Boolean isSync, Boolean isStale, String error) {
-
-    }
-
-
-
-    @Override
-    public void onCodeValidation(String response) {
-
-    }
 
 
     public interface Callbacks {
@@ -248,9 +231,8 @@ public class ListPicklistFragment extends Fragment implements PickingReceivingAd
 
         return true;
     }
-
-    //Right now - it will be used only for Unit testing
-    public  void UpdatePickList(List<Picklist> obj)
+    //Right now - only used for unit testing
+    public void updatePickList()
     {
         mPicklists.remove(2);
     }
