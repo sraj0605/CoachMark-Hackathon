@@ -4,7 +4,7 @@ package com.intuit.qbes.mobilescanner;
  * Created by ckumar5 on 11/03/17.
  */
 
-public final class TableDetails {
+public final class TableContract {
 
     public static String KEY_ID = "id";
 

@@ -333,7 +333,7 @@ public class Picklist implements Parcelable {
         return jsonString;
     }
 
-    public String JSONStringArrayFromPicklistArray(List<Picklist> picklists)
+    public static String JSONStringArrayFromPicklistArray(List<Picklist> picklists)
     {
         String jsonString = new String();
         try {
@@ -415,8 +415,7 @@ public class Picklist implements Parcelable {
         hash = 17 * hash + (int)this.id;
         return hash;
     }
-
-    public static void StorePickList(List<Picklist> picklists, Context context)
+    /*public static void StorePickList(List<Picklist> picklists, Context context)
     {
         if(db == null)
         db = new DatabaseHandler(context);
@@ -471,6 +470,6 @@ public class Picklist implements Parcelable {
         if(db == null)
             db = new DatabaseHandler(context);
         db.deleteLineItems(recnum);
-    }
+    }*/
 
 }

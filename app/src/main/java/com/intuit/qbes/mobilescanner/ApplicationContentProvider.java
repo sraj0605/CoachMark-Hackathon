@@ -7,16 +7,12 @@ import android.content.ContentValues;
 import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-
-import com.intuit.qbes.mobilescanner.model.Picklist;
 
 import java.util.ArrayList;
 
@@ -83,14 +79,14 @@ public class ApplicationContentProvider extends ContentProvider{
             SQLiteDatabase sqlDB = mDbHandler.getWritableDatabase();
             switch (uriType) {
                 case PICKLISTS:
-                    rowsUpdated = sqlDB.update(mDbHandler.TABLE_PICKLISTINFO_NAME,
+                    rowsUpdated = sqlDB.update(TableContract.Tables.PICKLIST,
                             values,
                             selection,
                             selectionArgs);
                     break;
 
                 case LINEITEMS:
-                    rowsUpdated = sqlDB.update(mDbHandler.TABLE_LINEITEMINFO_NAME,
+                    rowsUpdated = sqlDB.update(TableContract.Tables.LINEITEM,
                             values,
                             selection,
                             selectionArgs);
@@ -102,10 +98,10 @@ public class ApplicationContentProvider extends ContentProvider{
                             selectionArgs);*/
                     /*As of now lets keep all as insert*/
                     /*We have made sure that only new serial number will come here hence inserting*/
-                    long rowInserted = sqlDB.insertOrThrow(mDbHandler.TABLE_SERIALNUBERINFO, null, values);
+                    long rowInserted = sqlDB.insertOrThrow(TableContract.Tables.SERIALLOTNUMBER, null, values);
                     break;
                 case SYNCINFO:
-                    rowsUpdated = sqlDB.update(mDbHandler.TABLE_SYNCINFO,
+                    rowsUpdated = sqlDB.update(TableContract.Tables.SYNCINFO,
                             values,
                             selection,
                             selectionArgs);
@@ -134,24 +130,24 @@ public class ApplicationContentProvider extends ContentProvider{
             switch (uriType) {
 
                 case PICKLISTS:
-                    id = sqlDB.insertOrThrow(mDbHandler.TABLE_PICKLISTINFO_NAME, null, values);
+                    id = sqlDB.insertOrThrow(TableContract.Tables.PICKLIST, null, values);
                     ret = Uri.parse(PICKLIST_TABLE + "/" + id);
                     break;
 
                 case LINEITEMS:
-                    id = sqlDB.insertOrThrow(mDbHandler.TABLE_LINEITEMINFO_NAME, null, values);
+                    id = sqlDB.insertOrThrow(TableContract.Tables.LINEITEM, null, values);
                     ret = Uri.parse(LINEITEM_TABLE + "/" + id);
                     break;
                 case SERIALLOTNUMBERS:
-                    id = sqlDB.insertOrThrow(mDbHandler.TABLE_SERIALNUBERINFO, null, values);
+                    id = sqlDB.insertOrThrow(TableContract.Tables.SERIALLOTNUMBER, null, values);
                     ret = Uri.parse(SERIALLOTNUMBER_TABLE + "/" + id);
                     break;
                 case SYNCINFO:
-                    id = sqlDB.insertOrThrow(mDbHandler.TABLE_SYNCINFO, null, values);
+                    id = sqlDB.insertOrThrow(TableContract.Tables.SYNCINFO, null, values);
                     ret = Uri.parse(SYNCINFO_TABLE + "/" + id);
                     break;
                 case COMPANYFILEINFO:
-                    id = sqlDB.insertOrThrow(mDbHandler.TABLE_COMPANYYFILEINFO_NAME, null, values);
+                    id = sqlDB.insertOrThrow(TableContract.Tables.COMPANYFILEINFO, null, values);
                     ret = Uri.parse(COMPANYFILEINFO_TABLE + "/" + id);
                     break;
 
@@ -189,22 +185,22 @@ public class ApplicationContentProvider extends ContentProvider{
             switch (uriType) {
                 case PICKLISTS:
 
-                    rowsDeleted = sqlDB.delete(mDbHandler.TABLE_PICKLISTINFO_NAME,
+                    rowsDeleted = sqlDB.delete(TableContract.Tables.PICKLIST,
                             selection,
                             selectionArgs);
                     break;
                 case LINEITEMS:
-                    rowsDeleted = sqlDB.delete(mDbHandler.TABLE_LINEITEMINFO_NAME,
+                    rowsDeleted = sqlDB.delete(TableContract.Tables.LINEITEM,
                             selection,
                             selectionArgs);
                     break;
                 case SERIALLOTNUMBERS:
-                    rowsDeleted = sqlDB.delete(mDbHandler.TABLE_SERIALNUBERINFO,
+                    rowsDeleted = sqlDB.delete(TableContract.Tables.SERIALLOTNUMBER,
                             selection,
                             selectionArgs);
                     break;
                 case SYNCINFO:
-                    rowsDeleted = sqlDB.delete(mDbHandler.TABLE_SYNCINFO,
+                    rowsDeleted = sqlDB.delete(TableContract.Tables.SYNCINFO,
                             selection,
                             selectionArgs);
                     break;
@@ -233,19 +229,19 @@ public class ApplicationContentProvider extends ContentProvider{
             SQLiteDatabase sqlDB = mDbHandler.getReadableDatabase();
             switch (uriType) {
                 case PICKLISTS:
-                    cursor = sqlDB.query(mDbHandler.TABLE_PICKLISTINFO_NAME,null,selection,selectionArgs,null,null,null);
+                    cursor = sqlDB.query(TableContract.Tables.PICKLIST,null,selection,selectionArgs,null,null,null);
                     break;
                 case LINEITEMS:
-                    cursor = sqlDB.query(mDbHandler.TABLE_LINEITEMINFO_NAME,null,selection,selectionArgs,null,null,null);
+                    cursor = sqlDB.query(TableContract.Tables.LINEITEM,null,selection,selectionArgs,null,null,null);
                     break;
                 case SERIALLOTNUMBERS:
-                    cursor = sqlDB.query(mDbHandler.TABLE_SERIALNUBERINFO,null,selection,selectionArgs,null,null,null);
+                    cursor = sqlDB.query(TableContract.Tables.SERIALLOTNUMBER,null,selection,selectionArgs,null,null,null);
                     break;
                 case SYNCINFO:
-                    cursor = sqlDB.query(mDbHandler.TABLE_SYNCINFO,null,selection,selectionArgs,null,null,null);
+                    cursor = sqlDB.query(TableContract.Tables.SYNCINFO,null,selection,selectionArgs,null,null,null);
                     break;
                 case COMPANYFILEINFO:
-                    cursor = sqlDB.query(mDbHandler.TABLE_COMPANYYFILEINFO_NAME,null,selection,selectionArgs,null,null,null);
+                    cursor = sqlDB.query(TableContract.Tables.COMPANYFILEINFO,null,selection,selectionArgs,null,null,null);
             }
         }
         catch (SQLiteException exp)

@@ -10,25 +10,20 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import com.intuit.qbes.mobilescanner.model.CompanyFileDetails;
 import android.os.RemoteException;
-import android.provider.BaseColumns;
-import android.provider.ContactsContract;
-import android.text.format.DateFormat;
 import android.util.Log;
-import com.intuit.qbes.mobilescanner.TableDetails;
+
 import com.intuit.qbes.mobilescanner.model.LineItem;
 import com.intuit.qbes.mobilescanner.model.Picklist;
 import com.intuit.qbes.mobilescanner.model.SerialLotNumber;
 import com.intuit.qbes.mobilescanner.model.Status;
-import com.symbol.emdk.barcode.ScannerConfig;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,7 +38,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 21;
     private static final String DATABASE_NAME = "MobileScanner.db";
-    public static final String TABLE_PICKLISTINFO_NAME = "PickListInfo";
+    /*public static final String TABLE_PICKLISTINFO_NAME = "PickListInfo";
     public static final String TABLE_LINEITEMINFO_NAME = "LineItemInfo";
     public static final String TABLE_SERIALNUBERINFO = "SerialNumberInfo";
     public static final String TABLE_SYNCINFO= "SyncInfo";
@@ -103,7 +98,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final String KEY_REALMID = "companyId";
     private static final String KEY_DEVICEGUID = "extDeviceId";
-    private static final String KEY_COMPANYNAME = "companyName";
+    private static final String KEY_COMPANYNAME = "companyName";*/
 
 
     //Context object
@@ -117,19 +112,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         try {
-            db.execSQL("CREATE TABLE " + TableDetails.Tables.PICKLIST + " ("
-                    + TableDetails.KEY_ID + " LONG PRIMARY KEY,"
-                    + TableDetails.PickListInfo.KEY_COMPANYID + " TEXT NOT NULL,"
-                    + TableDetails.PickListInfo.KEY_TASKTYPE + " LONG NOT NULL,"
-                    + TableDetails.PickListInfo.KEY_NAME + " TEXT NOT NULL,"
-                    + TableDetails.PickListInfo.KEY_ASSIGNEDID + " LONG,"
-                    + TableDetails.PickListInfo.KEY_CREATEDBYID + " LONG,"
-                    + TableDetails.PickListInfo.KEY_STATUS + " INT NOT NULL,"
-                    + TableDetails.PickListInfo.KEY_SITEID + " INT,"
-                    + TableDetails.PickListInfo.KEY_NOTES + " TEXT,"
-                    + TableDetails.PickListInfo.KEY_SHOWNOTES + " TEXT,"
-                    + TableDetails.PickListInfo.KEY_SYNCTOKEN + " LONG,"
-                    + TableDetails.PickListInfo.KEY_MODIFIEDTIMESTAMP + " TEXT "
+            db.execSQL("CREATE TABLE " + TableContract.Tables.PICKLIST + " ("
+                    + TableContract.KEY_ID + " LONG PRIMARY KEY,"
+                    + TableContract.PickListInfo.KEY_COMPANYID + " TEXT NOT NULL,"
+                    + TableContract.PickListInfo.KEY_TASKTYPE + " LONG NOT NULL,"
+                    + TableContract.PickListInfo.KEY_NAME + " TEXT NOT NULL,"
+                    + TableContract.PickListInfo.KEY_ASSIGNEDID + " LONG,"
+                    + TableContract.PickListInfo.KEY_CREATEDBYID + " LONG,"
+                    + TableContract.PickListInfo.KEY_STATUS + " INT NOT NULL,"
+                    + TableContract.PickListInfo.KEY_SITEID + " INT,"
+                    + TableContract.PickListInfo.KEY_NOTES + " TEXT,"
+                    + TableContract.PickListInfo.KEY_SHOWNOTES + " TEXT,"
+                    + TableContract.PickListInfo.KEY_SYNCTOKEN + " LONG,"
+                    + TableContract.PickListInfo.KEY_MODIFIEDTIMESTAMP + " TEXT "
                     + ")");
         }
         catch (SQLException exp)
@@ -138,26 +133,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             Log.i("DatabaseHandler",exp.getMessage().toString());
         }
         try {
-            db.execSQL("CREATE TABLE " + TableDetails.Tables.LINEITEM + " ("
-                    + TableDetails.KEY_ID + " LONG PRIMARY KEY,"
-                    + TableDetails.LineItemInfo.KEY_TASKID + " LONG NOT NULL,"
-                    + TableDetails.LineItemInfo.KEY_EXTID + " LONG NOT NULL,"
-                    + TableDetails.LineItemInfo.KEY_NAME_LINEITEM + " TEXT NOT NULL,"
-                    + TableDetails.LineItemInfo.KEY_DESC + " TEXT,"
-                    + TableDetails.LineItemInfo.KEY_LINEITEMPOS + " LONG,"
-                    + TableDetails.LineItemInfo.KEY_DOCNUM + " TEXT,"
-                    + TableDetails.LineItemInfo.KEY_TXNID + " LONG,"
-                    + TableDetails.PickListInfo.KEY_NOTES + " TEXT,"
-                    + TableDetails.PickListInfo.KEY_STATUS + " INT,"
-                    + TableDetails.LineItemInfo.KEY_UOM + " TEXT,"
-                    + TableDetails.LineItemInfo.KEY_TOPICK + " REAL,"
-                    + TableDetails.LineItemInfo.KEY_PICKED + " REAL,"
-                    + TableDetails.LineItemInfo.KEY_BARCODE + " TEXT,"
-                    + TableDetails.LineItemInfo.KEY_BINLOCATION + " TEXT,"
-                    + TableDetails.LineItemInfo.KEY_BINEXTID + " LONG,"
-                    + TableDetails.LineItemInfo.KEY_CUSTOMFIELD + " TEXT,"
-                    + TableDetails.LineItemInfo.KEY_SERIANUMBER + " BOOLEAN,"
-                    + TableDetails.LineItemInfo.KEY_LOTNUMBER + " BOOLEAN "
+            db.execSQL("CREATE TABLE " + TableContract.Tables.LINEITEM + " ("
+                    + TableContract.KEY_ID + " LONG PRIMARY KEY,"
+                    + TableContract.LineItemInfo.KEY_TASKID + " LONG NOT NULL,"
+                    + TableContract.LineItemInfo.KEY_EXTID + " LONG NOT NULL,"
+                    + TableContract.LineItemInfo.KEY_NAME_LINEITEM + " TEXT NOT NULL,"
+                    + TableContract.LineItemInfo.KEY_DESC + " TEXT,"
+                    + TableContract.LineItemInfo.KEY_LINEITEMPOS + " LONG,"
+                    + TableContract.LineItemInfo.KEY_DOCNUM + " TEXT,"
+                    + TableContract.LineItemInfo.KEY_TXNID + " LONG,"
+                    + TableContract.PickListInfo.KEY_NOTES + " TEXT,"
+                    + TableContract.PickListInfo.KEY_STATUS + " INT,"
+                    + TableContract.LineItemInfo.KEY_UOM + " TEXT,"
+                    + TableContract.LineItemInfo.KEY_TOPICK + " REAL,"
+                    + TableContract.LineItemInfo.KEY_PICKED + " REAL,"
+                    + TableContract.LineItemInfo.KEY_BARCODE + " TEXT,"
+                    + TableContract.LineItemInfo.KEY_BINLOCATION + " TEXT,"
+                    + TableContract.LineItemInfo.KEY_BINEXTID + " LONG,"
+                    + TableContract.LineItemInfo.KEY_CUSTOMFIELD + " TEXT,"
+                    + TableContract.LineItemInfo.KEY_SERIANUMBER + " BOOLEAN,"
+                    + TableContract.LineItemInfo.KEY_LOTNUMBER + " BOOLEAN "
                     + ")");
         }
         catch (Exception exp)
@@ -166,11 +161,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             Log.i("DatabaseHandler","LineItemInfo table Creation Failed");
         }
         try {
-            db.execSQL("CREATE TABLE " + TableDetails.Tables.SERIALLOTNUMBER + " ("
-                    + TableDetails.KEY_ID + " LONG,"
-                    + TableDetails.SerialNumberInfo.KEY_LINEITEMID + " LONG NOT NULL,"
-                    + TableDetails.SerialNumberInfo.KEY_TYPE + " LONG,"
-                    + TableDetails.SerialNumberInfo.KEY_VALUE + " TEXT "
+            db.execSQL("CREATE TABLE " + TableContract.Tables.SERIALLOTNUMBER + " ("
+                    + TableContract.KEY_ID + " LONG,"
+                    + TableContract.SerialNumberInfo.KEY_LINEITEMID + " LONG NOT NULL,"
+                    + TableContract.SerialNumberInfo.KEY_TYPE + " LONG,"
+                    + TableContract.SerialNumberInfo.KEY_VALUE + " TEXT "
                     + ")");
         }
         catch (Exception exp)
@@ -179,9 +174,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             Log.i("DatabaseHandler","SerialNumberInfo Table creation failed");
         }
         try {
-            db.execSQL("CREATE TABLE " + TableDetails.Tables.SYNCINFO + " ("
-                    + TableDetails.SyncInfo.KEY_GUID + " LONG PRIMARY KEY,"
-                    + TableDetails.SyncInfo.KEY_LASTSYNCTIME + " TEXT "
+            db.execSQL("CREATE TABLE " + TableContract.Tables.SYNCINFO + " ("
+                    + TableContract.SyncInfo.KEY_GUID + " LONG PRIMARY KEY,"
+                    + TableContract.SyncInfo.KEY_LASTSYNCTIME + " TEXT "
                     + ")");
         }
         catch (Exception exp)
@@ -191,10 +186,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         try {
-            db.execSQL("CREATE TABLE " + TableDetails.Tables.COMPANYFILEINFO + " ("
-                    + TableDetails.CompanyFileInfo.KEY_REALMID + " TEXT PRIMARY KEY,"
-                    + TableDetails.CompanyFileInfo.KEY_DEVICEGUID + " TEXT,"
-                    + TableDetails.CompanyFileInfo.KEY_COMPANYNAME + " TEXT "
+            db.execSQL("CREATE TABLE " + TableContract.Tables.COMPANYFILEINFO + " ("
+                    + TableContract.CompanyFileInfo.KEY_REALMID + " TEXT PRIMARY KEY,"
+                    + TableContract.CompanyFileInfo.KEY_DEVICEGUID + " TEXT,"
+                    + TableContract.CompanyFileInfo.KEY_COMPANYNAME + " TEXT "
                     + ")");
         }
         catch (Exception exp)
@@ -341,19 +336,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void addPickList(Picklist mPickList) {
         try {
             ContentValues values = new ContentValues();
-            values.put(TableDetails.KEY_ID, mPickList.getId());
-            values.put(TableDetails.PickListInfo.KEY_COMPANYID, mPickList.getCompanyId());
-            values.put(TableDetails.PickListInfo.KEY_TASKTYPE, mPickList.getTaskType());
-            values.put(TableDetails.PickListInfo.KEY_NAME, mPickList.getName());
-            values.put(TableDetails.PickListInfo.KEY_ASSIGNEDID, mPickList.getAssigneeId());
-            values.put(TableDetails.PickListInfo.KEY_CREATEDBYID, mPickList.getCreatedById());
-            values.put(TableDetails.PickListInfo.KEY_STATUS, String.valueOf(mPickList.getStatus()));
-            values.put(TableDetails.PickListInfo.KEY_SITEID, mPickList.getSiteId());
-            values.put(TableDetails.PickListInfo.KEY_NOTES, mPickList.getNotes());
-            values.put(TableDetails.PickListInfo.KEY_SHOWNOTES, String.valueOf(mPickList.isShowNotes()));
-            values.put(TableDetails.PickListInfo.KEY_SYNCTOKEN, mPickList.getSyncToken());
+            values.put(TableContract.KEY_ID, mPickList.getId());
+            values.put(TableContract.PickListInfo.KEY_COMPANYID, mPickList.getCompanyId());
+            values.put(TableContract.PickListInfo.KEY_TASKTYPE, mPickList.getTaskType());
+            values.put(TableContract.PickListInfo.KEY_NAME, mPickList.getName());
+            values.put(TableContract.PickListInfo.KEY_ASSIGNEDID, mPickList.getAssigneeId());
+            values.put(TableContract.PickListInfo.KEY_CREATEDBYID, mPickList.getCreatedById());
+            values.put(TableContract.PickListInfo.KEY_STATUS, String.valueOf(mPickList.getStatus()));
+            values.put(TableContract.PickListInfo.KEY_SITEID, mPickList.getSiteId());
+            values.put(TableContract.PickListInfo.KEY_NOTES, mPickList.getNotes());
+            values.put(TableContract.PickListInfo.KEY_SHOWNOTES, String.valueOf(mPickList.isShowNotes()));
+            values.put(TableContract.PickListInfo.KEY_SYNCTOKEN, mPickList.getSyncToken());
            // values.put(KEY_CREATEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getCreatedTimestamp()));
-            values.put(TableDetails.PickListInfo.KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getModifiedTimestamp()));
+            values.put(TableContract.PickListInfo.KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getModifiedTimestamp()));
             myCR.insert(ApplicationContentProvider.CONTENT_URI_PICKLIST_TABLE, values);
         }
         catch (IllegalArgumentException exp)
@@ -389,19 +384,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         try {
 
             ContentValues values = new ContentValues();
-            values.put(TableDetails.PickListInfo.KEY_ID, mPickList.getId());
-            values.put(TableDetails.PickListInfo.KEY_COMPANYID, mPickList.getCompanyId());
-            values.put(TableDetails.PickListInfo.KEY_TASKTYPE, mPickList.getTaskType());
-            values.put(TableDetails.PickListInfo.KEY_NAME, mPickList.getName());
-            values.put(TableDetails.PickListInfo.KEY_ASSIGNEDID, mPickList.getAssigneeId());
-            values.put(TableDetails.PickListInfo.KEY_CREATEDBYID, mPickList.getCreatedById());
-            values.put(TableDetails.PickListInfo.KEY_STATUS, String.valueOf(mPickList.getStatus()));
-            values.put(TableDetails.PickListInfo.KEY_SITEID, mPickList.getSiteId());
-            values.put(TableDetails.PickListInfo.KEY_NOTES, mPickList.getNotes());
-            values.put(TableDetails.PickListInfo.KEY_SHOWNOTES, String.valueOf(mPickList.isShowNotes()));
-            values.put(TableDetails.PickListInfo.KEY_SYNCTOKEN, mPickList.getSyncToken());
+            values.put(TableContract.PickListInfo.KEY_ID, mPickList.getId());
+            values.put(TableContract.PickListInfo.KEY_COMPANYID, mPickList.getCompanyId());
+            values.put(TableContract.PickListInfo.KEY_TASKTYPE, mPickList.getTaskType());
+            values.put(TableContract.PickListInfo.KEY_NAME, mPickList.getName());
+            values.put(TableContract.PickListInfo.KEY_ASSIGNEDID, mPickList.getAssigneeId());
+            values.put(TableContract.PickListInfo.KEY_CREATEDBYID, mPickList.getCreatedById());
+            values.put(TableContract.PickListInfo.KEY_STATUS, String.valueOf(mPickList.getStatus()));
+            values.put(TableContract.PickListInfo.KEY_SITEID, mPickList.getSiteId());
+            values.put(TableContract.PickListInfo.KEY_NOTES, mPickList.getNotes());
+            values.put(TableContract.PickListInfo.KEY_SHOWNOTES, String.valueOf(mPickList.isShowNotes()));
+            values.put(TableContract.PickListInfo.KEY_SYNCTOKEN, mPickList.getSyncToken());
             //values.put(KEY_CREATEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getCreatedTimestamp()));
-            values.put(TableDetails.PickListInfo.KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getModifiedTimestamp()));
+            values.put(TableContract.PickListInfo.KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getModifiedTimestamp()));
 
             String whereClause = "id = " + String.valueOf(mPickList.getId());
 
@@ -490,29 +485,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void addLineItem(LineItem lineItem, long id) {
         try {
             ContentValues values = new ContentValues();
-            values.put(TableDetails.KEY_ID, lineItem.getId());
-            values.put(TableDetails.LineItemInfo.KEY_TASKID, lineItem.getTaskId());
-            values.put(TableDetails.LineItemInfo.KEY_EXTID, lineItem.getExtId());
-            values.put(TableDetails.LineItemInfo.KEY_NAME_LINEITEM, lineItem.getItemName());
-            values.put(TableDetails.LineItemInfo.KEY_DESC, lineItem.getItemDesc());
-            values.put(TableDetails.LineItemInfo.KEY_LINEITEMPOS, lineItem.getLineitemPos());
-            values.put(TableDetails.LineItemInfo.KEY_DOCNUM, lineItem.getDocNum());
-            values.put(TableDetails.LineItemInfo.KEY_TXNID, lineItem.getTxnId());
+            values.put(TableContract.KEY_ID, lineItem.getId());
+            values.put(TableContract.LineItemInfo.KEY_TASKID, lineItem.getTaskId());
+            values.put(TableContract.LineItemInfo.KEY_EXTID, lineItem.getExtId());
+            values.put(TableContract.LineItemInfo.KEY_NAME_LINEITEM, lineItem.getItemName());
+            values.put(TableContract.LineItemInfo.KEY_DESC, lineItem.getItemDesc());
+            values.put(TableContract.LineItemInfo.KEY_LINEITEMPOS, lineItem.getLineitemPos());
+            values.put(TableContract.LineItemInfo.KEY_DOCNUM, lineItem.getDocNum());
+            values.put(TableContract.LineItemInfo.KEY_TXNID, lineItem.getTxnId());
             /*if(lineItem.getTxnDate() != null)
              values.put(KEY_TXNDATE, MSUtils.yyyyMMddFormat.format(lineItem.getTxnDate()));
             if(lineItem.getShipDate() != null)
             values.put(KEY_SHIPDATE, MSUtils.yyyyMMddFormat.format(lineItem.getShipDate()));*/
-            values.put(TableDetails.PickListInfo.KEY_NOTES, lineItem.getNotes());
-            values.put(TableDetails.PickListInfo.KEY_STATUS, String.valueOf(lineItem.getmItemStatus()));
-            values.put(TableDetails.LineItemInfo.KEY_UOM, lineItem.getUom());
-            values.put(TableDetails.LineItemInfo.KEY_TOPICK, lineItem.getQtyToPick());
-            values.put(TableDetails.LineItemInfo.KEY_PICKED, lineItem.getQtyPicked());
-            values.put(TableDetails.LineItemInfo.KEY_BARCODE, lineItem.getBarcode());
-            values.put(TableDetails.LineItemInfo.KEY_BINLOCATION, lineItem.getBinLocation());
-            values.put(TableDetails.LineItemInfo.KEY_BINEXTID, lineItem.getBinExtId());
-            values.put(TableDetails.LineItemInfo.KEY_CUSTOMFIELD, lineItem.getCustomFields());
-            values.put(TableDetails.LineItemInfo.KEY_SERIANUMBER,String.valueOf(lineItem.isShowSerialNo()));
-            values.put(TableDetails.LineItemInfo.KEY_LOTNUMBER,String.valueOf(lineItem.isShowLotNo()));
+            values.put(TableContract.PickListInfo.KEY_NOTES, lineItem.getNotes());
+            values.put(TableContract.PickListInfo.KEY_STATUS, String.valueOf(lineItem.getmItemStatus()));
+            values.put(TableContract.LineItemInfo.KEY_UOM, lineItem.getUom());
+            values.put(TableContract.LineItemInfo.KEY_TOPICK, lineItem.getQtyToPick());
+            values.put(TableContract.LineItemInfo.KEY_PICKED, lineItem.getQtyPicked());
+            values.put(TableContract.LineItemInfo.KEY_BARCODE, lineItem.getBarcode());
+            values.put(TableContract.LineItemInfo.KEY_BINLOCATION, lineItem.getBinLocation());
+            values.put(TableContract.LineItemInfo.KEY_BINEXTID, lineItem.getBinExtId());
+            values.put(TableContract.LineItemInfo.KEY_CUSTOMFIELD, lineItem.getCustomFields());
+            values.put(TableContract.LineItemInfo.KEY_SERIANUMBER,String.valueOf(lineItem.isShowSerialNo()));
+            values.put(TableContract.LineItemInfo.KEY_LOTNUMBER,String.valueOf(lineItem.isShowLotNo()));
             myCR.insert(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE, values);
         }
         catch (IllegalArgumentException exp)
@@ -526,27 +521,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         try {
             ContentValues values = new ContentValues();
 
-            values.put(KEY_ID, lineItem.getId());
-            values.put(TableDetails.LineItemInfo.KEY_TASKID, lineItem.getTaskId());
-            values.put(TableDetails.LineItemInfo.KEY_EXTID, lineItem.getExtId());
-            values.put(TableDetails.LineItemInfo.KEY_NAME_LINEITEM, lineItem.getItemName());
-            values.put(TableDetails.LineItemInfo.KEY_DESC, lineItem.getItemDesc());
-            values.put(TableDetails.LineItemInfo.KEY_LINEITEMPOS, lineItem.getLineitemPos());
-            values.put(TableDetails.LineItemInfo.KEY_DOCNUM, lineItem.getDocNum());
-            values.put(TableDetails.LineItemInfo.KEY_TXNID, lineItem.getTxnId());
+            values.put(TableContract.KEY_ID, lineItem.getId());
+            values.put(TableContract.LineItemInfo.KEY_TASKID, lineItem.getTaskId());
+            values.put(TableContract.LineItemInfo.KEY_EXTID, lineItem.getExtId());
+            values.put(TableContract.LineItemInfo.KEY_NAME_LINEITEM, lineItem.getItemName());
+            values.put(TableContract.LineItemInfo.KEY_DESC, lineItem.getItemDesc());
+            values.put(TableContract.LineItemInfo.KEY_LINEITEMPOS, lineItem.getLineitemPos());
+            values.put(TableContract.LineItemInfo.KEY_DOCNUM, lineItem.getDocNum());
+            values.put(TableContract.LineItemInfo.KEY_TXNID, lineItem.getTxnId());
             //values.put(KEY_TXNDATE, MSUtils.yyyyMMddFormat.format(lineItem.getTxnDate()));
             //values.put(KEY_SHIPDATE, MSUtils.yyyyMMddFormat.format(lineItem.getShipDate()));
-            values.put(TableDetails.PickListInfo.KEY_NOTES, lineItem.getNotes());
-            values.put(TableDetails.PickListInfo.KEY_STATUS, String.valueOf(lineItem.getmItemStatus()));
-            values.put(TableDetails.LineItemInfo.KEY_UOM, lineItem.getUom());
-            values.put(TableDetails.LineItemInfo.KEY_TOPICK, lineItem.getQtyToPick());
-            values.put(TableDetails.LineItemInfo.KEY_PICKED, lineItem.getQtyPicked());
-            values.put(TableDetails.LineItemInfo.KEY_BARCODE, lineItem.getBarcode());
-            values.put(TableDetails.LineItemInfo.KEY_BINLOCATION, lineItem.getBinLocation());
-            values.put(TableDetails.LineItemInfo.KEY_BINEXTID, lineItem.getBinExtId());
-            values.put(TableDetails.LineItemInfo.KEY_CUSTOMFIELD, lineItem.getCustomFields());
-            values.put(TableDetails.LineItemInfo.KEY_SERIANUMBER,String.valueOf(lineItem.isShowSerialNo()));
-            values.put(TableDetails.LineItemInfo.KEY_LOTNUMBER,String.valueOf(lineItem.isShowLotNo()));
+            values.put(TableContract.PickListInfo.KEY_NOTES, lineItem.getNotes());
+            values.put(TableContract.PickListInfo.KEY_STATUS, String.valueOf(lineItem.getmItemStatus()));
+            values.put(TableContract.LineItemInfo.KEY_UOM, lineItem.getUom());
+            values.put(TableContract.LineItemInfo.KEY_TOPICK, lineItem.getQtyToPick());
+            values.put(TableContract.LineItemInfo.KEY_PICKED, lineItem.getQtyPicked());
+            values.put(TableContract.LineItemInfo.KEY_BARCODE, lineItem.getBarcode());
+            values.put(TableContract.LineItemInfo.KEY_BINLOCATION, lineItem.getBinLocation());
+            values.put(TableContract.LineItemInfo.KEY_BINEXTID, lineItem.getBinExtId());
+            values.put(TableContract.LineItemInfo.KEY_CUSTOMFIELD, lineItem.getCustomFields());
+            values.put(TableContract.LineItemInfo.KEY_SERIANUMBER,String.valueOf(lineItem.isShowSerialNo()));
+            values.put(TableContract.LineItemInfo.KEY_LOTNUMBER,String.valueOf(lineItem.isShowLotNo()));
             String whereClause = "id = " + String.valueOf(lineItem.getId());
             myCR.update(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE, values, whereClause, null);
         }
@@ -563,10 +558,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         try {
 
             ContentValues values = new ContentValues();
-            values.put(TableDetails.KEY_ID, serialLotNumber.getId());
-            values.put(TableDetails.SerialNumberInfo.KEY_LINEITEMID, serialLotNumber.getLineitemId());
-            values.put(TableDetails.SerialNumberInfo.KEY_TYPE, serialLotNumber.getType());
-            values.put(TableDetails.SerialNumberInfo.KEY_VALUE, serialLotNumber.getValue());
+            values.put(TableContract.KEY_ID, serialLotNumber.getId());
+            values.put(TableContract.SerialNumberInfo.KEY_LINEITEMID, serialLotNumber.getLineitemId());
+            values.put(TableContract.SerialNumberInfo.KEY_TYPE, serialLotNumber.getType());
+            values.put(TableContract.SerialNumberInfo.KEY_VALUE, serialLotNumber.getValue());
 
         }
         catch (IllegalArgumentException exp)
@@ -616,18 +611,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //Picklist Table
         String selection = "id = ?";
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, mPickList.getId());
-        values.put(KEY_COMPANYID, mPickList.getCompanyId());
-        values.put(KEY_TASKTYPE, mPickList.getTaskType());
-        values.put(KEY_NAME, mPickList.getName());
-        values.put(KEY_ASSIGNEDID, mPickList.getAssigneeId());
-        values.put(KEY_CREATEDBYID, mPickList.getCreatedById());
-        values.put(KEY_STATUS, String.valueOf(mPickList.getStatus()));
-        values.put(KEY_SITEID, mPickList.getSiteId());
-        values.put(KEY_NOTES, mPickList.getNotes());
-        values.put(KEY_SHOWNOTES, String.valueOf(mPickList.isShowNotes()));
-        values.put(KEY_SYNCTOKEN, mPickList.getSyncToken());
-        values.put(KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getModifiedTimestamp()));
+        values.put(TableContract.KEY_ID, mPickList.getId());
+        values.put(TableContract.PickListInfo.KEY_COMPANYID, mPickList.getCompanyId());
+        values.put(TableContract.PickListInfo.KEY_TASKTYPE, mPickList.getTaskType());
+        values.put(TableContract.PickListInfo.KEY_NAME, mPickList.getName());
+        values.put(TableContract.PickListInfo.KEY_ASSIGNEDID, mPickList.getAssigneeId());
+        values.put(TableContract.PickListInfo.KEY_CREATEDBYID, mPickList.getCreatedById());
+        values.put(TableContract.PickListInfo.KEY_STATUS, String.valueOf(mPickList.getStatus()));
+        values.put(TableContract.PickListInfo.KEY_SITEID, mPickList.getSiteId());
+        values.put(TableContract.PickListInfo.KEY_NOTES, mPickList.getNotes());
+        values.put(TableContract.PickListInfo.KEY_SHOWNOTES, String.valueOf(mPickList.isShowNotes()));
+        values.put(TableContract.PickListInfo.KEY_SYNCTOKEN, mPickList.getSyncToken());
+        values.put(TableContract.PickListInfo.KEY_MODIFIEDTIMESTAMP, MSUtils.yyyyMMddFormat.format(mPickList.getModifiedTimestamp()));
 
         try {
 
@@ -650,27 +645,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     //Lineitem table
                     LineItem lineItem = mPickList.getLineitems().get(i);
                     ContentValues values1 = new ContentValues();
-                    values1.put(KEY_ID, lineItem.getId());
-                    values1.put(KEY_TASKID, lineItem.getTaskId());
-                    values1.put(KEY_EXTID, lineItem.getExtId());
-                    values1.put(KEY_NAME_LINEITEM, lineItem.getItemName());
-                    values1.put(KEY_DESC, lineItem.getItemDesc());
-                    values1.put(KEY_LINEITEMPOS, lineItem.getLineitemPos());
-                    values1.put(KEY_DOCNUM, lineItem.getDocNum());
-                    values1.put(KEY_TXNID, lineItem.getTxnId());
+                    values1.put(TableContract.KEY_ID, lineItem.getId());
+                    values1.put(TableContract.LineItemInfo.KEY_TASKID, lineItem.getTaskId());
+                    values1.put(TableContract.LineItemInfo.KEY_EXTID, lineItem.getExtId());
+                    values1.put(TableContract.LineItemInfo.KEY_NAME_LINEITEM, lineItem.getItemName());
+                    values1.put(TableContract.LineItemInfo.KEY_DESC, lineItem.getItemDesc());
+                    values1.put(TableContract.LineItemInfo.KEY_LINEITEMPOS, lineItem.getLineitemPos());
+                    values1.put(TableContract.LineItemInfo.KEY_DOCNUM, lineItem.getDocNum());
+                    values1.put(TableContract.LineItemInfo.KEY_TXNID, lineItem.getTxnId());
                     //values1.put(KEY_TXNDATE, MSUtils.yyyyMMddFormat.format(lineItem.getTxnDate()));
                     //values1.put(KEY_SHIPDATE, MSUtils.yyyyMMddFormat.format(lineItem.getShipDate()));
-                    values1.put(KEY_NOTES, lineItem.getNotes());
-                    values1.put(KEY_STATUS, String.valueOf(lineItem.getmItemStatus()));
-                    values1.put(KEY_UOM, lineItem.getUom());
-                    values1.put(KEY_TOPICK, lineItem.getQtyToPick());
-                    values1.put(KEY_PICKED, lineItem.getQtyPicked());
-                    values1.put(KEY_BARCODE, lineItem.getBarcode());
-                    values1.put(KEY_BINLOCATION, lineItem.getBinLocation());
-                    values1.put(KEY_BINEXTID, lineItem.getBinExtId());
-                    values1.put(KEY_CUSTOMFIELD, lineItem.getCustomFields());
-                    values1.put(KEY_SERIANUMBER,String.valueOf(lineItem.isShowSerialNo()));
-                    values1.put(KEY_LOTNUMBER,String.valueOf(lineItem.isShowLotNo()));
+                    values1.put(TableContract.PickListInfo.KEY_NOTES, lineItem.getNotes());
+                    values1.put(TableContract.PickListInfo.KEY_STATUS, String.valueOf(lineItem.getmItemStatus()));
+                    values1.put(TableContract.LineItemInfo.KEY_UOM, lineItem.getUom());
+                    values1.put(TableContract.LineItemInfo.KEY_TOPICK, lineItem.getQtyToPick());
+                    values1.put(TableContract.LineItemInfo.KEY_PICKED, lineItem.getQtyPicked());
+                    values1.put(TableContract.LineItemInfo.KEY_BARCODE, lineItem.getBarcode());
+                    values1.put(TableContract.LineItemInfo.KEY_BINLOCATION, lineItem.getBinLocation());
+                    values1.put(TableContract.LineItemInfo.KEY_BINEXTID, lineItem.getBinExtId());
+                    values1.put(TableContract.LineItemInfo.KEY_CUSTOMFIELD, lineItem.getCustomFields());
+                    values1.put(TableContract.LineItemInfo.KEY_SERIANUMBER,String.valueOf(lineItem.isShowSerialNo()));
+                    values1.put(TableContract.LineItemInfo.KEY_LOTNUMBER,String.valueOf(lineItem.isShowLotNo()));
                     if(badd)
                         ops.add(
                             ContentProviderOperation.newInsert(ApplicationContentProvider.CONTENT_URI_LINEITEM_TABLE)
@@ -687,10 +682,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                             //Serial number table
                             SerialLotNumber serialLotNumber = lineItem.getSerialLotNumbers().get(j);
                             ContentValues values2 = new ContentValues();
-                            values2.put(KEY_ID, serialLotNumber.getId());
-                            values2.put(KEY_LINEITEMID, serialLotNumber.getLineitemId());
-                            values2.put(KEY_TYPE, serialLotNumber.getType());
-                            values2.put(KEY_VALUE, serialLotNumber.getValue());
+                            values2.put(TableContract.KEY_ID, serialLotNumber.getId());
+                            values2.put(TableContract.SerialNumberInfo.KEY_LINEITEMID, serialLotNumber.getLineitemId());
+                            values2.put(TableContract.SerialNumberInfo.KEY_TYPE, serialLotNumber.getType());
+                            values2.put(TableContract.SerialNumberInfo.KEY_VALUE, serialLotNumber.getValue());
                             if(badd)
                                 ops.add(
                                     ContentProviderOperation.newInsert(ApplicationContentProvider.CONTENT_URI_SERIALLOTNUMBER_TABLE)
@@ -810,8 +805,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             final String utcTime = sdf.format(new Date());
             ContentValues values = new ContentValues();
-            values.put(KEY_GUID, guid);
-            values.put(KEY_LASTSYNCTIME, utcTime);
+            values.put(TableContract.SyncInfo.KEY_GUID, guid);
+            values.put(TableContract.SyncInfo.KEY_LASTSYNCTIME, utcTime);
             Log.i("SyncAdapter",utcTime);
             String whereClause = "guid= ?";
             if(syncTimeExistsforCompanyId(guid))
@@ -886,9 +881,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         {
             ContentValues values = new ContentValues();
 
-            values.put(KEY_REALMID, details.getRealmID());
-            values.put(KEY_DEVICEGUID, details.getDeviceGUID());
-            values.put(KEY_COMPANYNAME, details.getCompanyName());
+            values.put(TableContract.CompanyFileInfo.KEY_REALMID, details.getRealmID());
+            values.put(TableContract.CompanyFileInfo.KEY_DEVICEGUID, details.getDeviceGUID());
+            values.put(TableContract.CompanyFileInfo.KEY_COMPANYNAME, details.getCompanyName());
             myCR.insert(ApplicationContentProvider.CONTENT_URI_COMPANYFILEINFO_TABLE, values);
 
          /*   db.insert(TABLE_COMPANYYFILEINFO_NAME,null, values);
@@ -905,7 +900,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public CompanyFileDetails getDetails() {
         CompanyFileDetails obj = null;
 
-        String query = "SELECT  * FROM " + TABLE_COMPANYYFILEINFO_NAME;
+        String query = "SELECT  * FROM " + TableContract.Tables.COMPANYFILEINFO;
         SQLiteDatabase db = this.getWritableDatabase();
 
         //Cursor cursor = db.rawQuery(query, null);

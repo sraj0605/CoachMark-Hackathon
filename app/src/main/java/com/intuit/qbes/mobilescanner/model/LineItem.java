@@ -427,7 +427,7 @@ public class LineItem implements Parcelable {
         }
         return lineItems;
     }
-    public String JSONStringFromLineitem(LineItem lineItem)
+    public static String JSONStringFromLineitem(LineItem lineItem)
     {
         GsonBuilder builder = new GsonBuilder().setDateFormat("yyyy-MM-dd");
         Gson gson = builder.create();
@@ -435,7 +435,7 @@ public class LineItem implements Parcelable {
         return jsonString;
     }
 
-    public String JSONStringArrayFromPicklistArray(List<LineItem> lineItems)
+    public static String JSONStringArrayFromPicklistArray(List<LineItem> lineItems)
     {
         GsonBuilder builder = new GsonBuilder().setDateFormat("yyyy-MM-dd");
         Gson gson = builder.create();
