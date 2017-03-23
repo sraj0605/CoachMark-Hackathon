@@ -167,6 +167,7 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
         {
             SetErrorScreen();
             dismissDialog();
+
         }
         else if(response.compareTo("NoInternet") == 0)
         {
@@ -174,11 +175,13 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
             dismissDialog();
 
 
+
         }
         else if(response.compareTo("ServiceIssue") == 0)
         {
             ServerIssueDialog(getContext());
             dismissDialog();
+
         }
     }
 
@@ -390,6 +393,7 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
             }
             MobileTimeOut(false);
             dismissDialog();
+            mCode.setText(""); //Sunder added for QBWG-43340
 
         }
         else if(response.compareTo("deny") == 0)
@@ -398,6 +402,7 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
                 mCallback.onDeny();
             }
             dismissDialog();
+            mCode.setText(""); //Sunder added for QBWG-43340
 
         }
         else if(response.compareTo("NoInternet") == 0)
@@ -405,11 +410,14 @@ public class CodeEntryFragment extends Fragment implements DataSync.DataSyncCall
             NoInternetDialog(getContext());
             dismissDialog();
 
+
+
         }
         else if(response.compareTo("ServiceError") == 0)
         {
             ServerIssueDialog(getContext());
             dismissDialog();
+
 
         }
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(
