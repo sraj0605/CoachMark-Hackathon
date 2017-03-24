@@ -124,6 +124,7 @@ public class DevicePairingActivity extends AppCompatActivity implements GetStart
         fragmentClass = SuccessfulPairFragment.class;
         String tag = fragmentClass.getCanonicalName();
         FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack();
         fragment = fragmentManager.findFragmentByTag(tag);
         try {
             if (fragment == null) {
