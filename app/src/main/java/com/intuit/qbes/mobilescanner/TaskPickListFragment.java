@@ -33,6 +33,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.intuit.qbes.mobilescanner.barcode.BarcodeFactory;
 import com.intuit.qbes.mobilescanner.barcode.BarcodeScannerDevice;
@@ -92,6 +93,7 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
 
     private DatabaseHandler db = null;
     private List<LineItem> lineitems = null;
+  
 
     @Override
     public void onFetchPicklist(List<Picklist> mPicklists) {
@@ -148,7 +150,12 @@ public class TaskPickListFragment extends Fragment implements View.OnClickListen
         }, 2000);
 
         mSyncTick.setVisibility(View.VISIBLE);
+        //QBWG-44263 added by Sunder Raj
+        Toast.makeText(getActivity(),getString(R.string.sync_complete),
+                Toast.LENGTH_SHORT).show();
         mSync.setVisibility(View.GONE);
+
+
     }
 
     public interface Callbacks {
