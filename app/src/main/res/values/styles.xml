@@ -15,83 +15,15 @@
         <item name="colorAccent">#2DA01C</item>
     </style>
 
+    <!-- CoachMark animation -->
+    <style name="CoachMarkAnimation">
+        <item name="@android:windowEnterAnimation">@anim/coach_mark_show</item>
+        <item name="@android:windowExitAnimation">@anim/coach_mark_hide</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="Divider">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:background">#ebebe4</item>
-    </style>
-
-    <style name="ErrorDivider">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">3dp</item>
-        <item name="android:background">#b20000</item>
-    </style>
-
-    <style name="VerticalDivider">
-        <item name="android:layout_width">1dp</item>
-        <item name="android:layout_height">53dp</item>
-        <item name="android:background">#ebebe4</item>
-    </style>
-
-    <style name="UPC_Error">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">53dp</item>
-        <item name="android:background">#ff4c4c</item>
-    </style>
-
-    <style name="UPCErrorLine">
-        <item name="android:layout_width">247dp</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:background">#b20000</item>
-    </style>
-
-    <style name="UPCLine">
-        <item name="android:layout_width">250dp</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:background">#2DA01C</item>
-    </style>
-
-    <style name="DevPairErrorLine">
-        <item name="android:layout_width">10dp</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:background">#b20000</item>
-    </style>
-
-    <style name="DevPairLine">
-        <item name="android:layout_width">10dp</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:background">#2DA01C</item>
-    </style>
-
-    <style name="ButtonFooter">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">68dp</item>
-        <item name="android:layout_marginBottom">5dp</item>
-        <item name="android:background">@drawable/button_footer</item>
-        <item name="android:layout_alignParentBottom">true</item>
-    </style>
-
-    <style name="ButtonGap">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:background">#ffffff</item>
-        <item name="android:layout_alignParentBottom">true</item>
-    </style>
-
-    <style name="FullscreenTheme" parent="AppTheme">
-        <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:windowBackground">@null</item>
-        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
-        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
-    </style>
-
-    <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
-        <item name="android:background">@color/black_overlay</item>
-    </style>
 
 </resources>

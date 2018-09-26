@@ -6,24 +6,27 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#eeeeee"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="22dp"
-        android:text="Welcome to the"
+        android:textSize="22sp"
+        android:text="@string/DPw1"
+        android:textColor="#404040"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="79dp"
         android:id="@+id/start_screen_text1"
         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="22dp"
-        android:text="QuickBooks Enterprise"
+        android:textSize="22sp"
+        android:text="@string/DPw2"
+        android:textColor="#404040"
         android:layout_marginTop="1dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/start_screen_text1"
@@ -33,22 +36,36 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="22dp"
-        android:text="Inventory Mobile App!"
+        android:textSize="22sp"
+        android:text="@string/DPw3"
+        android:textColor="#404040"
+
         android:layout_marginTop="1dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/start_screen_text2"
         android:id="@+id/start_screen_text3"
         />
+    <ImageView
+        app:layout_widthPercent="100%"
+        app:layout_heightPercent="42.2%"
+        android:layout_below="@+id/start_screen_text3"
+        android:layout_marginTop="49dp"
+        android:id="@+id/WelcomeImageView" />
 
-    <Button
-        android:text="Get Started"
-        app:layout_widthPercent="90%"
+
+    <TextView
+        android:text="@string/DPwb1"
+        android:textColor="#0177c5"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
+        android:background="#eeeeee"
         android:id="@+id/GetStartedButton" />
+
 
 
 </android.support.percent.PercentRelativeLayout>

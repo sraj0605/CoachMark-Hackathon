@@ -6,7 +6,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
     defaultConfig {
-        applicationId "com.intuit.qbes.mobilescanner"
+        applicationId "com.hackathon.coachmarks"
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
@@ -36,8 +36,9 @@ ext {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'], exclude: ['com.symbol.emdk.jar'])
-    provided fileTree(include: ['com.symbol.emdk.jar'], dir: '/Users/ckumar5/Library/Android/sdk/add-ons/addon-symbol-emdk_v5.0-API-19/libs')
+    compile fileTree(include: ['*.jar'], exclude: ['com.symbol.emdk.jar'], dir: 'libs')
+    compile 'com.android.support.constraint:constraint-layout:1.1.3'
+    provided fileTree(include: ['com.symbol.emdk.jar'], dir: '/Users/sraj2/Library/Android/sdk/add-ons/addon-symbol-emdk_v5.0-API-19/libs')
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
     compile "com.android.support:support-v4:${supportLibVersion}"
@@ -48,10 +49,11 @@ dependencies {
     compile 'com.android.volley:volley:1.0.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.1.4'
-    testCompile "org.robolectric:shadows-support-v4:3.0"
+    testCompile 'org.robolectric:shadows-support-v4:3.0'
     testCompile 'org.json:json:20140107'
-    testCompile "org.mockito:mockito-core:2.0.57-beta"
+    testCompile 'org.mockito:mockito-core:2.0.57-beta'
     testCompile 'org.robolectric:shadows-httpclient:3.0'
     androidTestCompile 'junit:junit:4.12'
     compile 'com.google.code.gson:gson:2.2.4'
+    //compile files('/Users/sraj2/prc/-sbg-qbes-mobilescanner/libs/android-support-v4.jar')
 }

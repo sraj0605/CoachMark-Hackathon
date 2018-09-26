@@ -1,110 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.intuit.qbes.mobilescanner">
+    package="com.hackathon.coachmarks">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="com.symbol.emdk.permission.EMDK" />
-    <uses-permission
-        android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission
-        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
-    <uses-permission
-        android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
-    <uses-permission
-        android:name="android.permission.READ_SYNC_STATS"/>
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
-        android:name=".networking.AppController"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <uses-library
-            android:name="com.symbol.emdk"
-            android:required="false" />
-
-        <activity
-            android:name=".DetailPicklistActivity"
-            android:label="Picklist Details">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
-            android:name=".SettingsActivity"
-            android:label="Settings"></activity>
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/main_activity_label">
-
+        <activity android:name=".WalkThroughActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-        <activity
-            android:name=".ProductInfoActivity"
-            android:label="@string/title_activity_product_info"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".DetailPicklistActivity" />
-
-
-        </activity>
-        <provider
-            android:authorities="com.intuit.qbes.mobilescanner.provider"
-            android:name=".ApplicationContentProvider"
-            android:syncable="true"
-            android:exported="false"></provider>
-
 
         <activity
-            android:name=".PicklistCompleteActivity"
-            android:label="@string/title_activity_picklist_complete"
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
             android:theme="@style/AppTheme"></activity>
-
-        <!-- This service implements our SyncAdapter. It needs to be exported, so that the system
-       sync framework can access it. -->
-        <service android:name=".SyncService"
-            android:process=":sync"
-            android:exported="true">
-            <!-- This intent filter is required. It allows the system to launch our sync service
-            as needed. -->
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-            <!-- This points to a required XML file which describes our SyncAdapter. -->
-            <meta-data android:name="android.content.SyncAdapter"
-                android:resource="@xml/syncadapter" />
-        </service>
-
-        <!-- This implements the account we'll use as an attachment point for our SyncAdapter. Since
-        our SyncAdapter doesn't need to authenticate the current user (it just fetches a public RSS
-        feed), this account's implementation is largely empty.
-
-        It's also possible to attach a SyncAdapter to an existing account provided by another
-        package. In that case, this element could be omitted here. -->
-        <service android:name="com.intuit.qbes.mobilescanner.Account.GenericAccountService">
-            <!-- Required filter used by the system to launch our account service. -->
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
-            <!-- This points to an XMLf ile which describes our account service. -->
-            <meta-data android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
-        </service>
-        <activity
-            android:name=".DevicePairingActivity"
-            android:label="@string/title_activity_device_pairing"
-            android:theme="@style/AppTheme">
-        </activity>
-
-        <service android:name=".DevicePairingService">
-        </service>
     </application>
 
 </manifest>

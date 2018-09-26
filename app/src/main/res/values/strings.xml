@@ -1,30 +1,146 @@
 <resources>
-    <string name="app_name">MobileScanner</string>
+    <string name="app_name">Sample App</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="title_home_item">Home</string>
-    <string name="title_settings_item">Settings</string>
-    <string name="title_switch_item">Switch User</string>
+    <string name="title_mytasks">"My tasks"</string>
+    <string name="title_switch_user">"Switch user"</string>
+    <string name="title_select_user">"Select user"</string>
+    <string name="title_help">"Help"</string>
+    <string name="title_help_bluetooth">Bluetooth Help</string>
+    <string name="title_about">"About"</string>
+    <string name="title_legal">License Agreement</string>
+    <string name="application_version">Application Version</string>
+    <string name="header_greetings_no_user">Hello </string>
+    <string name="header_greetings_with_user">Hello, </string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-    <string name="main_activity_label">My Tasks</string>
+    <string name="main_activity_label">Sample App</string>
     <string name="title_activity_product_info">Information</string>
-    <string name="sort_by">SORT BY</string>
-    <string name="filter">FILTER</string>
-    <string name="sort_by_location">Locations</string>
-    <string name="sort_by_items">Items</string>
+    <string name="sort_by_location">Bin</string>
+    <string name="sort_by_items">Item</string>
     <string name="sort_by_status">Status</string>
-    <string name="sort_by_salesorder">Sales Order</string>
+    <string name="sort_by">SORT BY</string>
     <string name="No">No</string>
     <string name="Yes">Yes</string>
     <string name="OK">OK</string>
     <string name="CANCEL">CANCEL</string>
+    <string name="sno_Title">Add serial numbers</string>
+    <string name="SAVE">SAVE</string>
+    <string name="EDIT">EDIT</string>
+    <string name="NOTE_Character_Beyound_Limit">You cannot save this information because it has exceeded the character limit.</string>
+    <string name="UNDO">UNDO</string>
+    <string name="DISCARD">DISCARD</string>
+    <string name="PICK">PICK</string>
+    <string name="PleaseWait">Please wait. We\'re connecting your device now.</string>
+    <string name="DiscrepancyFragmentTitle">Quantity mismatch</string>
+    <string name="NotesFragmentTitle">Add a note</string>
+    <string name="ListPicklistTitle">My Picklists</string>
+    <string name="SelectTaskTitle">Select task</string>
+    <string name="PartiallyPickmsg1">You need to pick </string>
+    <string name="PartiallyPickmsg2"> more piece(s).\nDo you want to continue picking this item?</string>
+    <string name="Complete_Confirmation">Are you sure you want to complete this picklist?</string>
+    <string name="Sno_Del_Confirmation">Are you sure you want to remove this serial number?</string>
+    <string name="Empty"></string>
+    <string name="Picked">PICKED</string>
+    <string name="toBePicked">TO BE PICKED</string>
+    <string name="ItemTag">ITEM</string>
+    <string name="doneTag">Done</string>
+
+
+    <string name="DPw1">Welcome to</string>
+    <string name="DPw2">QuickBooks Desktop</string>
+    <string name="DPw3">Warehouse</string>
+    <string name="DPwb1">Let\'s get started</string>
+
+    <string name="DPc1">Enter the passcode</string>
+    <string name="DPc2">you see in QuickBooks to</string>
+    <string name="DPc3">connect to your company file</string>
+
+    <string name="DPd1">QuickBooks isn\'t allowing</string>
+    <string name="DPd2">this device to link.</string>
+    <string name="DPd3">Try again or contact your</string>
+    <string name="DPd4">administrator.</string>
+
+    <string name="DPca1">QuickBooks is no longer</string>
+    <string name="DPca2">linked to this device.</string>
+
+    <string name="DPto1">The connection attempt</string>
+    <string name="DPto2">has timed out.</string>
+
+
+    <string name="DPs1">Success!</string>
+    <string name="DPs2">Your device is now connected to</string>
+    <string name="DPs4">ABC Company</string>
+    <string name="ConnectToQB">Connect to QuickBooks</string>
+
+    <string name="text_good">Good Job!</string>
+    <string name="text_picklist">This Picklist is</string>
+    <string name="text_complete">Complete.</string>
+    <string name="link_dashboard">Go to Dashboard</string>
 
     <string name="title_activity_picklist_complete">PicklistCompleteActivity</string>
     <string name="title_activity_device_pairing">DevicePairingActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_notes">NotesActivity</string>
 
-    <string name="sync_complete">Sync is completed</string>
+    <string name="ConErrorMsg1">You aren\'t connected to the internet. Check your network settings and try again.</string>
+    <string name="WrongItemScan">The item you scanned isn\'t in your picklist. Make sure you have the right item.</string>
+    <string name="InvalidCode">This isn\'t the right passcode.</string>
+    <string name="ExpiredOtp">Your passcode has expired. Contact QuickBooks to request a new passcode for this company file.</string>
+    <string name="serverIssue">Something\'s not right. Please try again.</string>
+    <string name="otp_hint"><font size="14">Enter the passcode</font></string>
+    <string name="sno_hint"><font size="14">Enter serial number</font></string>
+    <string name="noteConfMsg">You\'ll lose this note\n if you don\'t save it</string>
+    <string name="Sno_Exceed">Quantity picked exceeds quantity assigned</string>
+    <string name="ItemDetailSave">The changes you made will be lost. Do you want to pick this item or discard changes?</string>
+
+
+    <string name="sync_complete">Saved! Sent to QuickBooks.</string>
+    <string name="sync_picklist">Syncing PickList</string>
+    <string name="sync_user">Syncing user</string>
+    <string name="sync_user_error">Your QuickBooks file \nhas no warehouse users \nto choose from.</string>
+    <string name="sync_tasks">Syncing tasks</string>
+    <string name="Damaged">Damaged</string>
+    <string name="Insufficient">Insufficient</string>
+    <string name="Insufficient_receive">Item shortage</string>
+    <string name="OutofStock">Out of Stock</string>
+    <string name="OtherBin">Picked from another bin</string>
+    <string name="Other">Other</string>
+    <string name="Default">Select message (optional)</string>
+    <string name="dis_not_ready">DIS Not Ready</string>
+    <string name="emdk_not_ready">EMDK Manager not ready</string>
+    <string name="emdk_ver_prefix">EMDK</string>
+    <string name="realm_id_not_found">Realm Id not found</string>
+    <string name="nps_survey_file_key">com.intuit.qbes.mobilescanner.prs.PRSUtil.NPS_SURVEY_FILE_KEY</string>
+    <string name="nps_survey_eligibility">com.intuit.qbes.mobilescanner.prs.PRSUtil.NPS_SURVEY_IS_ELIGIBLE</string>
+    <string name="nps_survey_eligibility_check_time">com.intuit.qbes.mobilescanner.prs.PRSUtil.NPS_SURVEY_ELIGIBILITY_CHECK_TIME</string>
+    <string name="nps_survey_task_dashboard_launch_count">com.intuit.qbes.mobilescanner.prs.PRSUtil.NPS_SURVEY_TASK_DASHBOARD_LAUNCH_COUNT</string>
+
+
+    <string name="skip">Skip</string>
+    <string name="start">Start</string>
+    <string name="walkthrough1">Link the device to your QuickBooks Company file</string>
+    <string name="description1">Enter the 6 digits OTP generated by QuickBooks</string>
+    <string name="walkthrough2">Select a Warehouse User</string>
+    <string name="description2">Choose a picker name who has picklist assigned for picking</string>
+    <string name="walkthrough3">Select a picklist and an item</string>
+    <string name="description3">Picker scans item barcode and update the intermediate status </string>
+    <string name="walkthrough4">Complete picklist and update QuickBooks</string>
+    <string name="description4">Send completed picklist status to QuickBooks and start working on next picklist </string>
+    <string name="title_activity_help_overlay">HelpOverlay</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="title_activity_main">MainActivity</string>
 
 </resources>
